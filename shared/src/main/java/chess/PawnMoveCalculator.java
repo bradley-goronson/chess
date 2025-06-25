@@ -6,9 +6,9 @@ import java.util.Collection;
 public class PawnMoveCalculator implements PieceMoveCalculator{
     @Override
     public Collection<ChessMove> getPieceMoves(ChessBoard board, ChessPosition position) {
+        Collection<ChessMove> validMoves = new ArrayList<>();
         ChessPiece currentPiece = board.getPiece(position);
         ChessGame.TeamColor currentColor = currentPiece.getTeamColor();
-        Collection<ChessMove> validMoves = new ArrayList<>();
         int row = position.getRow();
         int column = position.getColumn();
 
