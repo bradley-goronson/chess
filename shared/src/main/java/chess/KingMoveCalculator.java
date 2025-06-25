@@ -12,55 +12,14 @@ public class KingMoveCalculator implements PieceMoveCalculator {
         int row = position.getRow();
         int column = position.getColumn();
 
-        ChessPosition up = new ChessPosition(row + 1, column);
-        ChessPosition upRight = new ChessPosition(row + 1, column + 1);
-        ChessPosition upLeft = new ChessPosition(row + 1, column - 1);
-        ChessPosition right = new ChessPosition(row, column + 1);
-        ChessPosition left = new ChessPosition(row, column - 1);
-        ChessPosition down = new ChessPosition(row - 1, column);
-        ChessPosition downRight = new ChessPosition(row - 1, column + 1);
-        ChessPosition downLeft = new ChessPosition(row - 1, column - 1);
+        int[][] positionAdjustments = {{1, 0}, {1, 1}, {1, -1}, {0, 1}, {0, -1}, {-1, 0}, {-1, 1}, {-1, -1}};
 
-        if (row != 8) {
-            if (board.getPiece(up) == null || board.getPiece(up).getTeamColor() != currentColor) {
-                validMoves.add(new ChessMove(position, up, null));
-            }
-            if (column != 1) {
-                if (board.getPiece(upLeft) == null || board.getPiece(upLeft).getTeamColor() != currentColor) {
-                    validMoves.add(new ChessMove(position, upLeft, null));
-                }
-            }
-            if (column != 8) {
-                if (board.getPiece(upRight) == null || board.getPiece(upRight).getTeamColor() != currentColor) {
-                    validMoves.add(new ChessMove(position, upRight, null));
-                }
+        for (int[] adjustment : positionAdjustments) {
+            ChessPosition candidatePosition = new ChessPosition(row + adjustment[0], column + adjustment[1]);
+            if (candidatePosition.getRow() >= 1 && candidatePosition.getRow() <= 8 && candidatePosition.getColumn() >= 1 && candidatePosition.getColumn() <= 8 && (board.getPiece(candidatePosition) == null || board.getPiece(candidatePosition).getTeamColor() != currentColor)) {
+                validMoves.add(new ChessMove(position, candidatePosition, null));
             }
         }
-        if (row != 1) {
-            if (board.getPiece(down) == null || board.getPiece(down).getTeamColor() != currentColor) {
-                validMoves.add(new ChessMove(position, down, null));
-            }
-            if (column != 1) {
-                if (board.getPiece(downLeft) == null || board.getPiece(downLeft).getTeamColor() != currentColor) {
-                    validMoves.add(new ChessMove(position, downLeft, null));
-                }
-            }
-            if (column != 8) {
-                if (board.getPiece(downRight) == null || board.getPiece(downRight).getTeamColor() != currentColor) {
-                    validMoves.add(new ChessMove(position, downRight, null));
-                }
-            }
-        }
-        if (column != 1) {
-            if (board.getPiece(left) == null || board.getPiece(left).getTeamColor() != currentColor) {
-                validMoves.add(new ChessMove(position, left, null));
-            }
-        }
-        if (column != 8) {
-            if (board.getPiece(right) == null || board.getPiece(right).getTeamColor() != currentColor) {
-                validMoves.add(new ChessMove(position, right, null));
-            }
-        }
-            return validMoves;
-        }
+        return validMoves;
     }
+}
