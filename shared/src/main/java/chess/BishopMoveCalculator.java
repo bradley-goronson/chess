@@ -3,7 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class BishopMoveCalculator implements PieceMoveCalculator{
+public class BishopMoveCalculator implements PieceMoveCalculator {
     public Collection<ChessMove> getPieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> validMoves = new ArrayList<>();
         ChessPiece currentPiece = board.getPiece(position);
@@ -23,7 +23,7 @@ public class BishopMoveCalculator implements PieceMoveCalculator{
                         validMoves.add(new ChessMove(position, candidatePosition, null));
                     }
                     foundOtherPiece = true;
-                    } else {
+                } else {
                     validMoves.add(new ChessMove(position, candidatePosition, null));
                 }
                 row += adjustment[0];

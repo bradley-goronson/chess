@@ -93,7 +93,6 @@ public class PawnMoveCalculator implements PieceMoveCalculator{
                 }
             }
         }
-
         return validMoves;
     }
 }
