@@ -10,10 +10,9 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] board = new ChessPiece[8][8];
+    private final ChessPiece[][] board = new ChessPiece[8][8];
 
-    public ChessBoard() {
-    }
+    public ChessBoard() {}
 
     /**
      * Adds a chess piece to the chessboard
@@ -41,7 +40,20 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        board = new ChessPiece[8][8];
+        for (int i = 1; i <= 8; i++) {
+            this.addPiece(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+            this.addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        }
+
+        ChessPiece.PieceType[] nonPawnPieces = {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.KING};
+        for (int i = 0; i < 5; i++) {
+            this.addPiece(new ChessPosition(1, 1 + i), new ChessPiece(ChessGame.TeamColor.WHITE, nonPawnPieces[i]));
+            this.addPiece(new ChessPosition(8, 1 + i), new ChessPiece(ChessGame.TeamColor.BLACK, nonPawnPieces[i]));
+            if (i < 3) {
+                this.addPiece(new ChessPosition(1, 8 - i), new ChessPiece(ChessGame.TeamColor.WHITE, nonPawnPieces[i]));
+                this.addPiece(new ChessPosition(8, 8 - i), new ChessPiece(ChessGame.TeamColor.BLACK, nonPawnPieces[i]));
+            }
+        }
     }
 
     @Override
