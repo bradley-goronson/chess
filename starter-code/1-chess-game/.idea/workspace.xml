@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d1fb9994-7db1-4e52-909a-e08efec4578d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../../shared/src/main/java/chess/Testing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../shared/src/main/java/chess/ChessBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../shared/src/main/java/chess/ChessBoard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/passoff/chess/extracredit/CastlingTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../shared/1-chess-game/passoff/chess/extracredit/CastlingTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/passoff/chess/extracredit/EnPassantTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../shared/1-chess-game/passoff/chess/extracredit/EnPassantTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/passoff/chess/game/ChessGameTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../shared/1-chess-game/passoff/chess/game/ChessGameTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/passoff/chess/game/FullGameTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../shared/1-chess-game/passoff/chess/game/FullGameTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/passoff/chess/game/GameStatusTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../shared/1-chess-game/passoff/chess/game/GameStatusTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/passoff/chess/game/MakeMoveTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../shared/1-chess-game/passoff/chess/game/MakeMoveTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/passoff/chess/game/ValidMovesTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../shared/1-chess-game/passoff/chess/game/ValidMovesTests.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "bradley-goronson"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/bradley-goronson/chess.git",
+    "accountId": "aa7eacab-8f4f-4893-adaf-683c456f15d6"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="2z7aHmj7nZcc2ZydfHfZf4VNMeu" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/goronson/Desktop/CS 240/chess/starter-code/1-chess-game"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d1fb9994-7db1-4e52-909a-e08efec4578d" name="Changes" comment="" />
+      <created>1751084479385</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1751084479385</updated>
+    </task>
+    <servers />
+  </component>
+</project>
