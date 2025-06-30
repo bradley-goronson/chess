@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -9,16 +11,19 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    ChessBoard currentBoard = new ChessBoard();
+    ChessBoard candidateBoard;
+    TeamColor currentTeam = TeamColor.WHITE;
 
     public ChessGame() {
-
+        currentBoard.resetBoard();
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return currentTeam;
     }
 
     /**
@@ -27,7 +32,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        currentTeam = team;
     }
 
     /**
@@ -46,7 +51,25 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = currentBoard.getPiece(startPosition);
+        if (piece == null) {
+            return null;
+        }
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(currentBoard, startPosition);
+        //for each move in possibleMoves, copy the currentBoard to a candidateBoard, use the makeMove method on candidateBoard,
+        //then check if the currentTeam is in check with the isInCheck method. If they are, then we skip that move, but if not
+        //then we add that move to the validMoves array. Then return validMoves.
+        TeamColor originalTeam = currentTeam;
+
+        for (ChessMove move : possibleMoves) {
+            //copy current board
+            ChessBoard candidateBoard = clone();
+            currentBoard = candidateBoard;
+            this.makeMove(move);
+        }
+        currentTeam = originalTeam;
+        return validMoves;
     }
 
     /**
@@ -56,7 +79,18 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        //we want to update the currentBoard so the piece specified in the provided ChessMove is now at the end position.
+        //that involves setting the entry of the ChessPiece[][] board array that corresponds with the startPosition of the
+        //ChessMove to be null and setting the entry at the end position to be the piece that was at startPosition. We can update these
+        //entries using these positions with the ChessBoard's addPiece() method.
+        ChessPiece movingPiece = currentBoard.getPiece(move.getStartPosition());
+        currentBoard.addPiece(move.getEndPosition(), movingPiece);
+        currentBoard.addPiece(move.getStartPosition(), null);
+        if (currentTeam == TeamColor.WHITE) {
+            setTeamTurn(TeamColor.BLACK);
+        } else {
+            setTeamTurn(TeamColor.WHITE);
+        }
     }
 
     /**
@@ -96,7 +130,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        currentBoard = board;
     }
 
     /**
@@ -105,6 +139,31 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return currentBoard;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ChessGame chessGame)) {
+            return false;
+        }
+        return Objects.equals(currentBoard, chessGame.currentBoard) && currentTeam == chessGame.currentTeam;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentBoard, currentTeam);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "currentBoard=" + currentBoard +
+                ", currentTeam=" + currentTeam +
+                '}';
     }
 }
+
+
+
+
