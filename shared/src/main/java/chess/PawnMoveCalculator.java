@@ -33,7 +33,8 @@ public class PawnMoveCalculator implements PieceMoveCalculator {
             int candidateRow = candidatePositions.get(i).getRow();
             int candidateColumn = candidatePositions.get(i).getColumn();
             if (candidateRow >= 1 && candidateRow <= 8 && candidateColumn >= 1 && candidateColumn <= 8) {
-                if ((i == 0 && board.getPiece(candidatePositions.get(i)) == null) || (i > 1 && board.getPiece(candidatePositions.get(i)) != null && board.getPiece(candidatePositions.get(i)).getTeamColor() != currentColor)) {
+                ChessPiece candidatePiece = board.getPiece(candidatePositions.get(i));
+                if ((i == 0 && candidatePiece == null) || (i > 1 && candidatePiece != null && candidatePiece.getTeamColor() != currentColor)) {
                     if ((candidateRow == 8 && currentColor == ChessGame.TeamColor.WHITE) || (candidateRow == 1 && currentColor == ChessGame.TeamColor.BLACK)) {
                         for (ChessPiece.PieceType promotionPiece : promotionPieces) {
                             validMoves.add(new ChessMove(position, candidatePositions.get(i), promotionPiece));
@@ -46,7 +47,7 @@ public class PawnMoveCalculator implements PieceMoveCalculator {
                     }
                 }
                 if (i == 1 && advanceOneValid && ((currentRow == 2 && currentColor == ChessGame.TeamColor.WHITE) || (currentRow == 7 && currentColor == ChessGame.TeamColor.BLACK))) {
-                    if (board.getPiece(candidatePositions.get(i)) == null) {
+                    if (candidatePiece == null) {
                         validMoves.add(new ChessMove(position, candidatePositions.get(i), null));
                     }
                 }

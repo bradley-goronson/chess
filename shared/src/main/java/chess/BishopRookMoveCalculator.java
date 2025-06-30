@@ -19,9 +19,11 @@ public class BishopRookMoveCalculator implements PieceMoveCalculator {
             boolean foundOtherPiece = false;
             int row = position.getRow();
             int column = position.getColumn();
+            int nextColumn = column + adjustment[1];
+            int nextRow = row + adjustment[0];
 
-            while (!foundOtherPiece && row + adjustment[0] >= 1 && row + adjustment[0] <= 8 && column + adjustment[1] >= 1 && column + adjustment[1] <= 8) {
-                ChessPosition candidatePosition = new ChessPosition(row + adjustment[0], column + adjustment[1]);
+            while (!foundOtherPiece && nextRow >= 1 && nextRow <= 8 && nextColumn >= 1 && nextColumn <= 8) {
+                ChessPosition candidatePosition = new ChessPosition(nextRow, nextColumn);
                 if (board.getPiece(candidatePosition) != null) {
                     if (board.getPiece(candidatePosition).getTeamColor() != currentColor) {
                         validMoves.add(new ChessMove(position, candidatePosition, null));
@@ -32,6 +34,8 @@ public class BishopRookMoveCalculator implements PieceMoveCalculator {
                 }
                 row += adjustment[0];
                 column += adjustment[1];
+                nextRow = row + adjustment[0];
+                nextColumn = column + adjustment[1];
             }
         }
         return validMoves;

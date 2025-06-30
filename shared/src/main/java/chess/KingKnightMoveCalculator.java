@@ -20,7 +20,14 @@ public class KingKnightMoveCalculator implements PieceMoveCalculator {
 
         for (int[] adjustment : positionAdjustments) {
             ChessPosition candidatePosition = new ChessPosition(row + adjustment[0], column + adjustment[1]);
-            if (candidatePosition.getRow() >= 1 && candidatePosition.getRow() <= 8 && candidatePosition.getColumn() >= 1 && candidatePosition.getColumn() <= 8 && (board.getPiece(candidatePosition) == null || board.getPiece(candidatePosition).getTeamColor() != currentColor)) {
+            boolean outOfBounds = true;
+            int candidateRow = candidatePosition.getRow();
+            int candidateColumn = candidatePosition.getColumn();
+            if (candidateRow >= 1 && candidateRow <= 8 && candidateColumn >= 1 && candidateColumn <= 8) {
+                outOfBounds = false;
+            }
+
+            if (!outOfBounds && (board.getPiece(candidatePosition) == null || board.getPiece(candidatePosition).getTeamColor() != currentColor)) {
                 validMoves.add(new ChessMove(position, candidatePosition, null));
             }
         }
