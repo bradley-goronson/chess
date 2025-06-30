@@ -60,24 +60,30 @@ public class ChessPiece {
             validMoves = pawnMoveCalculator.getPieceMoves(board, myPosition);
         }
         if (this.type == PieceType.KING) {
-            PieceMoveCalculator kingMoveCalculator = new KingMoveCalculator();
+            int[][] positionAdjustments = {{1, 0}, {1, 1}, {1, -1}, {0, 1}, {0, -1}, {-1, 0}, {-1, 1}, {-1, -1}};
+            PieceMoveCalculator kingMoveCalculator = new KingKnightMoveCalculator(positionAdjustments);
             validMoves = kingMoveCalculator.getPieceMoves(board, myPosition);
         }
         if (this.type == PieceType.KNIGHT) {
-            PieceMoveCalculator knightMoveCalculator = new KnightMoveCalculator();
+            int[][] positionAdjustments = {{2, -1}, {2, 1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {1, 2}, {-1, 2}};
+            PieceMoveCalculator knightMoveCalculator = new KingKnightMoveCalculator(positionAdjustments);
             validMoves = knightMoveCalculator.getPieceMoves(board, myPosition);
         }
         if (this.type == PieceType.ROOK) {
-            PieceMoveCalculator rookMoveCalculator = new RookMoveCalculator();
+            int[][] positionAdjustments = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
+            PieceMoveCalculator rookMoveCalculator = new BishopRookMoveCalculator(positionAdjustments);
             validMoves = rookMoveCalculator.getPieceMoves(board, myPosition);
         }
         if (this.type == PieceType.BISHOP) {
-            PieceMoveCalculator bishopMoveCalculator = new BishopMoveCalculator();
+            int[][] positionAdjustments = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+            PieceMoveCalculator bishopMoveCalculator = new BishopRookMoveCalculator(positionAdjustments);
             validMoves = bishopMoveCalculator.getPieceMoves(board, myPosition);
         }
         if (this.type == PieceType.QUEEN) {
-            PieceMoveCalculator rookMoveCalculator = new RookMoveCalculator();
-            PieceMoveCalculator bishopMoveCalculator = new BishopMoveCalculator();
+            int[][] rookPositionAdjustments = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
+            int[][] bishopPositionAdjustments = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+            PieceMoveCalculator rookMoveCalculator = new BishopRookMoveCalculator(rookPositionAdjustments);
+            PieceMoveCalculator bishopMoveCalculator = new BishopRookMoveCalculator(bishopPositionAdjustments);
 
             validMoves.addAll(rookMoveCalculator.getPieceMoves(board, myPosition));
             validMoves.addAll(bishopMoveCalculator.getPieceMoves(board, myPosition));

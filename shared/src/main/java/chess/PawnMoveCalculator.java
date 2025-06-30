@@ -10,7 +10,12 @@ public class PawnMoveCalculator implements PieceMoveCalculator {
         ChessGame.TeamColor currentColor = currentPiece.getTeamColor();
         int currentRow = position.getRow();
         int currentColumn = position.getColumn();
-        ChessPiece.PieceType[] promotionPieces = {ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT};
+        ChessPiece.PieceType[] promotionPieces = {
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.KNIGHT
+        };
 
         int[][] positionAdjustments = {{1, 0}, {2, 0}, {1, 1}, {1, -1}};
         ArrayList<ChessPosition> candidatePositions = new ArrayList<>();

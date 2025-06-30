@@ -3,7 +3,13 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class KnightMoveCalculator implements PieceMoveCalculator {
+public class KingKnightMoveCalculator implements PieceMoveCalculator {
+    int[][] positionAdjustments;
+
+    public KingKnightMoveCalculator(int[][] positionAdjustments) {
+        this.positionAdjustments = positionAdjustments;
+    }
+
     @Override
     public Collection<ChessMove> getPieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> validMoves = new ArrayList<>();
@@ -11,8 +17,6 @@ public class KnightMoveCalculator implements PieceMoveCalculator {
         ChessGame.TeamColor currentColor = currentPiece.getTeamColor();
         int row = position.getRow();
         int column = position.getColumn();
-
-        int[][] positionAdjustments = {{2, -1}, {2, 1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {1, 2}, {-1, 2}};
 
         for (int[] adjustment : positionAdjustments) {
             ChessPosition candidatePosition = new ChessPosition(row + adjustment[0], column + adjustment[1]);

@@ -45,7 +45,14 @@ public class ChessBoard {
             this.addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
         }
 
-        ChessPiece.PieceType[] nonPawnPieces = {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.KING};
+        ChessPiece.PieceType[] nonPawnPieces = {
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING
+        };
+
         for (int i = 0; i < 5; i++) {
             this.addPiece(new ChessPosition(1, 1 + i), new ChessPiece(ChessGame.TeamColor.WHITE, nonPawnPieces[i]));
             this.addPiece(new ChessPosition(8, 1 + i), new ChessPiece(ChessGame.TeamColor.BLACK, nonPawnPieces[i]));

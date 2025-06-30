@@ -3,13 +3,17 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class BishopMoveCalculator implements PieceMoveCalculator {
+public class BishopRookMoveCalculator implements PieceMoveCalculator {
+    int[][] positionAdjustments;
+
+    public BishopRookMoveCalculator(int[][] positionAdjustments) {
+        this.positionAdjustments = positionAdjustments;
+    }
+
     public Collection<ChessMove> getPieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> validMoves = new ArrayList<>();
         ChessPiece currentPiece = board.getPiece(position);
         ChessGame.TeamColor currentColor = currentPiece.getTeamColor();
-
-        int[][] positionAdjustments = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
         for (int[] adjustment : positionAdjustments) {
             boolean foundOtherPiece = false;
