@@ -25,15 +25,15 @@ public class BishopRookMoveCalculator implements PieceMoveCalculator {
             while (!foundOtherPiece && nextRow >= 1 && nextRow <= 8 && nextColumn >= 1 && nextColumn <= 8) {
                 ChessPosition candidatePosition = new ChessPosition(nextRow, nextColumn);
                 if (board.getPiece(candidatePosition) != null) {
+                    foundOtherPiece = true;
                     if (board.getPiece(candidatePosition).getTeamColor() != currentColor) {
                         validMoves.add(new ChessMove(position, candidatePosition, null));
                     }
-                    foundOtherPiece = true;
                 } else {
                     validMoves.add(new ChessMove(position, candidatePosition, null));
                 }
-                row += adjustment[0];
-                column += adjustment[1];
+                row = nextRow;
+                column = nextColumn;
                 nextRow = row + adjustment[0];
                 nextColumn = column + adjustment[1];
             }
