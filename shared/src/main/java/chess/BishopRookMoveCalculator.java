@@ -19,8 +19,8 @@ public class BishopRookMoveCalculator implements PieceMoveCalculator {
             boolean foundOtherPiece = false;
             int row = position.getRow();
             int column = position.getColumn();
-            int nextColumn = column + adjustment[1];
             int nextRow = row + adjustment[0];
+            int nextColumn = column + adjustment[1];
 
             while (!foundOtherPiece && nextRow >= 1 && nextRow <= 8 && nextColumn >= 1 && nextColumn <= 8) {
                 ChessPosition candidatePosition = new ChessPosition(nextRow, nextColumn);

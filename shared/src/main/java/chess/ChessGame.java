@@ -12,7 +12,6 @@ import java.util.Objects;
  */
 public class ChessGame {
     ChessBoard currentBoard = new ChessBoard();
-    ChessBoard candidateBoard;
     TeamColor currentTeam = TeamColor.WHITE;
 
     public ChessGame() {
@@ -57,18 +56,19 @@ public class ChessGame {
         }
         Collection<ChessMove> validMoves = new ArrayList<>();
         Collection<ChessMove> possibleMoves = piece.pieceMoves(currentBoard, startPosition);
-        //for each move in possibleMoves, copy the currentBoard to a candidateBoard, use the makeMove method on candidateBoard,
-        //then check if the currentTeam is in check with the isInCheck method. If they are, then we skip that move, but if not
-        //then we add that move to the validMoves array. Then return validMoves.
-        TeamColor originalTeam = currentTeam;
-
         for (ChessMove move : possibleMoves) {
-            //copy current board
-            ChessBoard candidateBoard = clone();
-            currentBoard = candidateBoard;
-            this.makeMove(move);
+            ChessBoard savedBoard = currentBoard.clone();
+            TeamColor savedTeam = currentTeam;
+            try {
+                makeMove(move);
+                validMoves.add(move);
+            } catch (InvalidMoveException e) {
+
+            } finally {
+                currentBoard = savedBoard;
+                currentTeam = savedTeam;
+            }
         }
-        currentTeam = originalTeam;
         return validMoves;
     }
 
@@ -86,6 +86,9 @@ public class ChessGame {
         ChessPiece movingPiece = currentBoard.getPiece(move.getStartPosition());
         currentBoard.addPiece(move.getEndPosition(), movingPiece);
         currentBoard.addPiece(move.getStartPosition(), null);
+        if (isInCheck(currentTeam)) {
+            throw new InvalidMoveException();
+        }
         if (currentTeam == TeamColor.WHITE) {
             setTeamTurn(TeamColor.BLACK);
         } else {

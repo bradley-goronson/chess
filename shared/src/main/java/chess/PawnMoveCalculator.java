@@ -29,29 +29,43 @@ public class PawnMoveCalculator implements PieceMoveCalculator {
         }
 
         boolean advanceOneValid = false;
-        for (int i = 0; i < 4; i++) {
-            int candidateRow = candidatePositions.get(i).getRow();
-            int candidateColumn = candidatePositions.get(i).getColumn();
+        int loop = 1;
+        for (ChessPosition candidatePosition : candidatePositions) {
+            int candidateRow = candidatePosition.getRow();
+            int candidateColumn = candidatePosition.getColumn();
+            boolean outOfBounds = true;
+
             if (candidateRow >= 1 && candidateRow <= 8 && candidateColumn >= 1 && candidateColumn <= 8) {
-                ChessPiece candidatePiece = board.getPiece(candidatePositions.get(i));
-                if ((i == 0 && candidatePiece == null) || (i > 1 && candidatePiece != null && candidatePiece.getTeamColor() != currentColor)) {
-                    if ((candidateRow == 8 && currentColor == ChessGame.TeamColor.WHITE) || (candidateRow == 1 && currentColor == ChessGame.TeamColor.BLACK)) {
-                        for (ChessPiece.PieceType promotionPiece : promotionPieces) {
-                            validMoves.add(new ChessMove(position, candidatePositions.get(i), promotionPiece));
-                        }
-                    } else {
-                        validMoves.add(new ChessMove(position, candidatePositions.get(i), null));
-                        if (i == 0) {
-                            advanceOneValid = true;
-                        }
+                outOfBounds = false;
+            }
+
+            if (loop == 1 && !outOfBounds && board.getPiece(candidatePosition) == null) {
+                if (candidateRow == 8 || candidateRow == 1) {
+                    for (ChessPiece.PieceType promotionPiece : promotionPieces) {
+                        validMoves.add(new ChessMove(position, candidatePosition, promotionPiece));
                     }
+                } else {
+                    validMoves.add(new ChessMove(position, candidatePosition, null));
                 }
-                if (i == 1 && advanceOneValid && ((currentRow == 2 && currentColor == ChessGame.TeamColor.WHITE) || (currentRow == 7 && currentColor == ChessGame.TeamColor.BLACK))) {
-                    if (candidatePiece == null) {
-                        validMoves.add(new ChessMove(position, candidatePositions.get(i), null));
-                    }
+                advanceOneValid = true;
+            }
+
+            if (loop == 2 && advanceOneValid && !outOfBounds && board.getPiece(candidatePosition) == null) {
+                if ((currentRow == 2 && currentColor == ChessGame.TeamColor.WHITE) || (currentRow == 7 && currentColor == ChessGame.TeamColor.BLACK)) {
+                    validMoves.add(new ChessMove(position, candidatePosition, null));
                 }
             }
+
+            if (loop > 2 && !outOfBounds && board.getPiece(candidatePosition) != null && board.getPiece(candidatePosition).getTeamColor() != currentColor) {
+                if (candidateRow == 8 || candidateRow == 1) {
+                    for (ChessPiece.PieceType promotionPiece : promotionPieces) {
+                        validMoves.add(new ChessMove(position, candidatePosition, promotionPiece));
+                    }
+                } else {
+                    validMoves.add(new ChessMove(position, candidatePosition, null));
+                }
+            }
+            loop++;
         }
         return validMoves;
     }
