@@ -10,7 +10,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard implements Cloneable {
-    private ChessPiece[][] board = new ChessPiece[8][8];
+    public ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {}
 
@@ -88,11 +88,15 @@ public class ChessBoard implements Cloneable {
         try {
             ChessBoard clonedChessBoard = (ChessBoard) super.clone();
             ChessPiece[][] clonedBoardArray = new ChessPiece[8][8];
-            int index = 0;
-            for (ChessPiece[] array : board) {
-                ChessPiece[] arrayClone = Arrays.copyOf(array, array.length);
-                clonedBoardArray[index] = arrayClone;
-                index++;
+            for (int i = 0; i < clonedChessBoard.board.length; i++) {
+                for (int j = 0; j < clonedChessBoard.board[i].length; j++) {
+                    ChessPiece currentPiece = clonedChessBoard.board[i][j];
+                    if (currentPiece != null) {
+                        clonedBoardArray[i][j] = currentPiece.clone();
+                    } else {
+                        clonedBoardArray[i][j] = null;
+                    }
+                }
             }
             clonedChessBoard.board = clonedBoardArray;
             return clonedChessBoard;

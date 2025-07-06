@@ -50,8 +50,8 @@ public class PawnMoveCalculator implements PieceMoveCalculator {
                 advanceOneValid = true;
             }
 
-            if (loop == 2 && advanceOneValid && !outOfBounds && board.getPiece(candidatePosition) == null) {
-                if ((currentRow == 2 && currentColor == ChessGame.TeamColor.WHITE) || (currentRow == 7 && currentColor == ChessGame.TeamColor.BLACK)) {
+            if ((currentRow == 2 && currentColor == ChessGame.TeamColor.WHITE) || (currentRow == 7 && currentColor == ChessGame.TeamColor.BLACK)) {
+                if (loop == 2 && advanceOneValid && !outOfBounds && board.getPiece(candidatePosition) == null) {
                     validMoves.add(new ChessMove(position, candidatePosition, null));
                 }
             }
