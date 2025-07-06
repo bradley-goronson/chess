@@ -94,12 +94,15 @@ public class ChessGame {
             throw new InvalidMoveException();
         }
 
+        if (move.getPromotionPiece() != null) {
+            movingPiece.type = move.getPromotionPiece();
+        }
         currentBoard.addPiece(move.getEndPosition(), movingPiece);
         currentBoard.addPiece(move.getStartPosition(), null);
-
         if (isInCheck(movingPiece.getTeamColor())) {
             throw new InvalidMoveException();
         }
+
         if (currentTeam == TeamColor.WHITE) {
             setTeamTurn(TeamColor.BLACK);
         } else {
