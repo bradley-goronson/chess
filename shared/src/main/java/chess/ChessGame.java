@@ -80,13 +80,18 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        //we want to update the currentBoard so the piece specified in the provided ChessMove is now at the end position.
-        //that involves setting the entry of the ChessPiece[][] board array that corresponds with the startPosition of the
-        //ChessMove to be null and setting the entry at the end position to be the piece that was at startPosition. We can update these
-        //entries using these positions with the ChessBoard's addPiece() method.
         ChessPiece movingPiece = currentBoard.getPiece(move.getStartPosition());
+        ChessPiece destinationPiece = currentBoard.getPiece(move.getEndPosition());
+        if (movingPiece == null) {
+            throw new InvalidMoveException();
+        }
+        if (destinationPiece != null && destinationPiece.getTeamColor() == currentTeam) {
+            throw new InvalidMoveException();
+        }
+
         currentBoard.addPiece(move.getEndPosition(), movingPiece);
         currentBoard.addPiece(move.getStartPosition(), null);
+
         if (isInCheck(currentTeam)) {
             throw new InvalidMoveException();
         }
@@ -124,7 +129,7 @@ public class ChessGame {
             ChessPiece opponentPiece = currentBoard.getPiece(opponentPosition);
             Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(currentBoard, opponentPosition);
             for (ChessMove opponentMove : opponentMoves) {
-                if (opponentMove.getEndPosition() == kingPosition) {
+                if (opponentMove.getEndPosition().equals(kingPosition)) {
                     return true;
                 }
             }
