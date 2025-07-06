@@ -85,14 +85,19 @@ public class ChessGame {
         if (movingPiece == null) {
             throw new InvalidMoveException();
         }
-        if (destinationPiece != null && destinationPiece.getTeamColor() == currentTeam) {
+        if (destinationPiece != null && destinationPiece.getTeamColor() == movingPiece.getTeamColor()) {
+            throw new InvalidMoveException();
+        }
+
+        Collection<ChessMove> possibleMoves = movingPiece.pieceMoves(currentBoard, move.getStartPosition());
+        if (!possibleMoves.contains(move)) {
             throw new InvalidMoveException();
         }
 
         currentBoard.addPiece(move.getEndPosition(), movingPiece);
         currentBoard.addPiece(move.getStartPosition(), null);
 
-        if (isInCheck(currentTeam)) {
+        if (isInCheck(movingPiece.getTeamColor())) {
             throw new InvalidMoveException();
         }
         if (currentTeam == TeamColor.WHITE) {
@@ -144,7 +149,13 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return false;
+        Collection<ChessPosition> currentTeamPositions = ownedPositions(teamColor);
+        for (ChessPosition position : currentTeamPositions) {
+            if (!validMoves(position).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -155,7 +166,15 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return false;
+        if (!isInCheck(teamColor)) {
+            Collection<ChessPosition> currentTeamPositions = ownedPositions(teamColor);
+            for (ChessPosition position : currentTeamPositions) {
+                if (!validMoves(position).isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -174,6 +193,19 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return currentBoard;
+    }
+
+    public Collection<ChessPosition> ownedPositions(TeamColor teamColor) {
+        Collection<ChessPosition> currentTeamPositions = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece currentPiece = currentBoard.board[i][j];
+                if (currentPiece != null && currentPiece.getTeamColor() == teamColor) {
+                    currentTeamPositions.add(new ChessPosition(i + 1, j + 1));
+                }
+            }
+        }
+        return currentTeamPositions;
     }
 
     @Override
