@@ -13,6 +13,7 @@ import java.util.Objects;
 public class ChessPiece implements Cloneable {
     public ChessGame.TeamColor pieceColor;
     public PieceType type;
+    public boolean hasMoved = false;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
