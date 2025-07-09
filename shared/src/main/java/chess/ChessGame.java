@@ -164,13 +164,7 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
-            Collection<ChessPosition> currentTeamPositions = ownedPositions(teamColor);
-            for (ChessPosition position : currentTeamPositions) {
-                if (!validMoves(position).isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
+            return noValidMoves(teamColor);
         }
         return false;
     }
@@ -184,15 +178,19 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if (!isInCheck(teamColor)) {
-            Collection<ChessPosition> currentTeamPositions = ownedPositions(teamColor);
-            for (ChessPosition position : currentTeamPositions) {
-                if (!validMoves(position).isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
+            return noValidMoves(teamColor);
         }
         return false;
+    }
+
+    public boolean noValidMoves(TeamColor teamColor) {
+        Collection<ChessPosition> currentTeamPositions = ownedPositions(teamColor);
+        for (ChessPosition position : currentTeamPositions) {
+            if (!validMoves(position).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
