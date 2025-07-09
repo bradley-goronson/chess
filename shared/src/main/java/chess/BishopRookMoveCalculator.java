@@ -38,21 +38,6 @@ public class BishopRookMoveCalculator implements PieceMoveCalculator {
                 nextColumn = column + adjustment[1];
             }
         }
-        if (board.getCastlingType() != null) {
-            ChessBoard.CastlingType currentCastling = board.getCastlingType();
-            if (currentCastling == ChessBoard.CastlingType.BlackLeft) {
-                validMoves.add(new ChessMove(position, new ChessPosition(8, 4), null));
-            }
-            if (currentCastling == ChessBoard.CastlingType.BlackRight) {
-                validMoves.add(new ChessMove(position, new ChessPosition(8, 6), null));
-            }
-            if (currentCastling == ChessBoard.CastlingType.WhiteLeft) {
-                validMoves.add(new ChessMove(position, new ChessPosition(1, 4), null));
-            }
-            if (currentCastling == ChessBoard.CastlingType.WhiteRight) {
-                validMoves.add(new ChessMove(position, new ChessPosition(1, 6), null));
-            }
-        }
         return validMoves;
     }
 }

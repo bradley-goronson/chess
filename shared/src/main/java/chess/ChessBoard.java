@@ -11,7 +11,6 @@ import java.util.Objects;
  */
 public class ChessBoard implements Cloneable {
     public ChessPiece[][] board = new ChessPiece[8][8];
-    CastlingType castlingType = null;
 
     public ChessBoard() {}
 
@@ -62,21 +61,6 @@ public class ChessBoard implements Cloneable {
                 this.addPiece(new ChessPosition(8, 8 - i), new ChessPiece(ChessGame.TeamColor.BLACK, nonPawnPieces[i]));
             }
         }
-    }
-
-    public enum CastlingType {
-        BlackLeft,
-        BlackRight,
-        WhiteLeft,
-        WhiteRight,
-    }
-
-    public void setCastlingType(CastlingType castlingType) {
-        this.castlingType = castlingType;
-    }
-
-    public CastlingType getCastlingType() {
-        return this.castlingType;
     }
 
     @Override

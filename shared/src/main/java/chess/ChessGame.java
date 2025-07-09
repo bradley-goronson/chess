@@ -52,10 +52,10 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = currentBoard.getPiece(startPosition);
-        alternateUniverse = true;
         if (piece == null) {
             return null;
         }
+        alternateUniverse = true;
         Collection<ChessMove> validMoves = new ArrayList<>();
         Collection<ChessMove> possibleMoves = piece.pieceMoves(currentBoard, startPosition);
         for (ChessMove move : possibleMoves) {
@@ -86,6 +86,7 @@ public class ChessGame {
         if (movingPiece == null) {
             throw new InvalidMoveException();
         }
+
         if (!alternateUniverse) {
             if (movingPiece.getTeamColor() != getTeamTurn()) {
                 throw new InvalidMoveException();
@@ -95,23 +96,13 @@ public class ChessGame {
             throw new InvalidMoveException();
         }
 
-        if (move.getPromotionPiece() != null) {
-            movingPiece.type = move.getPromotionPiece();
-        }
-
         Collection<ChessMove> possibleMoves = movingPiece.pieceMoves(currentBoard, move.getStartPosition());
         if (!possibleMoves.contains(move)) {
             throw new InvalidMoveException();
         }
 
-        if (movingPiece.type == ChessPiece.PieceType.KING && Math.abs(move.getEndPosition().getColumn() - move.getStartPosition().getColumn()) == 2) {
-            if (move.getEndPosition().getColumn() == 3 && !kingSideCastleValid(move.getStartPosition())) {
-                throw new InvalidMoveException();
-            }
-            if (move.getEndPosition().getColumn() == 7 && !queenSideCastleValid(move.getStartPosition())) {
-                throw new InvalidMoveException();
-            }
-            considerCastling(move);
+        if (move.getPromotionPiece() != null) {
+            movingPiece.type = move.getPromotionPiece();
         }
 
         currentBoard.addPiece(move.getEndPosition(), movingPiece);
@@ -122,8 +113,6 @@ public class ChessGame {
         }
 
         if (!alternateUniverse) {
-            currentBoard.setCastlingType(null);
-            movingPiece.hasMoved = true;
             if (movingPiece.getTeamColor() == TeamColor.WHITE) {
                 setTeamTurn(TeamColor.BLACK);
             } else {
@@ -237,64 +226,7 @@ public class ChessGame {
         return currentTeamPositions;
     }
 
-    public boolean kingSideCastleValid(ChessPosition kingPosition) {
-        alternateUniverse = true;
-        ChessMove middlePositionMove = new ChessMove(new ChessPosition(kingPosition.getRow(), kingPosition.getColumn()), new ChessPosition(kingPosition.getRow(), 4), null);
-        ChessBoard savedBoard = currentBoard;
-        currentBoard = currentBoard.clone();
-        try {
-            makeMove(middlePositionMove);
-        } catch (InvalidMoveException e) {
-            return false;
-        } finally {
-            setBoard(savedBoard);
-        }
-        return true;
-    }
 
-    public boolean queenSideCastleValid(ChessPosition kingPosition) {
-        alternateUniverse = true;
-        ChessMove middlePositionMove = new ChessMove(new ChessPosition(kingPosition.getRow(), kingPosition.getColumn()), new ChessPosition(kingPosition.getRow(), 6), null);
-        ChessBoard savedBoard = currentBoard;
-        currentBoard = currentBoard.clone();
-        try {
-            makeMove(middlePositionMove);
-        } catch (InvalidMoveException e) {
-            return false;
-        } finally {
-            setBoard(savedBoard);
-        }
-        return true;
-    }
-
-    public void considerCastling(ChessMove move) throws InvalidMoveException {
-        int row = move.getStartPosition().getRow();
-        int startingColumn = move.getStartPosition().getColumn();
-        int endingColumn = move.getEndPosition().getColumn();
-        ChessPiece movingPiece = currentBoard.getPiece(move.getStartPosition());
-        if (movingPiece == null) {
-            return;
-        }
-
-        if (Math.abs(endingColumn - startingColumn) == 2) {
-            if (endingColumn == 3) {
-                if (currentTeam == TeamColor.BLACK) {
-                    currentBoard.setCastlingType(ChessBoard.CastlingType.BlackLeft);
-                } else {
-                    currentBoard.setCastlingType(ChessBoard.CastlingType.WhiteLeft);
-                }
-                makeMove(new ChessMove(new ChessPosition(row, 1), new ChessPosition(row, 4), null));
-            }
-            if (endingColumn == 7) {
-                if (currentTeam == TeamColor.BLACK) {
-                    currentBoard.setCastlingType(ChessBoard.CastlingType.BlackRight);
-                } else {
-                    currentBoard.setCastlingType(ChessBoard.CastlingType.WhiteRight);
-                }
-                makeMove(new ChessMove(new ChessPosition(row, 8), new ChessPosition(row, 6), null));
-            }
-        }
-    }
 
     @Override
     public boolean equals(Object o) {
