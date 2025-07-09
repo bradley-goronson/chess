@@ -33,13 +33,15 @@ public class PawnMoveCalculator implements PieceMoveCalculator {
         for (ChessPosition candidatePosition : candidatePositions) {
             int candidateRow = candidatePosition.getRow();
             int candidateColumn = candidatePosition.getColumn();
+            ChessPiece candidatePiece = null;
             boolean outOfBounds = true;
 
             if (candidateRow >= 1 && candidateRow <= 8 && candidateColumn >= 1 && candidateColumn <= 8) {
                 outOfBounds = false;
+                candidatePiece = board.getPiece(candidatePosition);
             }
 
-            if (loop == 1 && !outOfBounds && board.getPiece(candidatePosition) == null) {
+            if (loop == 1 && !outOfBounds && candidatePiece == null) {
                 if (candidateRow == 8 || candidateRow == 1) {
                     for (ChessPiece.PieceType promotionPiece : promotionPieces) {
                         validMoves.add(new ChessMove(position, candidatePosition, promotionPiece));
@@ -51,12 +53,12 @@ public class PawnMoveCalculator implements PieceMoveCalculator {
             }
 
             if ((currentRow == 2 && currentColor == ChessGame.TeamColor.WHITE) || (currentRow == 7 && currentColor == ChessGame.TeamColor.BLACK)) {
-                if (loop == 2 && advanceOneValid && !outOfBounds && board.getPiece(candidatePosition) == null) {
+                if (loop == 2 && advanceOneValid && !outOfBounds && candidatePiece == null) {
                     validMoves.add(new ChessMove(position, candidatePosition, null));
                 }
             }
 
-            if (loop > 2 && !outOfBounds && board.getPiece(candidatePosition) != null && board.getPiece(candidatePosition).getTeamColor() != currentColor) {
+            if (loop > 2 && !outOfBounds && candidatePiece != null && candidatePiece.getTeamColor() != currentColor) {
                 if (candidateRow == 8 || candidateRow == 1) {
                     for (ChessPiece.PieceType promotionPiece : promotionPieces) {
                         validMoves.add(new ChessMove(position, candidatePosition, promotionPiece));
