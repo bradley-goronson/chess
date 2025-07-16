@@ -6,5 +6,7 @@ public class ClearService extends Service {
 
     public void clear() {
         userDAO.clearUsers();
+        gameDAO.clearGames();
+        authDAO.clearAuth();
     }
 }

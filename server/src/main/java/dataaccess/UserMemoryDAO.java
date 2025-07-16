@@ -23,11 +23,6 @@ public class UserMemoryDAO implements UserDataAccess {
         return user;
     }
 
-    public void updateUser(String username, UserData newUser) throws DataAccessException {
-        UserData originalUser = getUser(username);
-        userMap.put(username, newUser);
-    }
-
     public void removeUser(String username) throws DataAccessException {
         getUser(username);
         userMap.remove(username);
