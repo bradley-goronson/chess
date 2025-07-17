@@ -3,6 +3,16 @@ package server;
 public class Result {
     private int statusCode;
     private String resultBody;
+    private String username;
+    private String authToken;
+
+    public void setUsername(String newUsername) {
+        username = newUsername;
+    }
+
+    public void setAuthToken(String newAuthToken) {
+        authToken = newAuthToken;
+    }
 
     public int getStatusCode() {
         return statusCode;

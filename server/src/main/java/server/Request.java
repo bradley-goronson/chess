@@ -1,15 +1,25 @@
 package server;
 
-import java.util.ArrayList;
-
 public class Request {
-    private String resultBody;
+    private String authorization;
+    private String username;
+    private String password;
+    private String email;
+    private Integer gameID;
 
-    public String getResultBody() {
-        return resultBody;
+    public String getUsername() {
+        return username;
     }
 
-    public void setResultBody(String body) {
-        resultBody = body;
+    public String getPassword() {
+        return password;
+    }
+
+    public String getAuthToken() {
+        return authorization;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }

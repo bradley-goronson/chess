@@ -5,6 +5,8 @@ import spark.Response;
 
 public class RegisterHandler extends Handler {
     public Object handle(Request req, Response res) {
-        return "Hello!";
+        RegisterRequest registerRequest = serializer.fromJson(req.body(), RegisterRequest.class);
+        RegisterResult registerResult = new RegisterService().register(registerRequest);
+        return serializer.toJson(registerResult);
     }
 }
