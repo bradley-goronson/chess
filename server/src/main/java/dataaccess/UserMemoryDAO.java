@@ -11,6 +11,9 @@ public class UserMemoryDAO implements UserDataAccess {
             getUser(user.username());
             throw new AlreadyTakenException("Username already taken");
         } catch (DataAccessException ex) {
+            if (user.password() == null || user.email() == null) {
+                throw new BadRequestException("Error: bad request");
+            }
             userMap.put(user.username(), user);
         }
     }
@@ -21,11 +24,6 @@ public class UserMemoryDAO implements UserDataAccess {
             throw new DataAccessException("User not found");
         }
         return user;
-    }
-
-    public void removeUser(String username) throws DataAccessException {
-        getUser(username);
-        userMap.remove(username);
     }
 
     public void clearUsers() {

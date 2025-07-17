@@ -7,8 +7,6 @@ public interface UserDataAccess {
 
     UserData getUser(String username) throws DataAccessException;
 
-    void removeUser(String username) throws DataAccessException;
-
     void clearUsers();
 
     int size();

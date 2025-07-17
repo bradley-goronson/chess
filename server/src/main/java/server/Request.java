@@ -4,8 +4,6 @@ public class Request {
     private String authorization;
     private String username;
     private String password;
-    private String email;
-    private Integer gameID;
 
     public String getUsername() {
         return username;
@@ -19,7 +17,15 @@ public class Request {
         return authorization;
     }
 
-    public String getEmail() {
-        return email;
+    public void setUsername(String newUsername) {
+        username = newUsername;
+    }
+
+    public void setAuthorization(String authToken) {
+        authorization = authToken;
+    }
+
+    public void setPassword(String newPassword) {
+        password = newPassword;
     }
 }
