@@ -1,7 +1,6 @@
 package server.login;
 
 import dataaccess.DataAccessException;
-import dataaccess.UnauthorizedException;
 import model.UserData;
 import service.Service;
 
@@ -14,17 +13,22 @@ public class LoginService extends Service {
         try {
             UserData targetUser = userDAO.getUser(username);
             if (!targetUser.password().equals(password)) {
+                System.out.println("Invalidated!");
                 loginResult.setStatusCode(401);
-                throw new UnauthorizedException("Error: unauthorized");
+                loginResult.setResultBody("Error: unauthorized");
+            } else {
+                System.out.println("Validated!");
+                String authToken = authDAO.addAuth(username);
+                loginResult.setStatusCode(200);
+                loginResult.setUsername(username);
+                loginResult.setAuthToken(authToken);
             }
-            String authToken = authDAO.addAuth(username);
-            loginResult.setStatusCode(200);
-            loginResult.setUsername(username);
-            loginResult.setAuthToken(authToken);
         } catch (DataAccessException e) {
+            System.out.println("Not enough info!");
             loginResult.setStatusCode(400);
             loginResult.setResultBody("Error: bad request");
         }
+        System.out.println(loginResult.getStatusCode());
         return loginResult;
     }
 }

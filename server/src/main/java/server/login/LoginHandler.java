@@ -1,9 +1,6 @@
 package server.login;
 
 import server.Handler;
-import server.register.RegisterRequest;
-import server.register.RegisterResult;
-import server.register.RegisterService;
 import spark.Request;
 import spark.Response;
 

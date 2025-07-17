@@ -19,7 +19,7 @@ public class RegisterService extends Service {
             registerResult.setAuthToken(authToken);
         } catch (AlreadyTakenException e) {
             registerResult.setStatusCode(403);
-            registerResult.setResultBody(e.getMessage());
+            registerResult.setResultBody(null);
         } catch (BadRequestException ex) {
             registerResult.setStatusCode(400);
             registerResult.setResultBody(ex.getMessage());

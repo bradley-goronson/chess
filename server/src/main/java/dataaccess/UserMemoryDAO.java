@@ -9,7 +9,7 @@ public class UserMemoryDAO implements UserDataAccess {
     public void addUser(UserData user) throws AlreadyTakenException {
         try {
             getUser(user.username());
-            throw new AlreadyTakenException("Username already taken");
+            throw new AlreadyTakenException("Error: already taken");
         } catch (DataAccessException ex) {
             if (user.password() == null || user.email() == null) {
                 throw new BadRequestException("Error: bad request");
