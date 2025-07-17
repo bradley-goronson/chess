@@ -2,6 +2,7 @@ package server;
 
 import server.clear.ClearHandler;
 import server.login.LoginHandler;
+import server.logout.LogoutHandler;
 import server.register.RegisterHandler;
 import spark.*;
 
@@ -28,5 +29,6 @@ public class Server {
         Spark.delete("/db", new ClearHandler());
         Spark.post("/user", new RegisterHandler());
         Spark.post("/session", new LoginHandler());
+        Spark.delete("/session", new LogoutHandler());
     }
 }

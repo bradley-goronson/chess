@@ -23,8 +23,8 @@ public class AuthMemoryDAO implements AuthDataAccess {
         return authData;
     }
 
-    public void removeAuth(String authToken) throws UnauthorizedException {
-        getAuth(authToken);
+    public void removeAuth(String authToken) {
+        authMap.remove(authToken);
     }
 
     public void clearAuth() {
