@@ -12,17 +12,17 @@ public class RegisterService extends Service {
         String password = registerRequest.getPassword();
         String email = registerRequest.getEmail();
         try {
-            getUserDAO().addUser(new UserData(username, password, email));
-            String authToken = getAuthDAO().addAuth(username);
+            userDAO.addUser(new UserData(username, password, email));
+            String authToken = authDAO.addAuth(username);
             registerResult.setStatusCode(200);
             registerResult.setUsername(username);
             registerResult.setAuthToken(authToken);
         } catch (AlreadyTakenException e) {
             registerResult.setStatusCode(403);
-            //registerResult.setResultBody(e.getMessage());
+            registerResult.setResultBody(e.getMessage());
         } catch (BadRequestException ex) {
             registerResult.setStatusCode(400);
-            //registerResult.setResultBody(ex.getMessage());
+            registerResult.setResultBody(ex.getMessage());
         }
         return registerResult;
     }

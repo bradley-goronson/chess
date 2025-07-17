@@ -1,6 +1,7 @@
 package server;
 
 import server.clear.ClearHandler;
+import server.login.LoginHandler;
 import server.register.RegisterHandler;
 import spark.*;
 
@@ -26,5 +27,6 @@ public class Server {
     private static void createRoutes() {
         Spark.delete("/db", new ClearHandler());
         Spark.post("/user", new RegisterHandler());
+        Spark.post("/session", new LoginHandler());
     }
 }
