@@ -10,25 +10,30 @@ public class LoginService extends Service {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
+        if (username == null || password == null) {
+            loginResult.setStatusCode(400);
+            loginResult.setMessage("Error: bad request");
+            return loginResult;
+        }
+
         try {
+            System.out.println(username);
             UserData targetUser = userDAO.getUser(username);
+            System.out.println("target aquired");
             if (!targetUser.password().equals(password)) {
-                System.out.println("Invalidated!");
+                System.out.println("correct password");
                 loginResult.setStatusCode(401);
-                loginResult.setResultBody("Error: unauthorized");
+                loginResult.setMessage("Error: unauthorized");
             } else {
-                System.out.println("Validated!");
+                System.out.println("auth time");
                 String authToken = authDAO.addAuth(username);
                 loginResult.setStatusCode(200);
                 loginResult.setUsername(username);
                 loginResult.setAuthToken(authToken);
             }
         } catch (DataAccessException e) {
-            System.out.println("Not enough info!");
-            loginResult.setStatusCode(400);
-            loginResult.setResultBody("Error: bad request");
+            System.out.println("User not found");
         }
-        System.out.println(loginResult.getStatusCode());
         return loginResult;
     }
 }

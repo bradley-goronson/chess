@@ -11,7 +11,7 @@ public class UserMemoryDAO implements UserDataAccess {
             getUser(user.username());
             throw new AlreadyTakenException("Error: already taken");
         } catch (DataAccessException ex) {
-            if (user.password() == null || user.email() == null) {
+            if (user.username() == null || user.password() == null || user.email() == null) {
                 throw new BadRequestException("Error: bad request");
             }
             userMap.put(user.username(), user);

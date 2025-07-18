@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class GameMemoryDAO implements GameDataAccess {
     private HashMap<Integer, GameData> gameMap = new HashMap<>();
-    Integer nextID = 0;
+    Integer nextID = 1;
 
     public Integer addGame(String gameName) {
         Integer gameID = nextID;
