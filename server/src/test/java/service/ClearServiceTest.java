@@ -1,12 +1,19 @@
 package service;
 
 import model.UserData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.clear.ClearService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ClearServiceTest {
+    @BeforeEach
+    void setup() {
+        ClearService clearService = new ClearService();
+        clearService.clear();
+    }
+
     @Test
     void clear() {
         ClearService testClearService = new ClearService();

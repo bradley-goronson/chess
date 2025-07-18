@@ -14,7 +14,7 @@ public class LogoutService extends Service {
             logoutResult.setStatusCode(200);
         } catch (UnauthorizedException e) {
             logoutResult.setStatusCode(401);
-            logoutResult.setResultBody(e.getMessage());
+            logoutResult.setMessage(e.getMessage());
         }
         return logoutResult;
     }
