@@ -2,6 +2,7 @@ package server;
 
 import server.clear.ClearHandler;
 import server.createGame.CreateGameHandler;
+import server.listGames.ListGamesHandler;
 import server.login.LoginHandler;
 import server.logout.LogoutHandler;
 import server.register.RegisterHandler;
@@ -32,5 +33,6 @@ public class Server {
         Spark.post("/session", new LoginHandler());
         Spark.delete("/session", new LogoutHandler());
         Spark.post("/game", new CreateGameHandler());
+        Spark.get("/game", new ListGamesHandler());
     }
 }

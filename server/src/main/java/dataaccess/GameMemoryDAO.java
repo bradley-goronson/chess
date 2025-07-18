@@ -3,6 +3,7 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GameMemoryDAO implements GameDataAccess {
@@ -28,12 +29,12 @@ public class GameMemoryDAO implements GameDataAccess {
         gameMap.put(gameID, newGame);
     }
 
-    public void removeGame(Integer gameID) throws DataAccessException {
-        gameMap.remove(gameID);
-    }
-
     public void clearGames() {
         gameMap.clear();
+    }
+
+    public ArrayList<GameData> getAllGames() {
+        return new ArrayList<>(gameMap.values());
     }
 
     public int size() {

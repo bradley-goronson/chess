@@ -2,6 +2,8 @@ package dataaccess;
 
 import model.GameData;
 
+import java.util.ArrayList;
+
 public interface GameDataAccess {
     Integer addGame(String gameName);
 
@@ -9,9 +11,9 @@ public interface GameDataAccess {
 
     void updateGame(Integer gameID, GameData game);
 
-    void removeGame(Integer gameID) throws DataAccessException;
-
     void clearGames();
+
+    ArrayList<GameData> getAllGames();
 
     int size();
 }
