@@ -3,8 +3,17 @@ package server;
 public class Result {
     private int statusCode;
     private String resultBody;
+    private String message;
     private String username;
     private String authToken;
+
+    public void setMessage(String newMessage) {
+        message = newMessage;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 
     public void setUsername(String newUsername) {
         username = newUsername;

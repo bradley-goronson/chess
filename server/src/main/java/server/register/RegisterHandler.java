@@ -7,6 +7,7 @@ public class RegisterHandler extends Handler {
     public Object handle(Request req, Response res) {
         RegisterRequest registerRequest = serializer.fromJson(req.body(), RegisterRequest.class);
         RegisterResult registerResult = new RegisterService().register(registerRequest);
+        res.status(registerResult.getStatusCode());
         return serializer.toJson(registerResult);
     }
 }
