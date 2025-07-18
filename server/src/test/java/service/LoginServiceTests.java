@@ -84,6 +84,29 @@ public class LoginServiceTests {
 
         LoginService loginService = new LoginService();
         LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("bradle1");
+        loginRequest.setPassword(null);
+
+        LoginResult loginResult = loginService.login(loginRequest);
+        assertEquals(400, loginResult.getStatusCode());
+    }
+
+    @Test
+    void failToLoginWhenGivenIncompleteRequestNoUsername() {
+        RegisterService registerService = new RegisterService();
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setUsername("bradle1");
+        registerRequest.setPassword("goron");
+        registerRequest.setEmail("bg@gmail.com");
+
+        RegisterResult registerResult = registerService.register(registerRequest);
+
+        assertEquals(200, registerResult.getStatusCode());
+        assertEquals("bradle1", registerResult.getUsername());
+        assertNotEquals(null, registerResult.getAuthToken());
+
+        LoginService loginService = new LoginService();
+        LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(null);
         loginRequest.setPassword("wowzers");
 

@@ -20,8 +20,9 @@ public class LoginService extends Service {
             System.out.println(username);
             UserData targetUser = userDAO.getUser(username);
             System.out.println("target aquired");
-            if (!targetUser.password().equals(password)) {
-                System.out.println("correct password");
+            String targetPassword = targetUser.password();
+            if (!password.equals(targetPassword)) {
+                System.out.println("incorrect password");
                 loginResult.setStatusCode(401);
                 loginResult.setMessage("Error: unauthorized");
             } else {
