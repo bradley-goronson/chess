@@ -15,7 +15,7 @@ public class JoinGameService extends Service {
         String playerColor = joinGameRequest.getPlayColor();
         Integer gameID = joinGameRequest.getGameID();
 
-        if (authToken == null || playerColor == null || gameID == null) {
+        if (authToken == null || playerColor == null || gameID == null || !(playerColor.equals("WHITE") || playerColor.equals("BLACK"))) {
             joinGameResult.setStatusCode(400);
             joinGameResult.setMessage("Error: bad request");
             return joinGameResult;
@@ -56,8 +56,8 @@ public class JoinGameService extends Service {
         Integer gameID = game.gameID();
         String gameName = game.gameName();
         ChessGame chessGame = game.game();
-        String whiteUsername = null;
-        String blackUsername = null;
+        String whiteUsername = game.whiteUsername();
+        String blackUsername = game.blackUsername();
 
         if (playerColor.equals("WHITE")) {
             whiteUsername = username;

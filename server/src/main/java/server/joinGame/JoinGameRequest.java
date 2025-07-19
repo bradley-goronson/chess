@@ -3,15 +3,15 @@ package server.joinGame;
 import server.Request;
 
 public class JoinGameRequest extends Request {
-    private String playColor;
+    private String playerColor;
     private Integer gameID;
 
     public void setPlayColor(String newPlayerColor) {
-        playColor = newPlayerColor;
+        playerColor = newPlayerColor;
     }
 
     public String getPlayColor() {
-        return playColor;
+        return playerColor;
     }
 
     public void setGameID(Integer newGameID) {

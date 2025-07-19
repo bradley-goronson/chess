@@ -47,7 +47,7 @@ public class CreateGameServiceTests {
         registerRequest.setPassword("goron");
         registerRequest.setEmail("bg@gmail.com");
 
-        RegisterResult registerResult = registerService.register(registerRequest);
+        registerService.register(registerRequest);
 
         CreateGameService createGameService = new CreateGameService();
         CreateGameRequest createGameRequest = new CreateGameRequest();
