@@ -15,7 +15,7 @@ public class JoinGameService extends Service {
         String playerColor = joinGameRequest.getPlayColor();
         Integer gameID = joinGameRequest.getGameID();
 
-        if (authToken == null || playerColor == null || gameID == null || !(playerColor.equals("WHITE") || playerColor.equals("BLACK"))) {
+        if (authToken == null || gameID == null || playerColor == null || !(playerColor.equals("WHITE") || playerColor.equals("BLACK"))) {
             joinGameResult.setStatusCode(400);
             joinGameResult.setMessage("Error: bad request");
             return joinGameResult;
