@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public interface GameDataAccess {
     Integer addGame(String gameName);
 
-    GameData getGame(Integer gameID) throws DataAccessException;
+    GameData getGame(Integer gameID) throws GameNotFoundException;
 
     void updateGame(Integer gameID, GameData game);
 

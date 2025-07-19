@@ -74,14 +74,6 @@ public class CreateGameServiceTests {
 
     @Test
     void failToCreateGameIncompleteRequestNoAuthToken() {
-        RegisterService registerService = new RegisterService();
-        RegisterRequest registerRequest = new RegisterRequest();
-        registerRequest.setUsername("bradle1");
-        registerRequest.setPassword("goron");
-        registerRequest.setEmail("bg@gmail.com");
-
-        RegisterResult registerResult = registerService.register(registerRequest);
-
         CreateGameService createGameService = new CreateGameService();
         CreateGameRequest createGameRequest = new CreateGameRequest();
         createGameRequest.setGameName("much fun");

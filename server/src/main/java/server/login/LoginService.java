@@ -17,9 +17,10 @@ public class LoginService extends Service {
         }
 
         try {
-            System.out.println(username);
+            System.out.println("Requested username:" + username);
+            System.out.println("Given password:" + password);
             UserData targetUser = userDAO.getUser(username);
-            System.out.println("target aquired");
+            System.out.println("target acquired");
             String targetPassword = targetUser.password();
             if (!password.equals(targetPassword)) {
                 System.out.println("incorrect password");
@@ -33,7 +34,8 @@ public class LoginService extends Service {
                 loginResult.setAuthToken(authToken);
             }
         } catch (DataAccessException e) {
-            System.out.println("User not found");
+            loginResult.setStatusCode(401);
+            loginResult.setMessage("Error: unauthorized");
         }
         return loginResult;
     }

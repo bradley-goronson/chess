@@ -46,8 +46,7 @@ public class ListGamesServiceTests {
         createGameRequest.setGameName("this is fun");
         createGameRequest.setAuthorization(registerResult.getAuthToken());
 
-        CreateGameResult createGameResult = createGameService.addGame(createGameRequest);
-        System.out.println("gameID: " + createGameResult.getGameID());
+        createGameService.addGame(createGameRequest);
 
         CreateGameRequest createGameRequest2 = new CreateGameRequest();
         createGameRequest2.setGameName("this is fun");

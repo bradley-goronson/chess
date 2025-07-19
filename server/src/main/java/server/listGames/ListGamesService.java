@@ -14,6 +14,7 @@ public class ListGamesService extends Service {
         if (authToken == null) {
             listGamesResult.setStatusCode(400);
             listGamesResult.setMessage("Error: bad request");
+            return listGamesResult;
         }
 
         try {

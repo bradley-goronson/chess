@@ -17,10 +17,10 @@ public class GameMemoryDAO implements GameDataAccess {
         return gameID;
     }
 
-    public GameData getGame(Integer gameID) throws DataAccessException {
+    public GameData getGame(Integer gameID) throws GameNotFoundException {
         GameData game = gameMap.get(gameID);
         if (game == null) {
-            throw new DataAccessException("Game not found");
+            throw new GameNotFoundException("Error: bad request");
         }
         return game;
     }
