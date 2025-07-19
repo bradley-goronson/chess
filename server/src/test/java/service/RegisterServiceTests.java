@@ -30,6 +30,7 @@ public class RegisterServiceTests {
         assertEquals(200, registerResult.getStatusCode());
         assertEquals("bradle1", registerResult.getUsername());
         assertNotEquals(null, registerResult.getAuthToken());
+        assertEquals(1, registerService.getUserDAO().size());
     }
 
     @Test
@@ -40,12 +41,17 @@ public class RegisterServiceTests {
         registerRequest.setPassword("goron");
         registerRequest.setEmail("bg@gmail.com");
 
-        registerService.register(registerRequest);
+        RegisterResult registerResult = registerService.register(registerRequest);
+
+        assertEquals(200, registerResult.getStatusCode());
+        assertEquals("bradle1", registerResult.getUsername());
+        assertNotEquals(null, registerResult.getAuthToken());
+        assertEquals(1, registerService.getUserDAO().size());
 
         RegisterRequest registerRequest2 = new RegisterRequest();
         registerRequest2.setUsername("bradle1");
-        registerRequest.setPassword("wow");
-        registerRequest.setEmail("bg@gmail.com");
+        registerRequest2.setPassword("wow");
+        registerRequest2.setEmail("bg2@gmail.com");
 
         RegisterResult registerResult2 = registerService.register(registerRequest2);
 

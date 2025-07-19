@@ -31,6 +31,7 @@ public class GameMemoryDAO implements GameDataAccess {
 
     public void clearGames() {
         gameMap.clear();
+        nextID = 1;
     }
 
     public ArrayList<GameData> getAllGames() {

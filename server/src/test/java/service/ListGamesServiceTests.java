@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.clear.ClearService;
 import server.creategame.CreateGameRequest;
-import server.creategame.CreateGameResult;
 import server.creategame.CreateGameService;
 import server.listgames.ListGamesRequest;
 import server.listgames.ListGamesResult;
@@ -52,8 +51,7 @@ public class ListGamesServiceTests {
         createGameRequest2.setGameName("this is fun");
         createGameRequest2.setAuthorization(registerResult.getAuthToken());
 
-        CreateGameResult createGameResult2 = createGameService.addGame(createGameRequest2);
-        System.out.println("gameID: " + createGameResult2.getGameID());
+        createGameService.addGame(createGameRequest2);
 
         ListGamesService listGamesService = new ListGamesService();
         ListGamesRequest listGamesRequest = new ListGamesRequest();
