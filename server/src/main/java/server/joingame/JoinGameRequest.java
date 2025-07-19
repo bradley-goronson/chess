@@ -1,4 +1,4 @@
-package server.joinGame;
+package server.joingame;
 
 import server.Request;
 

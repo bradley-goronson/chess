@@ -1,9 +1,9 @@
 package server;
 
 import server.clear.ClearHandler;
-import server.createGame.CreateGameHandler;
-import server.joinGame.JoinGameHandler;
-import server.listGames.ListGamesHandler;
+import server.creategame.CreateGameHandler;
+import server.joingame.JoinGameHandler;
+import server.listgames.ListGamesHandler;
 import server.login.LoginHandler;
 import server.logout.LogoutHandler;
 import server.register.RegisterHandler;

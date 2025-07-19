@@ -1,4 +1,4 @@
-package server.listGames;
+package server.listgames;
 
 import server.Request;
 

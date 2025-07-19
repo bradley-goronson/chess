@@ -1,4 +1,4 @@
-package server.listGames;
+package server.listgames;
 
 import model.GameData;
 import server.Result;
@@ -10,9 +10,5 @@ public class ListGamesResult extends Result {
 
     public void setGamesArray(ArrayList<GameData> newGamesArray) {
         games = newGamesArray;
-    }
-
-    public ArrayList<GameData> getGamesArray() {
-        return games;
     }
 }

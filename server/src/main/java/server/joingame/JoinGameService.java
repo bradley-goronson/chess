@@ -1,4 +1,4 @@
-package server.joinGame;
+package server.joingame;
 
 import chess.ChessGame;
 import dataaccess.AlreadyTakenException;

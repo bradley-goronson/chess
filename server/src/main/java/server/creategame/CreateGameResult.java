@@ -1,4 +1,4 @@
-package server.createGame;
+package server.creategame;
 
 import server.Result;
 
