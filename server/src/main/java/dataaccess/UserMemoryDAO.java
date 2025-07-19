@@ -7,13 +7,14 @@ public class UserMemoryDAO implements UserDataAccess {
     private HashMap<String, UserData> userMap = new HashMap<>();
 
     public void addUser(UserData user) throws AlreadyTakenException {
+        if (user.username() == null || user.password() == null || user.email() == null) {
+            throw new BadRequestException("Error: bad request");
+        }
+
         try {
             getUser(user.username());
             throw new AlreadyTakenException("Error: already taken");
         } catch (DataAccessException ex) {
-            if (user.username() == null || user.password() == null || user.email() == null) {
-                throw new BadRequestException("Error: bad request");
-            }
             userMap.put(user.username(), user);
         }
     }
