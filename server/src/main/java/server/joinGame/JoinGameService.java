@@ -43,7 +43,7 @@ public class JoinGameService extends Service {
         return joinGameResult;
     }
 
-    public void colorAvailable(String playerColor, GameData game) throws AlreadyTakenException {
+    private void colorAvailable(String playerColor, GameData game) throws AlreadyTakenException {
         if (playerColor.equals("WHITE") && game.whiteUsername() != null) {
             throw new AlreadyTakenException("Error: already taken");
         }
@@ -52,7 +52,7 @@ public class JoinGameService extends Service {
         }
     }
 
-    public GameData constructNewGame(String playerColor, GameData game, String username) {
+    private GameData constructNewGame(String playerColor, GameData game, String username) {
         Integer gameID = game.gameID();
         String gameName = game.gameName();
         ChessGame chessGame = game.game();
