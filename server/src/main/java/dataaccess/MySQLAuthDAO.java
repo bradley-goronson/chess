@@ -26,12 +26,28 @@ public class MySQLAuthDAO implements AuthDataAccess {
         return authToken;
     }
 
-    public AuthData getAuth(String authToken) throws UnauthorizedException {
-        return new AuthData("a", "a");
+    public AuthData getAuth(String authToken) throws UnauthorizedException, DataAccessException {
+        String sql = "select * from auth where authToken='" + authToken + "'";
+        try (var conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            ResultSet queryResult = statement.executeQuery();
+            queryResult.next();
+            String pulledAuthToken = queryResult.getString("authToken");
+            String pulledUsername = queryResult.getString("username");
+            return new AuthData(pulledAuthToken, pulledUsername);
+        } catch (SQLException e) {
+            throw new DataAccessException("failed to get auth", e);
+        }
     }
 
-    public void removeAuth(String authToken) throws UnauthorizedException {
-
+    public void removeAuth(String authToken) throws UnauthorizedException, DataAccessException {
+        String sql = "delete from auth where authToken='" + authToken + "'";
+        try (var conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("failed to remove auth", e);
+        }
     }
 
     public void clearAuth() {

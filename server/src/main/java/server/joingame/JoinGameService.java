@@ -2,6 +2,7 @@ package server.joingame;
 
 import chess.ChessGame;
 import dataaccess.AlreadyTakenException;
+import dataaccess.DataAccessException;
 import dataaccess.GameNotFoundException;
 import dataaccess.UnauthorizedException;
 import model.AuthData;
@@ -38,6 +39,8 @@ public class JoinGameService extends Service {
         } catch (AlreadyTakenException exception) {
             joinGameResult.setStatusCode(403);
             joinGameResult.setMessage(exception.getMessage());
+        } catch (DataAccessException ex) {
+            System.out.println(ex.getMessage());
         }
 
         return joinGameResult;

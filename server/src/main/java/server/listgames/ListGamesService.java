@@ -1,5 +1,6 @@
 package server.listgames;
 
+import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
 import service.Service;
 
@@ -24,6 +25,8 @@ public class ListGamesService extends Service {
         } catch (UnauthorizedException e) {
             listGamesResult.setStatusCode(401);
             listGamesResult.setMessage("Error: unauthorized");
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
         }
         return listGamesResult;
     }

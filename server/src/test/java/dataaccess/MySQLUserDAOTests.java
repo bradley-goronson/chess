@@ -4,6 +4,7 @@ import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 import server.Server;
 import server.clear.ClearService;
 
@@ -50,7 +51,9 @@ public class MySQLUserDAOTests {
 
         assertEquals(0, initialUserCount);
         assertEquals(1, newUserCount);
-        assertEquals(testUser, pulledUser);
+        assertEquals(testUser.username(), pulledUser.username());
+        assertEquals(testUser.email(), pulledUser.email());
+        BCrypt.checkpw(testUser.password(), pulledUser.password());
     }
 
     @Test
@@ -93,8 +96,13 @@ public class MySQLUserDAOTests {
             throw new RuntimeException(e);
         }
 
-        assertEquals(testUser1, pulledUser1);
-        assertEquals(testUser2, pulledUser2);
+        assertEquals(testUser1.username(), pulledUser1.username());
+        assertEquals(testUser1.email(), pulledUser1.email());
+        BCrypt.checkpw(testUser1.password(), pulledUser1.password());
+
+        assertEquals(testUser2.username(), pulledUser2.username());
+        assertEquals(testUser2.email(), pulledUser2.email());
+        BCrypt.checkpw(testUser2.password(), pulledUser2.password());
     }
 
     @Test

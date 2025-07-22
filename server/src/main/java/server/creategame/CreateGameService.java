@@ -1,5 +1,6 @@
 package server.creategame;
 
+import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
 import service.Service;
 
@@ -23,6 +24,8 @@ public class CreateGameService extends Service {
         } catch (UnauthorizedException e) {
             createGameResult.setStatusCode(401);
             createGameResult.setMessage(e.getMessage());
+        } catch (DataAccessException ex) {
+            System.out.println(ex.getMessage());
         }
         return createGameResult;
     }

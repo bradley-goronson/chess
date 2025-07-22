@@ -1,5 +1,6 @@
 package server.logout;
 
+import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
 import service.Service;
 
@@ -15,6 +16,8 @@ public class LogoutService extends Service {
         } catch (UnauthorizedException e) {
             logoutResult.setStatusCode(401);
             logoutResult.setMessage(e.getMessage());
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
         }
         return logoutResult;
     }
