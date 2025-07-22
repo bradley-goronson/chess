@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,11 +17,12 @@ public class MySQLUserDAO implements UserDataAccess {
             getUser(user.username());
             throw new AlreadyTakenException("Error: already taken");
         } catch (DataAccessException ex) {
+            String hashedPassword = hashUserPassword(user.password());
             String sql =
                     "insert into users(" +
                     "username, password, email)" +
                     "values('" + user.username() +
-                    "','" + user.password() +
+                    "','" + hashedPassword +
                     "','" + user.email() + "')";
             try (Connection conn = DatabaseManager.getConnection();
                  PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -71,5 +73,9 @@ public class MySQLUserDAO implements UserDataAccess {
         } catch (SQLException e) {
             throw new DataAccessException("failed to get row count", e);
         }
+    }
+
+    private String hashUserPassword(String clearTextPassword) {
+        return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
     }
 }
