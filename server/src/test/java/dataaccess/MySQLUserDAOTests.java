@@ -1,5 +1,7 @@
 package dataaccess;
 
+import dataaccess.exceptions.AlreadyTakenException;
+import dataaccess.exceptions.DataAccessException;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

@@ -1,7 +1,7 @@
 package server.creategame;
 
-import dataaccess.DataAccessException;
-import dataaccess.UnauthorizedException;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.UnauthorizedException;
 import service.Service;
 
 public class CreateGameService extends Service {

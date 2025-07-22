@@ -1,5 +1,6 @@
 package dataaccess;
 
+import dataaccess.exceptions.GameNotFoundException;
 import model.GameData;
 
 import java.util.ArrayList;

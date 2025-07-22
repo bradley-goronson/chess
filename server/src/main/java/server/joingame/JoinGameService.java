@@ -1,10 +1,10 @@
 package server.joingame;
 
 import chess.ChessGame;
-import dataaccess.AlreadyTakenException;
-import dataaccess.DataAccessException;
-import dataaccess.GameNotFoundException;
-import dataaccess.UnauthorizedException;
+import dataaccess.exceptions.AlreadyTakenException;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.GameNotFoundException;
+import dataaccess.exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
 import service.Service;

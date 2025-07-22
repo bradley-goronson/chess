@@ -1,5 +1,6 @@
 package dataaccess;
 
+import dataaccess.exceptions.DataAccessException;
 import model.AuthData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

@@ -1,6 +1,6 @@
 package server;
 
-import dataaccess.DataAccessException;
+import dataaccess.exceptions.DataAccessException;
 import dataaccess.DatabaseManager;
 import server.clear.ClearHandler;
 import server.creategame.CreateGameHandler;

@@ -1,8 +1,8 @@
 package server.register;
 
-import dataaccess.AlreadyTakenException;
-import dataaccess.BadRequestException;
-import dataaccess.DataAccessException;
+import dataaccess.exceptions.AlreadyTakenException;
+import dataaccess.exceptions.BadRequestException;
+import dataaccess.exceptions.DataAccessException;
 import model.UserData;
 import service.Service;
 

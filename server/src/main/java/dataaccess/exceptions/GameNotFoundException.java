@@ -1,4 +1,4 @@
-package dataaccess;
+package dataaccess.exceptions;
 
 public class GameNotFoundException extends RuntimeException {
     public GameNotFoundException(String message) {

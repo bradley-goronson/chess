@@ -1,7 +1,7 @@
 package server.logout;
 
-import dataaccess.DataAccessException;
-import dataaccess.UnauthorizedException;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.UnauthorizedException;
 import service.Service;
 
 public class LogoutService extends Service {

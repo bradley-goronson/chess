@@ -1,6 +1,8 @@
 package dataaccess;
 
 import chess.ChessGame;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.GameNotFoundException;
 import model.GameData;
 
 import java.sql.PreparedStatement;

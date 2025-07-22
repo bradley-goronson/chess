@@ -1,7 +1,7 @@
 package server.listgames;
 
-import dataaccess.DataAccessException;
-import dataaccess.UnauthorizedException;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.UnauthorizedException;
 import service.Service;
 
 import java.util.ArrayList;
