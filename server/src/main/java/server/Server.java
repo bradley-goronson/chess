@@ -19,6 +19,7 @@ public class Server {
 
         try {
             DatabaseManager.createDatabase();
+            DatabaseManager.createTables();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -34,7 +35,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private static void createRoutes() {
+    public static void createRoutes() {
         Spark.delete("/db", new ClearHandler());
         Spark.post("/user", new RegisterHandler());
         Spark.post("/session", new LoginHandler());
