@@ -1,5 +1,7 @@
 package server;
 
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import server.clear.ClearHandler;
 import server.creategame.CreateGameHandler;
 import server.joingame.JoinGameHandler;
@@ -10,12 +12,16 @@ import server.register.RegisterHandler;
 import spark.*;
 
 public class Server {
-
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("/web");
 
+        try {
+            DatabaseManager.createDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         // Register your endpoints and handle exceptions here.
         createRoutes();
 
