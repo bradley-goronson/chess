@@ -57,11 +57,19 @@ public class MySQLUserDAO implements UserDataAccess {
                 System.out.println(ex.getMessage());
             }
         } catch (DataAccessException | SQLException ex) {
-            System.out.println("bad");
+            System.out.println("clear failed");
         }
     }
 
-    public int size() {
-        return 0;
+    public int size() throws DataAccessException {
+        String sql = "select count(*) from users";
+        try (var conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            ResultSet queryResult = statement.executeQuery();
+            queryResult.next();
+            return queryResult.getInt(1);
+        } catch (SQLException e) {
+            throw new DataAccessException("failed to get row count", e);
+        }
     }
 }

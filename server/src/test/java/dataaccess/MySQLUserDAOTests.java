@@ -28,20 +28,30 @@ public class MySQLUserDAOTests {
     void addUserSuccess() {
         UserData testUser = new UserData("bradle", "goron", "bgcom");
         MySQLUserDAO userDAO = new MySQLUserDAO();
-        int initialUserCount = userDAO.size();
-        int newUserCount;
+        int initialUserCount = 0;
+        try {
+            initialUserCount = userDAO.size();
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
+
         UserData pulledUser;
 
+        int newUserCount = 0;
         try {
             userDAO.addUser(testUser);
             pulledUser = userDAO.getUser("bradle");
-            newUserCount = userDAO.size();
+            try {
+                newUserCount = userDAO.size();
+            } catch (DataAccessException ex) {
+                System.out.println("size error");
+            }
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
 
         assertEquals(0, initialUserCount);
-        assertEquals(1, initialUserCount);
+        assertEquals(1, newUserCount);
         assertEquals(testUser, pulledUser);
     }
 
@@ -62,11 +72,70 @@ public class MySQLUserDAOTests {
 
     @Test
     void clearUsersSuccess() {
+        MySQLUserDAO userDAO = new MySQLUserDAO();
+        int initialUserCount = 0;
+        try {
+            initialUserCount = userDAO.size();
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
 
+        UserData testUser1 = new UserData("bradle", "goron", "bg@cool.com");
+        UserData testUser2 = new UserData("bradle2", "goron2", "bg2@cool.com");
+
+        int newUserCount = 0;
+        try {
+            userDAO.addUser(testUser1);
+            userDAO.addUser(testUser2);
+            try {
+                newUserCount = userDAO.size();
+            } catch (DataAccessException ex) {
+                System.out.println("size error");
+            }
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        int finalUserCount = 100;
+        userDAO.clearUsers();
+        try {
+            finalUserCount = userDAO.size();
+        } catch (DataAccessException e) {
+            System.out.println("size error");
+        }
+
+        assertEquals(0, initialUserCount);
+        assertEquals(2, newUserCount);
+        assertEquals(0, finalUserCount);
     }
 
     @Test
     void getSizeSuccess() {
+        UserData testUser1 = new UserData("bradle", "goron", "bg@cool.com");
+        UserData testUser2 = new UserData("bradle2", "goron2", "bg2@cool.com");
 
+        MySQLUserDAO userDAO = new MySQLUserDAO();
+        int initialUserCount = 0;
+        try {
+            initialUserCount = userDAO.size();
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
+
+        int newUserCount = 0;
+        try {
+            userDAO.addUser(testUser1);
+            userDAO.addUser(testUser2);
+            try {
+                newUserCount = userDAO.size();
+            } catch (DataAccessException ex) {
+                System.out.println("size error");
+            }
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        assertEquals(0, initialUserCount);
+        assertEquals(2, newUserCount);
     }
 }

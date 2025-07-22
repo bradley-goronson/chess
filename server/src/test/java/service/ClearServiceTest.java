@@ -30,14 +30,21 @@ public class ClearServiceTest {
             throw new RuntimeException(e);
         }
 
-
-        assertEquals(3, testClearService.getUserDAO().size());
+        try {
+            assertEquals(3, testClearService.getUserDAO().size());
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
 
         testClearService.getGameDAO().addGame("mario party");
         testClearService.getGameDAO().addGame("home evening");
         testClearService.getGameDAO().addGame("rival match");
 
-        assertEquals(3, testClearService.getUserDAO().size());
+        try {
+            assertEquals(3, testClearService.getUserDAO().size());
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
 
         testClearService.getAuthDAO().addAuth("bradle1");
         testClearService.getAuthDAO().addAuth("bradle1");
@@ -49,8 +56,13 @@ public class ClearServiceTest {
 
         testClearService.clear();
 
-        assertEquals(0, testClearService.getUserDAO().size());
-        assertEquals(0, testClearService.getGameDAO().size());
-        assertEquals(0, testClearService.getAuthDAO().size());
+        try {
+            assertEquals(0, testClearService.getUserDAO().size());
+            assertEquals(0, testClearService.getGameDAO().size());
+            assertEquals(0, testClearService.getAuthDAO().size());
+
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
     }
 }

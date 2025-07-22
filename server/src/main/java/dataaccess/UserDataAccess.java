@@ -9,5 +9,5 @@ public interface UserDataAccess {
 
     void clearUsers();
 
-    int size();
+    int size() throws DataAccessException;
 }

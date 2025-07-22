@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.clear.ClearService;
@@ -30,7 +31,11 @@ public class RegisterServiceTests {
         assertEquals(200, registerResult.getStatusCode());
         assertEquals("bradle1", registerResult.getUsername());
         assertNotEquals(null, registerResult.getAuthToken());
-        assertEquals(1, registerService.getUserDAO().size());
+        try {
+            assertEquals(1, registerService.getUserDAO().size());
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
     }
 
     @Test
@@ -46,7 +51,11 @@ public class RegisterServiceTests {
         assertEquals(200, registerResult.getStatusCode());
         assertEquals("bradle1", registerResult.getUsername());
         assertNotEquals(null, registerResult.getAuthToken());
-        assertEquals(1, registerService.getUserDAO().size());
+        try {
+            assertEquals(1, registerService.getUserDAO().size());
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
 
         RegisterRequest registerRequest2 = new RegisterRequest();
         registerRequest2.setUsername("bradle1");
