@@ -3,9 +3,9 @@ package service;
 import dataaccess.*;
 
 public class Service {
-    public static UserDataAccess userDAO = new UserMemoryDAO();
-    public static GameDataAccess gameDAO = new GameMemoryDAO();
-    public static AuthDataAccess authDAO = new AuthMemoryDAO();
+    public static UserDataAccess userDAO = new MySQLUserDAO();
+    public static GameDataAccess gameDAO = new MySQLGameDAO();
+    public static AuthDataAccess authDAO = new MySQLAuthDAO();
 
     public UserDataAccess getUserDAO() {
         return userDAO;

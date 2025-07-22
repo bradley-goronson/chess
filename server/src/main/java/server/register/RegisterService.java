@@ -2,6 +2,7 @@ package server.register;
 
 import dataaccess.AlreadyTakenException;
 import dataaccess.BadRequestException;
+import dataaccess.DataAccessException;
 import model.UserData;
 import service.Service;
 
@@ -23,6 +24,8 @@ public class RegisterService extends Service {
         } catch (BadRequestException ex) {
             registerResult.setStatusCode(400);
             registerResult.setMessage(ex.getMessage());
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
         return registerResult;
     }

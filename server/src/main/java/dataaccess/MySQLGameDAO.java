@@ -3,6 +3,8 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class MySQLGameDAO implements GameDataAccess {
@@ -19,7 +21,16 @@ public class MySQLGameDAO implements GameDataAccess {
     }
 
     public void clearGames() {
-
+        try (var connection = DatabaseManager.getConnection()) {
+            String sql = "delete from games";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.executeUpdate();
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        } catch (DataAccessException | SQLException ex) {
+            System.out.println("clear failed");
+        }
     }
 
     public ArrayList<GameData> getAllGames() {

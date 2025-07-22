@@ -2,16 +2,50 @@ package dataaccess;
 
 import model.UserData;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MySQLUserDAO implements UserDataAccess {
-    public void addUser(UserData user) {
-
+    public void addUser(UserData user) throws DataAccessException {
+        if (user.username() == null || user.password() == null || user.email() == null) {
+            throw new BadRequestException("Error: bad request");
+        }
+        try {
+            getUser(user.username());
+            throw new AlreadyTakenException("Error: already taken");
+        } catch (DataAccessException ex) {
+            String sql =
+                    "insert into users(" +
+                    "username, password, email)" +
+                    "values('" + user.username() +
+                    "','" + user.password() +
+                    "','" + user.email() + "')";
+            try (Connection conn = DatabaseManager.getConnection();
+                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException("failed to add user", e);
+            }
+        }
     }
 
-    public UserData getUser(String username) {
-        return null;
+    public UserData getUser(String username) throws DataAccessException {
+        String sql = "select * from users where username='" + username + "'";
+        try (var conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            ResultSet queryResult = statement.executeQuery();
+            if (!queryResult.next()) {
+                throw new DataAccessException("User not found");
+            }
+            String pulledUsername = queryResult.getString("username");
+            String pulledPassword = queryResult.getString("password");
+            String pulledEmail = queryResult.getString("email");
+            return new UserData(pulledUsername, pulledPassword, pulledEmail);
+        } catch (SQLException e) {
+            throw new DataAccessException("failed to get user", e);
+        }
     }
 
     public void clearUsers() {
@@ -28,6 +62,6 @@ public class MySQLUserDAO implements UserDataAccess {
     }
 
     public int size() {
-        return 1;
+        return 0;
     }
 }

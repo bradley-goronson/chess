@@ -108,4 +108,8 @@ public class DatabaseManager {
             }
         }
     }
+
+    public static String getConnectionUrl() {
+        return connectionUrl;
+    }
 }
