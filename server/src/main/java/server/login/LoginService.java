@@ -2,6 +2,7 @@ package server.login;
 
 import dataaccess.DataAccessException;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import service.Service;
 
 public class LoginService extends Service {
@@ -19,7 +20,7 @@ public class LoginService extends Service {
         try {
             UserData targetUser = userDAO.getUser(username);
             String targetPassword = targetUser.password();
-            if (!password.equals(targetPassword)) {
+            if (!BCrypt.checkpw(password, targetPassword)) {
                 loginResult.setStatusCode(401);
                 loginResult.setMessage("Error: unauthorized");
             } else {
