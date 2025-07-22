@@ -1,14 +1,13 @@
 package dataaccess;
 
 import model.UserData;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import server.Server;
 import server.clear.ClearService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MySQLUserDAOTests {
 
@@ -57,17 +56,62 @@ public class MySQLUserDAOTests {
 
     @Test
     void addUserFailure() {
+        UserData testUser1 = new UserData("bradle", "goron", "bgcom");
+        UserData testUser2 = new UserData("bradle", "goron2", "bgcom2");
+        MySQLUserDAO userDAO = new MySQLUserDAO();
 
+        try {
+            userDAO.addUser(testUser1);
+            userDAO.addUser(testUser2);
+        } catch (DataAccessException | AlreadyTakenException e) {
+            System.out.println(e.getMessage());
+        }
+
+        int userCount = -1;
+        try {
+            userCount = userDAO.size();
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
+
+        assertEquals(1, userCount);
     }
 
     @Test
     void getUserSuccess() {
+        UserData testUser1 = new UserData("bradle", "goron", "bgcom");
+        UserData testUser2 = new UserData("bradle2", "goron2", "bgcom2");
+        MySQLUserDAO userDAO = new MySQLUserDAO();
+        UserData pulledUser1;
+        UserData pulledUser2;
 
+        try {
+            userDAO.addUser(testUser1);
+            userDAO.addUser(testUser2);
+            pulledUser1 = userDAO.getUser("bradle");
+            pulledUser2 = userDAO.getUser("bradle2");
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        assertEquals(testUser1, pulledUser1);
+        assertEquals(testUser2, pulledUser2);
     }
 
     @Test
     void getUserFailure() {
+        UserData testUser1 = new UserData("bradle", "goron", "bgcom");
+        MySQLUserDAO userDAO = new MySQLUserDAO();
+        UserData pulledUser1 = null;
 
+        try {
+            userDAO.addUser(testUser1);
+            pulledUser1 = userDAO.getUser("bradlex");
+        } catch (DataAccessException e) {
+            System.out.println("user not found");
+        }
+
+        assertNull(pulledUser1);
     }
 
     @Test
@@ -96,7 +140,7 @@ public class MySQLUserDAOTests {
             throw new RuntimeException(e);
         }
 
-        int finalUserCount = 100;
+        int finalUserCount = -1;
         userDAO.clearUsers();
         try {
             finalUserCount = userDAO.size();
