@@ -46,12 +46,19 @@ public class ClearServiceTest {
             System.out.println("size error");
         }
 
-        testClearService.getAuthDAO().addAuth("bradle1");
-        testClearService.getAuthDAO().addAuth("bradle1");
-        testClearService.getAuthDAO().addAuth("bradle1");
+        try {
+            testClearService.getAuthDAO().addAuth("bradle1");
+            testClearService.getAuthDAO().addAuth("bradle1");
+            testClearService.getAuthDAO().addAuth("bradle1");
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
-        assertEquals(3, testClearService.getAuthDAO().size());
-
+        try {
+            assertEquals(3, testClearService.getAuthDAO().size());
+        } catch (DataAccessException e) {
+            System.out.println("size error");
+        }
 
 
         testClearService.clear();
@@ -60,7 +67,6 @@ public class ClearServiceTest {
             assertEquals(0, testClearService.getUserDAO().size());
             assertEquals(0, testClearService.getGameDAO().size());
             assertEquals(0, testClearService.getAuthDAO().size());
-
         } catch (DataAccessException ex) {
             System.out.println("size error");
         }

@@ -3,7 +3,7 @@ package dataaccess;
 import model.AuthData;
 
 public interface AuthDataAccess {
-    String addAuth(String username);
+    String addAuth(String username) throws DataAccessException;
 
     AuthData getAuth(String authToken) throws UnauthorizedException;
 
@@ -11,5 +11,5 @@ public interface AuthDataAccess {
 
     void clearAuth();
 
-    int size();
+    int size() throws DataAccessException;
 }

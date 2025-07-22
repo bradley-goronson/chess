@@ -10,7 +10,6 @@ import server.clear.ClearService;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MySQLUserDAOTests {
-
     @BeforeAll
     static void setup() {
         Server myServer = new Server();
