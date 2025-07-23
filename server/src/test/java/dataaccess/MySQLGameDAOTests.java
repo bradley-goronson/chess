@@ -129,7 +129,38 @@ public class MySQLGameDAOTests {
 
     @Test
     void clearGamesSuccess() {
+        MySQLGameDAO gameDAO = new MySQLGameDAO();
+        int initialGameCount = -1;
+        try {
+            initialGameCount = gameDAO.size();
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
 
+        int newGameCount = -1;
+        try {
+            gameDAO.addGame("cool");
+            gameDAO.addGame("cool2");
+            try {
+                newGameCount = gameDAO.size();
+            } catch (DataAccessException ex) {
+                System.out.println("size error");
+            }
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
+        }
+
+        int finalGameCount = -1;
+        gameDAO.clearGames();
+        try {
+            finalGameCount = gameDAO.size();
+        } catch (DataAccessException e) {
+            System.out.println("size error");
+        }
+
+        assertEquals(0, initialGameCount);
+        assertEquals(2, newGameCount);
+        assertEquals(0, finalGameCount);
     }
 
     @Test

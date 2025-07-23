@@ -25,8 +25,8 @@ public class MySQLGameDAO implements GameDataAccess {
             preparedStatement.setString(1, null);
             preparedStatement.setString(2, null);
             preparedStatement.setString(3, gameName);
-//            String jsonChessGame = serializeChessGame(new ChessGame());
-            preparedStatement.setString(4, "jsonChessGame");
+            String jsonChessGame = serializeChessGame(new ChessGame());
+            preparedStatement.setString(4, jsonChessGame);
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
             generatedKeys.next();
@@ -58,16 +58,16 @@ public GameData getGame(Integer gameID) throws GameNotFoundException, DataAccess
 }
 
 public void updateGame(Integer gameID, GameData game) throws DataAccessException {
-    GameData pulledGame = getGame(gameID);
+    getGame(gameID);
     String sql =
             "update games set whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? where gameID = ?";
     try (Connection conn = DatabaseManager.getConnection();
          PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-        preparedStatement.setString(1, pulledGame.whiteUsername());
-        preparedStatement.setString(2, pulledGame.blackUsername());
-        preparedStatement.setString(3, pulledGame.gameName());
-        //String jsonChessGame = serializeChessGame(pulledGame.game());
-        preparedStatement.setString(4, "jsonChessGame");
+        preparedStatement.setString(1, game.whiteUsername());
+        preparedStatement.setString(2, game.blackUsername());
+        preparedStatement.setString(3, game.gameName());
+        String jsonChessGame = serializeChessGame(game.game());
+        preparedStatement.setString(4, jsonChessGame);
         preparedStatement.setInt(5, gameID);
         preparedStatement.executeUpdate();
     } catch (SQLException e) {
