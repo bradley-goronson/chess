@@ -57,7 +57,7 @@ public class MySQLAuthDAO implements AuthDataAccess {
         }
     }
 
-    public void clearAuth() {
+    public void clearAuth() throws DataAccessException {
         try (var connection = DatabaseManager.getConnection()) {
             String sql = "delete from auth";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -66,7 +66,7 @@ public class MySQLAuthDAO implements AuthDataAccess {
                 System.out.println(ex.getMessage());
             }
         } catch (DataAccessException | SQLException ex) {
-            System.out.println("clear failed");
+            throw new DataAccessException(ex.getMessage());
         }
     }
 

@@ -26,7 +26,8 @@ public class ListGamesService extends Service {
             listGamesResult.setStatusCode(401);
             listGamesResult.setMessage("Error: unauthorized");
         } catch (DataAccessException e) {
-            System.out.println(e.getMessage());
+            listGamesResult.setStatusCode(500);
+            listGamesResult.setMessage("Error: lost connection when pulling games");
         }
         return listGamesResult;
     }

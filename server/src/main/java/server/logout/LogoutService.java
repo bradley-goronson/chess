@@ -17,7 +17,8 @@ public class LogoutService extends Service {
             logoutResult.setStatusCode(401);
             logoutResult.setMessage(e.getMessage());
         } catch (DataAccessException e) {
-            System.out.println(e.getMessage());
+            logoutResult.setStatusCode(500);
+            logoutResult.setMessage("Error: lost connection when logging out");
         }
         return logoutResult;
     }

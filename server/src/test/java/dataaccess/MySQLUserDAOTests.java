@@ -2,6 +2,7 @@ package dataaccess;
 
 import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.UserNotFoundException;
 import model.UserData;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import server.Server;
-import server.clear.ClearService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,8 +23,6 @@ public class MySQLUserDAOTests {
 
     @AfterEach
     void tearDownReset() {
-        ClearService clearService = new ClearService();
-        clearService.clear();
         try {
             DatabaseManager.dropTables();
             DatabaseManager.createTables();
@@ -129,7 +127,7 @@ public class MySQLUserDAOTests {
         try {
             userDAO.addUser(testUser1);
             pulledUser1 = userDAO.getUser("bradlex");
-        } catch (DataAccessException e) {
+        } catch (UserNotFoundException | DataAccessException e) {
             System.out.println("user not found");
         }
 
@@ -137,7 +135,7 @@ public class MySQLUserDAOTests {
     }
 
     @Test
-    void clearUsersSuccess() {
+    void clearUsersSuccess() throws DataAccessException {
         MySQLUserDAO userDAO = new MySQLUserDAO();
         int initialUserCount = 0;
         try {

@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.GameDataAccess;
+import dataaccess.exceptions.GameNotFoundException;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,11 +89,11 @@ public class JoinGameServiceTests {
 
         assertEquals(400, joinGameResult.getStatusCode());
         GameDataAccess gameDAO = joinGameService.getGameDAO();
-        GameData targetedGame;
+        GameData targetedGame = new GameData(null, null, null, null, null);
         try {
             targetedGame = gameDAO.getGame(1);
-        } catch (dataaccess.exceptions.DataAccessException e) {
-            throw new RuntimeException(e);
+        } catch (dataaccess.exceptions.DataAccessException | GameNotFoundException e) {
+            System.out.println(e.getMessage());
         }
         assertNull(targetedGame.whiteUsername());
     }

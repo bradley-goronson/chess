@@ -40,7 +40,8 @@ public class JoinGameService extends Service {
             joinGameResult.setStatusCode(403);
             joinGameResult.setMessage(exception.getMessage());
         } catch (DataAccessException ex) {
-            System.out.println(ex.getMessage());
+            joinGameResult.setStatusCode(500);
+            joinGameResult.setMessage("Error: lost connection when joining game");
         }
 
         return joinGameResult;

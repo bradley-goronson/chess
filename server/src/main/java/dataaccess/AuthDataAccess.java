@@ -11,7 +11,7 @@ public interface AuthDataAccess {
 
     void removeAuth(String authToken) throws UnauthorizedException, DataAccessException;
 
-    void clearAuth();
+    void clearAuth() throws DataAccessException;
 
     int size() throws DataAccessException;
 }

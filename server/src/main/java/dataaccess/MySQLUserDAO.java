@@ -3,6 +3,7 @@ package dataaccess;
 import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.UserNotFoundException;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -19,7 +20,7 @@ public class MySQLUserDAO implements UserDataAccess {
         try {
             getUser(user.username());
             throw new AlreadyTakenException("Error: already taken");
-        } catch (DataAccessException ex) {
+        } catch (UserNotFoundException ex) {
             String hashedPassword = hashUserPassword(user.password());
             String sql =
                     "insert into users(username, password, email)" +
@@ -36,14 +37,14 @@ public class MySQLUserDAO implements UserDataAccess {
         }
     }
 
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username) throws UserNotFoundException, DataAccessException {
         String sql = "select * from users where username=?";
         try (var conn = DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setString(1, username);
             ResultSet queryResult = statement.executeQuery();
             if (!queryResult.next()) {
-                throw new DataAccessException("User not found");
+                throw new UserNotFoundException("User not found");
             }
             String pulledUsername = queryResult.getString("username");
             String pulledPassword = queryResult.getString("password");
@@ -54,7 +55,7 @@ public class MySQLUserDAO implements UserDataAccess {
         }
     }
 
-    public void clearUsers() {
+    public void clearUsers() throws DataAccessException {
         try (var connection = DatabaseManager.getConnection()) {
             String sql = "delete from users";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -63,7 +64,7 @@ public class MySQLUserDAO implements UserDataAccess {
                 System.out.println(ex.getMessage());
             }
         } catch (DataAccessException | SQLException ex) {
-            System.out.println("clear failed");
+            throw new DataAccessException(ex.getMessage());
         }
     }
 

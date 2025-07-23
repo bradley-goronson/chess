@@ -25,7 +25,8 @@ public class RegisterService extends Service {
             registerResult.setStatusCode(400);
             registerResult.setMessage(ex.getMessage());
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            registerResult.setStatusCode(500);
+            registerResult.setMessage("Error: lost connection when registering");
         }
         return registerResult;
     }

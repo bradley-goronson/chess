@@ -25,7 +25,8 @@ public class CreateGameService extends Service {
             createGameResult.setStatusCode(401);
             createGameResult.setMessage(e.getMessage());
         } catch (DataAccessException ex) {
-            System.out.println(ex.getMessage());
+            createGameResult.setStatusCode(500);
+            createGameResult.setMessage("Error: lost connection when creating game");
         }
         return createGameResult;
     }

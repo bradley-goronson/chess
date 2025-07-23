@@ -3,6 +3,7 @@ package dataaccess;
 import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.UserNotFoundException;
 import model.UserData;
 import java.util.HashMap;
 
@@ -22,7 +23,7 @@ public class UserMemoryDAO implements UserDataAccess {
         }
     }
 
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username) throws UserNotFoundException, DataAccessException {
         UserData user = userMap.get(username);
         if (user == null) {
             throw new DataAccessException("User not found");

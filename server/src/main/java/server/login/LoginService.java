@@ -1,6 +1,7 @@
 package server.login;
 
 import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.UserNotFoundException;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import service.Service;
@@ -29,9 +30,12 @@ public class LoginService extends Service {
                 loginResult.setUsername(username);
                 loginResult.setAuthToken(authToken);
             }
-        } catch (DataAccessException e) {
+        } catch (UserNotFoundException ex) {
             loginResult.setStatusCode(401);
             loginResult.setMessage("Error: unauthorized");
+        } catch (DataAccessException e) {
+            loginResult.setStatusCode(500);
+            loginResult.setMessage("Error: lost connection when logging in");
         }
         return loginResult;
     }

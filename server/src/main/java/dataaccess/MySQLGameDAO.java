@@ -74,7 +74,7 @@ public void updateGame(Integer gameID, GameData game) throws DataAccessException
     }
 }
 
-public void clearGames() {
+public void clearGames() throws DataAccessException {
     try (var connection = DatabaseManager.getConnection()) {
         String sql = "delete from games";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -83,7 +83,7 @@ public void clearGames() {
             System.out.println(ex.getMessage());
         }
     } catch (DataAccessException | SQLException ex) {
-        System.out.println("clear failed");
+        throw new DataAccessException(ex.getMessage());
     }
 }
 

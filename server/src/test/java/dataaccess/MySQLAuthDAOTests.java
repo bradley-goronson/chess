@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import server.Server;
-import server.clear.ClearService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -23,8 +22,6 @@ public class MySQLAuthDAOTests {
 
     @AfterEach
     void tearDownReset() {
-        ClearService clearService = new ClearService();
-        clearService.clear();
         try {
             DatabaseManager.dropTables();
             DatabaseManager.createTables();
@@ -221,7 +218,11 @@ public class MySQLAuthDAOTests {
             System.out.println("size error");
         }
 
-        authDAO.clearAuth();
+        try {
+            authDAO.clearAuth();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         int finalRowCount = -1;
         try {
