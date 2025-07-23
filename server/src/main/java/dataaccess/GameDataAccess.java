@@ -11,7 +11,7 @@ public interface GameDataAccess {
 
     GameData getGame(Integer gameID) throws GameNotFoundException, DataAccessException;
 
-    void updateGame(Integer gameID, GameData game);
+    void updateGame(Integer gameID, GameData game) throws DataAccessException;
 
     void clearGames();
 

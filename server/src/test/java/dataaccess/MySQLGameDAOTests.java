@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
 import org.junit.jupiter.api.AfterEach;
@@ -68,7 +69,32 @@ public class MySQLGameDAOTests {
 
     @Test
     void addGameFailure() {
+        MySQLGameDAO gameDAO = new MySQLGameDAO();
+        int gameID = 0;
 
+        int initalGameCount = 0;
+        try {
+            initalGameCount = gameDAO.size();
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
+
+        try {
+            gameID = gameDAO.addGame(null);
+        } catch (BadRequestException | DataAccessException e) {
+            System.out.println(e.getMessage());
+        }
+
+        int finalGameCount = 0;
+        try {
+            finalGameCount = gameDAO.size();
+        } catch (DataAccessException ex) {
+            System.out.println("size error");
+        }
+
+        assertEquals(0, initalGameCount);
+        assertEquals(0, finalGameCount);
+        assertEquals(0, gameID);
     }
 
     @Test

@@ -38,7 +38,7 @@ public class MySQLGameDAO implements GameDataAccess {
     }
 
 public GameData getGame(Integer gameID) throws GameNotFoundException, DataAccessException {
-    String sql = "select * from games where gameID=?";
+    String sql = "select * from games where gameID = ?";
     try (var conn = DatabaseManager.getConnection();
          PreparedStatement statement = conn.prepareStatement(sql)) {
         statement.setInt(1, gameID);
@@ -49,15 +49,30 @@ public GameData getGame(Integer gameID) throws GameNotFoundException, DataAccess
         String pulledWhiteUsername = queryResult.getString("whiteUsername");
         String pulledBlackUsername = queryResult.getString("blackUsername");
         String pulledGameName = queryResult.getString("gameName");
-        ChessGame pulledGame = queryResult.getObject("game", ChessGame.class);
+        String pulledGameJSON = queryResult.getString("game");
+        ChessGame pulledGame = new Gson().fromJson(pulledGameJSON, ChessGame.class);
         return new GameData(gameID, pulledWhiteUsername, pulledBlackUsername, pulledGameName, pulledGame);
     } catch (SQLException e) {
         throw new DataAccessException("failed to get game", e);
     }
 }
 
-public void updateGame(Integer gameID, GameData game) {
-
+public void updateGame(Integer gameID, GameData game) throws DataAccessException {
+    GameData pulledGame = getGame(gameID);
+    String sql =
+            "update games set whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? where gameID = ?";
+    try (Connection conn = DatabaseManager.getConnection();
+         PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+        preparedStatement.setString(1, pulledGame.whiteUsername());
+        preparedStatement.setString(2, pulledGame.blackUsername());
+        preparedStatement.setString(3, pulledGame.gameName());
+        //String jsonChessGame = serializeChessGame(pulledGame.game());
+        preparedStatement.setString(4, "jsonChessGame");
+        preparedStatement.setInt(5, gameID);
+        preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+        throw new DataAccessException("failed to update game", e);
+    }
 }
 
 public void clearGames() {
