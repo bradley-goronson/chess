@@ -261,25 +261,8 @@ public class MySQLGameDAOTests {
     @Test
     void clearGamesSuccess() {
         MySQLGameDAO gameDAO = new MySQLGameDAO();
-        int initialGameCount = -1;
-        try {
-            initialGameCount = gameDAO.size();
-        } catch (DataAccessException ex) {
-            System.out.println("size error");
-        }
-
-        int newGameCount = -1;
-        try {
-            gameDAO.addGame("cool");
-            gameDAO.addGame("cool2");
-            try {
-                newGameCount = gameDAO.size();
-            } catch (DataAccessException ex) {
-                System.out.println("size error");
-            }
-        } catch (DataAccessException e) {
-            System.out.println(e.getMessage());
-        }
+        int initialGameCount = getInitialGameCount(gameDAO);
+        int newGameCount = getGameCountAfterAddingGames(gameDAO);
 
         int finalGameCount = -1;
         try {
@@ -301,13 +284,24 @@ public class MySQLGameDAOTests {
     @Test
     void getSizeSuccess() {
         MySQLGameDAO gameDAO = new MySQLGameDAO();
+        int initialGameCount = getInitialGameCount(gameDAO);
+        int newGameCount = getGameCountAfterAddingGames(gameDAO);
+
+        assertEquals(0, initialGameCount);
+        assertEquals(2,  newGameCount);
+    }
+
+    private int getInitialGameCount(MySQLGameDAO gameDAO) {
         int initialGameCount = -1;
         try {
             initialGameCount = gameDAO.size();
         } catch (DataAccessException ex) {
             System.out.println("size error");
         }
+        return initialGameCount;
+    }
 
+    private int getGameCountAfterAddingGames(MySQLGameDAO gameDAO) {
         int newGameCount = -1;
         try {
             gameDAO.addGame("cool");
@@ -320,8 +314,6 @@ public class MySQLGameDAOTests {
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-
-        assertEquals(0, initialGameCount);
-        assertEquals(2,  newGameCount);
+        return newGameCount;
     }
 }
