@@ -20,9 +20,15 @@ public class MySQLUserDAOTests {
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDownReset() {
         ClearService clearService = new ClearService();
         clearService.clear();
+        try {
+            DatabaseManager.dropTables();
+            DatabaseManager.createTables();
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test

@@ -91,7 +91,7 @@ public class DatabaseManager {
                 whiteUsername varchar(255) null,
                 blackUsername varchar(255) null,
                 gameName varchar(255) not null,
-                game varchar(1000) not null)
+                game longtext not null)
                 """,
                 """
                 create table if not exists auth(
@@ -111,7 +111,21 @@ public class DatabaseManager {
         }
     }
 
-    public static String getConnectionUrl() {
-        return connectionUrl;
+    public static void dropTables() throws DataAccessException {
+        String[] statementArray = {
+                "drop table if exists users",
+                "drop table if exists games",
+                "drop table if exists auth"
+        };
+
+        for (String statement : statementArray) {
+            String databaseConnectionUrl = connectionUrl + "/" + databaseName;
+            try (var conn = DriverManager.getConnection(databaseConnectionUrl, dbUsername, dbPassword);
+                 var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+            } catch (SQLException ex) {
+                throw new DataAccessException("failed to drop table", ex);
+            }
+        }
     }
 }

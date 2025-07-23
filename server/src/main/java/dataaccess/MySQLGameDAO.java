@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.GameNotFoundException;
@@ -24,7 +25,8 @@ public class MySQLGameDAO implements GameDataAccess {
             preparedStatement.setString(1, null);
             preparedStatement.setString(2, null);
             preparedStatement.setString(3, gameName);
-            preparedStatement.setObject(4, new ChessGame());
+//            String jsonChessGame = serializeChessGame(new ChessGame());
+            preparedStatement.setString(4, "jsonChessGame");
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
             generatedKeys.next();
@@ -100,7 +102,7 @@ public ArrayList<GameData> getAllGames() throws DataAccessException {
 }
 
 public int size() throws DataAccessException {
-    String sql = "select count(*) from users";
+    String sql = "select count(*) from games";
     try (var conn = DatabaseManager.getConnection();
          PreparedStatement statement = conn.prepareStatement(sql)) {
         ResultSet queryResult = statement.executeQuery();
@@ -109,5 +111,9 @@ public int size() throws DataAccessException {
     } catch (SQLException e) {
         throw new DataAccessException("failed to get row count", e);
     }
+}
+
+private String serializeChessGame(ChessGame chessGame) {
+        return new Gson().toJson(chessGame);
 }
 }

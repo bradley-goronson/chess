@@ -35,7 +35,9 @@ public class MySQLAuthDAO implements AuthDataAccess {
              PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setString(1, authToken);
             ResultSet queryResult = statement.executeQuery();
-            queryResult.next();
+            if (!queryResult.next()) {
+                throw new UnauthorizedException("Error: unauthorized");
+            }
             String pulledAuthToken = queryResult.getString("authToken");
             String pulledUsername = queryResult.getString("username");
             return new AuthData(pulledAuthToken, pulledUsername);
