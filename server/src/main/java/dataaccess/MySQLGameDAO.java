@@ -66,8 +66,7 @@ public void updateGame(Integer gameID, GameData game) throws DataAccessException
         preparedStatement.setString(1, game.whiteUsername());
         preparedStatement.setString(2, game.blackUsername());
         preparedStatement.setString(3, game.gameName());
-        String jsonChessGame = serializeChessGame(game.game());
-        preparedStatement.setString(4, jsonChessGame);
+        preparedStatement.setString(4, serializeChessGame(game.game()));
         preparedStatement.setInt(5, gameID);
         preparedStatement.executeUpdate();
     } catch (SQLException e) {
@@ -97,16 +96,17 @@ public ArrayList<GameData> getAllGames() throws DataAccessException {
         ResultSet queryResult = statement.executeQuery();
         while (queryResult.next()) {
             int pulledGameID = queryResult.getInt("gameID");
-            String whiteUsername = queryResult.getString("whiteUsername");
-            String blackUsername = queryResult.getString("blackUsername");
-            String gameName = queryResult.getString("gameName");
-            ChessGame game = queryResult.getObject("game", ChessGame.class);
+            String pulledWhiteUsername = queryResult.getString("whiteUsername");
+            String pulledBlackUsername = queryResult.getString("blackUsername");
+            String pulledGameName = queryResult.getString("gameName");
+            String pulledChessGameJSON = queryResult.getString("game");
+            ChessGame pulledChessGame = deSerializeChessGame(pulledChessGameJSON);
             GameData pulledGameData = new GameData(
                     pulledGameID,
-                    whiteUsername,
-                    blackUsername,
-                    gameName,
-                    game
+                    pulledWhiteUsername,
+                    pulledBlackUsername,
+                    pulledGameName,
+                    pulledChessGame
             );
             gamesArray.add(pulledGameData);
         }
@@ -131,4 +131,8 @@ public int size() throws DataAccessException {
 private String serializeChessGame(ChessGame chessGame) {
         return new Gson().toJson(chessGame);
 }
+
+    private ChessGame deSerializeChessGame(String chessGameJSON) {
+        return new Gson().fromJson(chessGameJSON, ChessGame.class);
+    }
 }

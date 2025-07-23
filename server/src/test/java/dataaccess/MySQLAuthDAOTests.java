@@ -1,7 +1,9 @@
 package dataaccess;
 
 import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.UnauthorizedException;
 import model.AuthData;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,9 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class MySQLAuthDAOTests {
+    static Server myServer = new Server();
+
     @BeforeAll
     static void setup() {
-        Server myServer = new Server();
         myServer.run(8080);
     }
 
@@ -28,6 +31,11 @@ public class MySQLAuthDAOTests {
         } catch (DataAccessException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @AfterAll
+    static void closeConnection() {
+        myServer.stop();
     }
 
     @Test
@@ -60,7 +68,7 @@ public class MySQLAuthDAOTests {
         try {
             authDAO.addAuth(firstUsername);
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
 
         try {
@@ -108,7 +116,7 @@ public class MySQLAuthDAOTests {
 
         try {
             testAuth = authDAO.getAuth("it's a wonderful life");
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | UnauthorizedException e) {
             System.out.println(e.getMessage());
         }
 

@@ -3,6 +3,7 @@ package dataaccess;
 import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.DataAccessException;
 import model.UserData;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,9 +14,10 @@ import server.clear.ClearService;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MySQLUserDAOTests {
+    static Server myServer = new Server();
+
     @BeforeAll
     static void setup() {
-        Server myServer = new Server();
         myServer.run(8080);
     }
 
@@ -29,6 +31,11 @@ public class MySQLUserDAOTests {
         } catch (DataAccessException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @AfterAll
+    static void closeConnection() {
+        myServer.stop();
     }
 
     @Test
