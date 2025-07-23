@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.GameNotFoundException;
 import model.GameData;
 
@@ -39,7 +40,7 @@ public class GameMemoryDAO implements GameDataAccess {
         return new ArrayList<>(gameMap.values());
     }
 
-    public int size() {
+    public int size() throws DataAccessException {
         return gameMap.size();
     }
 }

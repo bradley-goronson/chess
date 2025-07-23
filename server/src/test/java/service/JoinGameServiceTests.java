@@ -52,7 +52,12 @@ public class JoinGameServiceTests {
         assertEquals(200, joinGameResult.getStatusCode());
 
         GameDataAccess gameDAO = joinGameService.getGameDAO();
-        GameData targetedGame = gameDAO.getGame(createGameResult.getGameID());
+        GameData targetedGame;
+        try {
+            targetedGame = gameDAO.getGame(createGameResult.getGameID());
+        } catch (dataaccess.exceptions.DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         assertEquals("bradle1", targetedGame.whiteUsername());
     }
 
@@ -83,7 +88,12 @@ public class JoinGameServiceTests {
 
         assertEquals(400, joinGameResult.getStatusCode());
         GameDataAccess gameDAO = joinGameService.getGameDAO();
-        GameData targetedGame = gameDAO.getGame(1);
+        GameData targetedGame;
+        try {
+            targetedGame = gameDAO.getGame(1);
+        } catch (dataaccess.exceptions.DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         assertNull(targetedGame.whiteUsername());
     }
 
@@ -113,7 +123,12 @@ public class JoinGameServiceTests {
         JoinGameResult joinGameResult = joinGameService.joinGame(joinGameRequest);
         GameDataAccess gameDAO = joinGameService.getGameDAO();
 
-        GameData targetGame = gameDAO.getGame(createGameResult.getGameID());
+        GameData targetGame;
+        try {
+            targetGame = gameDAO.getGame(createGameResult.getGameID());
+        } catch (dataaccess.exceptions.DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         assertEquals(400, joinGameResult.getStatusCode());
         assertNull(targetGame.whiteUsername());
@@ -145,7 +160,12 @@ public class JoinGameServiceTests {
         JoinGameResult joinGameResult = joinGameService.joinGame(joinGameRequest);
         GameDataAccess gameDAO = joinGameService.getGameDAO();
 
-        GameData targetGame = gameDAO.getGame(createGameResult.getGameID());
+        GameData targetGame;
+        try {
+            targetGame = gameDAO.getGame(createGameResult.getGameID());
+        } catch (dataaccess.exceptions.DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         assertEquals(400, joinGameResult.getStatusCode());
         assertNull(targetGame.whiteUsername());
@@ -177,7 +197,12 @@ public class JoinGameServiceTests {
 
         JoinGameResult joinGameResult = joinGameService.joinGame(joinGameRequest);
         GameDataAccess gameDAO = joinGameService.getGameDAO();
-        GameData targetGame = gameDAO.getGame(createGameResult.getGameID());
+        GameData targetGame;
+        try {
+            targetGame = gameDAO.getGame(createGameResult.getGameID());
+        } catch (dataaccess.exceptions.DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         assertEquals(400, joinGameResult.getStatusCode());
         assertNull(targetGame.whiteUsername());

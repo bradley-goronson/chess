@@ -27,7 +27,7 @@ public class MySQLUserDAOTests {
 
     @Test
     void addUserSuccess() {
-        UserData testUser = new UserData("bradle", "goron", "bgcom");
+        UserData testUser = new UserData("tommy", "bumpkins", "bgcom");
         MySQLUserDAO userDAO = new MySQLUserDAO();
         int initialUserCount = 0;
         try {
@@ -41,7 +41,7 @@ public class MySQLUserDAOTests {
         int newUserCount = 0;
         try {
             userDAO.addUser(testUser);
-            pulledUser = userDAO.getUser("bradle");
+            pulledUser = userDAO.getUser("tommy");
             try {
                 newUserCount = userDAO.size();
             } catch (DataAccessException ex) {
@@ -165,7 +165,7 @@ public class MySQLUserDAOTests {
     @Test
     void getSizeSuccess() {
         UserData testUser1 = new UserData("bradle", "goron", "bg@cool.com");
-        UserData testUser2 = new UserData("bradle2", "goron2", "bg2@cool.com");
+        UserData testUser2 = new UserData("tommy", "bumpkins", "bg2@cool.com");
 
         MySQLUserDAO userDAO = new MySQLUserDAO();
         int initialUserCount = 0;

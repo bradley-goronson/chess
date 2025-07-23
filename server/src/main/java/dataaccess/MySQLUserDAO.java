@@ -22,13 +22,13 @@ public class MySQLUserDAO implements UserDataAccess {
         } catch (DataAccessException ex) {
             String hashedPassword = hashUserPassword(user.password());
             String sql =
-                    "insert into users(" +
-                    "username, password, email)" +
-                    "values('" + user.username() +
-                    "','" + hashedPassword +
-                    "','" + user.email() + "')";
+                    "insert into users(username, password, email)" +
+                    "values(?, ?, ?)";
             try (Connection conn = DatabaseManager.getConnection();
                  PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, user.username());
+                preparedStatement.setString(2, hashedPassword);
+                preparedStatement.setString(3, user.email());
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
                 throw new DataAccessException("failed to add user", e);
@@ -37,9 +37,10 @@ public class MySQLUserDAO implements UserDataAccess {
     }
 
     public UserData getUser(String username) throws DataAccessException {
-        String sql = "select * from users where username='" + username + "'";
+        String sql = "select * from users where username=?";
         try (var conn = DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, username);
             ResultSet queryResult = statement.executeQuery();
             if (!queryResult.next()) {
                 throw new DataAccessException("User not found");

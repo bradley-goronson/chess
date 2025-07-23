@@ -36,9 +36,21 @@ public class ClearServiceTest {
             System.out.println("size error");
         }
 
-        testClearService.getGameDAO().addGame("mario party");
-        testClearService.getGameDAO().addGame("home evening");
-        testClearService.getGameDAO().addGame("rival match");
+        try {
+            testClearService.getGameDAO().addGame("mario party");
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            testClearService.getGameDAO().addGame("home evening");
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            testClearService.getGameDAO().addGame("rival match");
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             assertEquals(3, testClearService.getUserDAO().size());

@@ -61,9 +61,18 @@ public class ListGamesServiceTests {
         assertEquals(200, listGamesResult.getStatusCode());
 
         GameDataAccess gameDAO = listGamesService.getGameDAO();
-        assertEquals(2, gameDAO.size());
+        try {
+            assertEquals(2, gameDAO.size());
+        } catch (dataaccess.exceptions.DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
-        ArrayList<GameData> gamesArray = gameDAO.getAllGames();
+        ArrayList<GameData> gamesArray;
+        try {
+            gamesArray = gameDAO.getAllGames();
+        } catch (dataaccess.exceptions.DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         for (GameData game : gamesArray) {
             System.out.println(game);
         }

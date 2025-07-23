@@ -17,10 +17,11 @@ public class MySQLAuthDAO implements AuthDataAccess {
         String sql =
                 "insert into auth(" +
                         "authToken, username)" +
-                        "values('" + authData.authToken() +
-                        "','" + authData.username() + "')";
+                        "values(?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, authData.authToken());
+            preparedStatement.setString(2, authData.username());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("failed to add auth", e);
@@ -29,9 +30,10 @@ public class MySQLAuthDAO implements AuthDataAccess {
     }
 
     public AuthData getAuth(String authToken) throws UnauthorizedException, DataAccessException {
-        String sql = "select * from auth where authToken='" + authToken + "'";
+        String sql = "select * from auth where authToken=?";
         try (var conn = DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, authToken);
             ResultSet queryResult = statement.executeQuery();
             queryResult.next();
             String pulledAuthToken = queryResult.getString("authToken");
@@ -43,9 +45,10 @@ public class MySQLAuthDAO implements AuthDataAccess {
     }
 
     public void removeAuth(String authToken) throws UnauthorizedException, DataAccessException {
-        String sql = "delete from auth where authToken='" + authToken + "'";
+        String sql = "delete from auth where authToken=?";
         try (var conn = DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, authToken);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("failed to remove auth", e);
