@@ -11,7 +11,7 @@ public class MySQLDAOTests {
 
     @BeforeAll
     static void setup() {
-        myServer.run(8080);
+        myServer.run(0);
     }
 
     @AfterEach
