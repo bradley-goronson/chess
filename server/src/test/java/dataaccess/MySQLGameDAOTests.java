@@ -5,39 +5,13 @@ import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.GameNotFoundException;
 import model.GameData;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import server.Server;
 
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MySQLGameDAOTests {
-    static Server myServer = new Server();
-
-    @BeforeAll
-    static void setup() {
-        myServer.run(8080);
-    }
-
-    @AfterEach
-    void tearDownReset() {
-        try {
-            DatabaseManager.dropTables();
-            DatabaseManager.createTables();
-        } catch (DataAccessException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    @AfterAll
-    static void closeConnection() {
-        myServer.stop();
-    }
-
+public class MySQLGameDAOTests extends MySQLDAOTests{
     @Test
     void addGameSuccess() {
         MySQLGameDAO gameDAO = new MySQLGameDAO();
@@ -225,7 +199,7 @@ public class MySQLGameDAOTests {
         assertEquals(expectedGamesArray.size(), gamesArray.size());
         assertEquals(expectedGamesArray.get(0), gamesArray.get(0));
         assertEquals(expectedGamesArray.get(1), gamesArray.get(1));
-        //assertEquals(expectedGamesArray.get(2), gamesArray.get(2));
+        assertEquals(expectedGamesArray.get(2), gamesArray.get(2));
     }
 
     @Test
@@ -233,29 +207,13 @@ public class MySQLGameDAOTests {
         MySQLGameDAO gameDAO = new MySQLGameDAO();
         ArrayList<GameData> gamesArray = new ArrayList<>();
         ArrayList<GameData> expectedGamesArray = new ArrayList<>();
-        expectedGamesArray.add(
-                new GameData(1, null, null, "game 1", new ChessGame())
-        );
-        expectedGamesArray.add(
-                new GameData(2, null, null, "game 2", new ChessGame())
-        );
-        expectedGamesArray.add(
-                new GameData(3, null, null, "game 3", new ChessGame())
-        );
 
         try {
-            gameDAO.addGame("game 1");
-            gameDAO.addGame("game 2");
-            gameDAO.addGame("game 3");
             gamesArray = gameDAO.getAllGames();
         } catch (DataAccessException e) {
             System.out.println(e.getMessage());
         }
-
-        assertEquals(expectedGamesArray.size(), gamesArray.size());
-        assertEquals(expectedGamesArray.get(0), gamesArray.get(0));
-        assertEquals(expectedGamesArray.get(1), gamesArray.get(1));
-        assertEquals(expectedGamesArray.get(2), gamesArray.get(2));
+        assertEquals(expectedGamesArray, gamesArray);
     }
 
     @Test

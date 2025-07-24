@@ -3,38 +3,12 @@ package dataaccess;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.UnauthorizedException;
 import model.AuthData;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import server.Server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class MySQLAuthDAOTests {
-    static Server myServer = new Server();
-
-    @BeforeAll
-    static void setup() {
-        myServer.run(8080);
-    }
-
-    @AfterEach
-    void tearDownReset() {
-        try {
-            DatabaseManager.dropTables();
-            DatabaseManager.createTables();
-        } catch (DataAccessException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    @AfterAll
-    static void closeConnection() {
-        myServer.stop();
-    }
-
+public class MySQLAuthDAOTests extends MySQLDAOTests {
     @Test
     void addAuthSuccess() {
         String firstUsername = "bradle";
