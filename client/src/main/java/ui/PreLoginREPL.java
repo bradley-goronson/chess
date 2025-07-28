@@ -26,6 +26,13 @@ public class PreLoginREPL {
                 case "quit" -> System.out.println("quitting application...");
                 default -> System.out.println("error: invalid command given. use \"help\" for a list of available commands");
             }
+
+            if (loggedIn) {
+                System.out.println(
+                        EscapeSequences.SET_TEXT_COLOR_GREEN +
+                        "Successfully logged in as: " + requestArray[1] +
+                        EscapeSequences.RESET_TEXT_COLOR);
+            }
         }
         return loggedIn;
     }
@@ -85,9 +92,14 @@ public class PreLoginREPL {
             System.out.println("incorrect number of arguments given");
             return false;
         }
-        System.out.println("You're trying to register");
         ServerFacade facade = new ServerFacade();
         authToken = facade.register(requestArray[1], requestArray[2], requestArray[3]);
+        if (!authToken.isEmpty()) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_GREEN +
+                    "Successfully registered account!" +
+                    EscapeSequences.RESET_TEXT_COLOR);
+        }
         return !authToken.isEmpty();
     }
 

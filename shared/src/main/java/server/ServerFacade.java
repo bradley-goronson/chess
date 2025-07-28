@@ -1,5 +1,9 @@
 package server;
 
+import model.GameData;
+
+import java.util.ArrayList;
+
 public class ServerFacade {
     public String register(String username, String password, String email) {
         String authToken = "null";
@@ -13,5 +17,27 @@ public class ServerFacade {
 
 
         return authToken;
+    }
+
+    public void logout() {
+
+    }
+
+    public ArrayList<GameData> listGames() {
+        ArrayList<GameData> gamesArray = new ArrayList<>();
+
+        return gamesArray;
+    }
+
+    public void createGame() {
+
+    }
+
+    public void joinGame() {
+
+    }
+
+    public void observeGame() {
+
     }
 }

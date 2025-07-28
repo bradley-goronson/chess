@@ -1,17 +1,19 @@
 package ui;
 
 import model.GameData;
+import server.ServerFacade;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class PostLoginREPL {
     boolean joinedGame = false;
+    ArrayList<GameData> recentGameArray = new ArrayList<>();
 
     public boolean repl(String authToken) {
         String method = "bacon cheeseburger";
-        ArrayList<GameData> recentGameArray = new ArrayList<>();
 
+        help();
         while (!method.equals("quit") && !joinedGame) {
             System.out.println("What would you like to do ROUND TWO? ");
             Scanner scanner = new Scanner(System.in);
@@ -32,26 +34,85 @@ public class PostLoginREPL {
     }
 
     private void help() {
+        System.out.println(
+                EscapeSequences.SET_TEXT_UNDERLINE + EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE +
+                        "Available commands:" +
+                        EscapeSequences.RESET_TEXT_UNDERLINE + EscapeSequences.RESET_TEXT_BOLD_FAINT);
 
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "help" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": display a list of available commands");
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "logout" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": logout of user account");
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "create" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": create a new chess game and name it with the provided name"
+        );
+        System.out.println("   usage: create <name>");
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "list" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": display a list of all active chess games"
+        );
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "join" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": join the indicated chess game playing as the indicated color"
+        );
+        System.out.println("   usage: join <gameID> <playerColor>");
+        System.out.println("   note: the gameID is the number to the left of the chess game when using the \"list\" command");
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "observer" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": observe the indicated chess game as a spectator"
+        );
+        System.out.println("   usage: observe <gameID>");
+        System.out.println("   note: the gameID is the number to the left of the chess game when using the \"list\" command");
     }
 
     private void logout(String authToken) {
+        ServerFacade facade = new ServerFacade();
 
+        facade.logout();
     }
 
     private void createGame(String[] requestArray) {
+        ServerFacade facade = new ServerFacade();
 
+        facade.createGame();
     }
 
     private void listGames() {
+        ServerFacade facade = new ServerFacade();
 
+        recentGameArray = facade.listGames();
     }
 
     private boolean playGame() {
+        ServerFacade facade = new ServerFacade();
+
+        facade.joinGame();
         return false;
     }
 
     private boolean observeGame() {
+        ServerFacade facade = new ServerFacade();
+        facade.observeGame();
         return false;
     }
 }
