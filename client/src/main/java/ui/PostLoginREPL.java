@@ -8,13 +8,14 @@ import java.util.Scanner;
 
 public class PostLoginREPL {
     boolean joinedGame = false;
+    boolean loggedIn = true;
     ArrayList<GameData> recentGameArray = new ArrayList<>();
 
     public boolean repl(String authToken) {
         String method = "bacon cheeseburger";
 
         help();
-        while (!method.equals("quit") && !joinedGame) {
+        while (!method.equals("logout") && !joinedGame) {
             System.out.println("What would you like to do ROUND TWO? ");
             Scanner scanner = new Scanner(System.in);
             String request = scanner.nextLine();
@@ -82,13 +83,18 @@ public class PostLoginREPL {
                         ": observe the indicated chess game as a spectator"
         );
         System.out.println("   usage: observe <gameID>");
-        System.out.println("   note: the gameID is the number to the left of the chess game when using the \"list\" command");
+        System.out.println("   note: the gameID is the number to the left of the chess game when using the \"list\" command\n");
     }
 
     private void logout(String authToken) {
         ServerFacade facade = new ServerFacade();
 
         facade.logout();
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_GREEN +
+                        "Successfully logged out" +
+                        EscapeSequences.RESET_TEXT_COLOR);
+        loggedIn = false;
     }
 
     private void createGame(String[] requestArray) {
@@ -114,5 +120,9 @@ public class PostLoginREPL {
         ServerFacade facade = new ServerFacade();
         facade.observeGame();
         return false;
+    }
+
+    public boolean getLoggedIn() {
+        return loggedIn;
     }
 }

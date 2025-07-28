@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 public class PreLoginREPL {
     private boolean loggedIn = false;
+    private boolean quit = false;
     private String authToken = "";
 
     public boolean repl() {
@@ -23,8 +24,12 @@ public class PreLoginREPL {
                 case "help" -> help();
                 case "register" -> loggedIn = register(requestArray);
                 case "login" -> loggedIn = login(requestArray);
-                case "quit" -> System.out.println("quitting application...");
+                case "quit" -> quit = true;
                 default -> System.out.println("error: invalid command given. use \"help\" for a list of available commands");
+            }
+
+            if (quit) {
+                System.out.println("quitting application...");
             }
 
             if (loggedIn) {
@@ -67,7 +72,7 @@ public class PreLoginREPL {
                 EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
                         "quit" +
                 EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
-                        ": close chess application" +
+                        ": close chess application\n" +
                 EscapeSequences.RESET_TEXT_COLOR);
     }
 
@@ -76,12 +81,6 @@ public class PreLoginREPL {
             System.out.println("incorrect number of arguments given");
             return false;
         }
-        String username = requestArray[1];
-        String password = requestArray[2];
-
-        System.out.println("You're trying to login");
-        System.out.println(username);
-        System.out.println(password);
         ServerFacade facade = new ServerFacade();
         authToken = facade.login(requestArray[1], requestArray[2]);
         return !authToken.isEmpty();
@@ -105,5 +104,9 @@ public class PreLoginREPL {
 
     public String getAuthToken() {
         return authToken;
+    }
+
+    public boolean getQuit() {
+        return quit;
     }
 }

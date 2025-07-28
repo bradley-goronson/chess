@@ -11,18 +11,23 @@ public class Main {
                 "♖♘♗♔ BYU CS 240 Chess Client ♕♗♘♖" +
                 EscapeSequences.RESET_TEXT_COLOR);
 
-        String authToken;
-        PreLoginREPL preLogin = new PreLoginREPL();
-        boolean loggedIn = preLogin.repl();
+        boolean quit = false;
+        while (!quit) {
+            String authToken;
+            PreLoginREPL preLogin = new PreLoginREPL();
+            boolean loggedIn = preLogin.repl();
+            quit = preLogin.getQuit();
 
-        if (loggedIn) {
-            authToken = preLogin.getAuthToken();
-            PostLoginREPL postLogin = new PostLoginREPL();
-            boolean joinedGame = postLogin.repl(authToken);
+            while (loggedIn) {
+                authToken = preLogin.getAuthToken();
+                PostLoginREPL postLogin = new PostLoginREPL();
+                boolean joinedGame = postLogin.repl(authToken);
 
-            if (joinedGame) {
-                GamePlayUI gamePlay = new GamePlayUI();
-                gamePlay.play();
+                if (joinedGame) {
+                    GamePlayUI gamePlay = new GamePlayUI();
+                    gamePlay.play();
+                }
+                loggedIn = postLogin.getLoggedIn();
             }
         }
     }
