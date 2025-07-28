@@ -1,14 +1,17 @@
-import chess.*;
+import ui.EscapeSequences;
 import ui.GamePlayUI;
 import ui.PostLoginREPL;
 import ui.PreLoginREPL;
 
 public class Main {
     public static void main(String[] args) {
-        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ BYU CS 240 Chess Client ♕");
-        String authToken;
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_WHITE +
+                EscapeSequences.SET_TEXT_BOLD +
+                "♖♘♗♔ BYU CS 240 Chess Client ♕♗♘♖" +
+                EscapeSequences.RESET_TEXT_COLOR);
 
+        String authToken;
         PreLoginREPL preLogin = new PreLoginREPL();
         boolean loggedIn = preLogin.repl();
 

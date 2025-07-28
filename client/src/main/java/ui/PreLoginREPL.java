@@ -1,10 +1,12 @@
 package ui;
 
+import server.ServerFacade;
+
 import java.util.Scanner;
 
 public class PreLoginREPL {
     private boolean loggedIn = false;
-    private String authToken;
+    private String authToken = "";
 
     public boolean repl() {
         String method = "mint chocolate chip ice cream";
@@ -19,13 +21,12 @@ public class PreLoginREPL {
 
             switch (method) {
                 case "help" -> help();
-                case "register" -> loggedIn = login(requestArray);
+                case "register" -> loggedIn = register(requestArray);
                 case "login" -> loggedIn = login(requestArray);
                 case "quit" -> System.out.println("quitting application...");
                 default -> System.out.println("error: invalid command given. use \"help\" for a list of available commands");
             }
         }
-        System.out.println("you quit");
         return loggedIn;
     }
 
@@ -64,29 +65,30 @@ public class PreLoginREPL {
     }
 
     private boolean login(String[] requestArray) {
+        if (requestArray.length != 3) {
+            System.out.println("incorrect number of arguments given");
+            return false;
+        }
         String username = requestArray[1];
         String password = requestArray[2];
 
         System.out.println("You're trying to login");
         System.out.println(username);
         System.out.println(password);
-        //serverfacade
-        //set auth
-        return false;
+        ServerFacade facade = new ServerFacade();
+        authToken = facade.login(requestArray[1], requestArray[2]);
+        return !authToken.isEmpty();
     }
 
     private boolean register(String[] requestArray) {
-        String username = requestArray[1];
-        String password = requestArray[2];
-        String email = requestArray[3];
-
+        if (requestArray.length != 4) {
+            System.out.println("incorrect number of arguments given");
+            return false;
+        }
         System.out.println("You're trying to register");
-        System.out.println(username);
-        System.out.println(password);
-        System.out.println(email);
-        //serverfacade
-        //set auth
-        return false;
+        ServerFacade facade = new ServerFacade();
+        authToken = facade.register(requestArray[1], requestArray[2], requestArray[3]);
+        return !authToken.isEmpty();
     }
 
     public String getAuthToken() {

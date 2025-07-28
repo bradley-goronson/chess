@@ -1,18 +1,32 @@
 package ui;
 
+import model.GameData;
+
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class PostLoginREPL {
     boolean joinedGame = false;
+
     public boolean repl(String authToken) {
-        System.out.println("What would you like to do? ");
-        Scanner scanner = new Scanner(System.in);
-        String request = scanner.nextLine();
-        String[] requestArray = request.split(" ");
-        String method = requestArray[0];
+        String method = "bacon cheeseburger";
+        ArrayList<GameData> recentGameArray = new ArrayList<>();
 
-        while (!method.equals("quit")) {
+        while (!method.equals("quit") && !joinedGame) {
+            System.out.println("What would you like to do ROUND TWO? ");
+            Scanner scanner = new Scanner(System.in);
+            String request = scanner.nextLine();
+            String[] requestArray = request.split(" ");
+            method = requestArray[0];
 
+            switch (method) {
+                case "help" -> help();
+                case "logout" -> logout(authToken);
+                case "createGame" -> createGame(requestArray);
+                case "list" -> listGames();
+                case "join" -> joinedGame = playGame();
+                case "observer" -> joinedGame = observeGame();
+            }
         }
         return joinedGame;
     }
@@ -21,12 +35,12 @@ public class PostLoginREPL {
 
     }
 
-    private void logout() {
+    private void logout(String authToken) {
 
     }
 
-    private boolean createGame() {
-        return false;
+    private void createGame(String[] requestArray) {
+
     }
 
     private void listGames() {
