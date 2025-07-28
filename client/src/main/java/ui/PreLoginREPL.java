@@ -8,8 +8,8 @@ public class PreLoginREPL {
 
     public boolean repl() {
         String method = "mint chocolate chip ice cream";
-        help();
 
+        help();
         while (!method.equals("quit") && !loggedIn) {
             System.out.println("What would you like to do? ");
             Scanner scanner = new Scanner(System.in);
@@ -17,14 +17,12 @@ public class PreLoginREPL {
             String[] requestArray = request.split(" ");
             method = requestArray[0];
 
-            if (method.equals("help")) {
-                help();
-            }
-            if (method.equals("login")) {
-                loggedIn = login(requestArray);
-            }
-            if (method.equals("register")) {
-                loggedIn = register(requestArray);
+            switch (method) {
+                case "help" -> help();
+                case "register" -> loggedIn = login(requestArray);
+                case "login" -> loggedIn = login(requestArray);
+                case "quit" -> System.out.println("quitting application...");
+                default -> System.out.println("error: invalid command given. use \"help\" for a list of available commands");
             }
         }
         System.out.println("you quit");
@@ -32,13 +30,37 @@ public class PreLoginREPL {
     }
 
     private void help() {
-        System.out.println("Available commands:");
-        System.out.println("help: display a list of available commands");
-        System.out.println("register: create a new user account");
-        System.out.println("   usage: <username> <password> <email>");
-        System.out.println("login: login to an existing user account");
-        System.out.println("   usage: <username> <password>");
-        System.out.println("quit: close chess application");
+        System.out.println(
+                EscapeSequences.SET_TEXT_UNDERLINE + EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE +
+                        "Available commands:" +
+                EscapeSequences.RESET_TEXT_UNDERLINE + EscapeSequences.RESET_TEXT_BOLD_FAINT);
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "help" +
+                EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": display a list of available commands");
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                "register" +
+                EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": create a new user account");
+        System.out.println("   usage: register <username> <password> <email>");
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "login" +
+                EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": login to an existing user account"
+        );
+        System.out.println("   usage: login <username> <password>");
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "quit" +
+                EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": close chess application" +
+                EscapeSequences.RESET_TEXT_COLOR);
     }
 
     private boolean login(String[] requestArray) {
