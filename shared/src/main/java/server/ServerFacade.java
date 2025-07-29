@@ -39,8 +39,10 @@ public class ServerFacade {
         return gamesArray;
     }
 
-    public void createGame() {
-
+    public int createGame(String gameName, String authToken) throws ResponseException {
+        ClientCreateGameRequest request = new ClientCreateGameRequest(gameName);
+        GameData gameData = makeRequest("POST", "/game", request, GameData.class, authToken);
+        return gameData.gameID();
     }
 
     public void joinGame() {
@@ -57,7 +59,6 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
             http.setRequestProperty("authorization", authToken);
             writeBody(request, http);
             http.connect();

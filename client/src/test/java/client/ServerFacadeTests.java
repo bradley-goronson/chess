@@ -83,7 +83,7 @@ public class ServerFacadeTests {
     @Test
     public void successfullyLogoutGivenValidAuthToken() {
         ServerFacade facade = new ServerFacade(serverURL);
-        String authToken = null;
+        String authToken;
         try {
             authToken = facade.register("bradle", "goron", "bg@gmail.com");
             facade.logout(authToken);
@@ -107,5 +107,53 @@ public class ServerFacadeTests {
         }
         assertNotNull(authToken);
         assertEquals(401, finalStatusCode);
+    }
+
+    @Test
+    public void successfullyListGames() {
+        ServerFacade facade = new ServerFacade(serverURL);
+        String authToken;
+        try {
+            authToken = facade.register("bradle", "goron", "bg@gmail.com");
+            facade.logout(authToken);
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+            assert(false);
+        }
+    }
+
+    @Test
+    public void successfullyCreateGame() {
+        ServerFacade facade = new ServerFacade(serverURL);
+        String authToken = null;
+        int gameId = -1;
+        try {
+            authToken = facade.register("bradle", "goron", "bg@gmail.com");
+            gameId = facade.createGame("game time", authToken);
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+            assert(false);
+        }
+
+        assertNotNull(authToken);
+        assertNotEquals(-1, gameId);
+    }
+
+    @Test
+    public void failToCreateGameIncompleteRequest() {
+        ServerFacade facade = new ServerFacade(serverURL);
+        String authToken = null;
+        int finalStatusCode = -1;
+        int gameID = -1;
+        try {
+            authToken = facade.register("bradle", "goron", "bg@gmail.com");
+            facade.createGame(null, authToken);
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+            finalStatusCode = e.getStatusCode();
+        }
+        assertNotNull(authToken);
+        assertEquals(-1, gameID);
+        assertEquals(400, finalStatusCode);
     }
 }

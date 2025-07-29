@@ -13,11 +13,11 @@ public class PostLoginREPL {
     ArrayList<GameData> recentGameArray = new ArrayList<>();
 
     public boolean repl(String authToken) throws ResponseException {
-        String method = "bacon cheeseburger";
+        String method;
 
         help();
         while (loggedIn && !joinedGame) {
-            System.out.println("What would you like to do ROUND TWO? ");
+            System.out.println("What would you like to do? ");
             Scanner scanner = new Scanner(System.in);
             String request = scanner.nextLine();
             String[] requestArray = request.split(" ");
@@ -26,7 +26,7 @@ public class PostLoginREPL {
             switch (method) {
                 case "help" -> help();
                 case "logout" -> loggedIn = logout(requestArray, authToken);
-                case "createGame" -> createGame(requestArray);
+                case "createGame" -> createGame(requestArray, authToken);
                 case "list" -> listGames(requestArray);
                 case "join" -> joinedGame = joinGame(requestArray, authToken);
                 case "observe" -> joinedGame = observeGame(requestArray);
@@ -109,7 +109,7 @@ public class PostLoginREPL {
         return false;
     }
 
-    private void createGame(String[] requestArray) {
+    private void createGame(String[] requestArray, String authToken) throws ResponseException {
         if (requestArray.length != 2) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
@@ -118,8 +118,7 @@ public class PostLoginREPL {
             return;
         }
         ServerFacade facade = new ServerFacade("blank");
-
-        facade.createGame();
+        facade.createGame(requestArray[1], authToken);
     }
 
     private void listGames(String[] requestArray) {
