@@ -23,7 +23,6 @@ public class Server {
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-        // Register your endpoints and handle exceptions here.
         createRoutes();
 
         Spark.awaitInitialization();

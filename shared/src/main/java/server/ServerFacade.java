@@ -33,10 +33,10 @@ public class ServerFacade {
         makeRequest("DELETE", "/session", null, null, authToken);
     }
 
-    public ArrayList<GameData> listGames() {
-        ArrayList<GameData> gamesArray = new ArrayList<>();
-
-        return gamesArray;
+    public ArrayList<GameData> listGames(String authToken) throws ResponseException {
+        record listGamesResponse(ArrayList<GameData> games) {}
+        listGamesResponse response = makeRequest("GET", "/game", null, listGamesResponse.class, authToken);
+        return response.games;
     }
 
     public int createGame(String gameName, String authToken) throws ResponseException {
@@ -45,8 +45,9 @@ public class ServerFacade {
         return gameData.gameID();
     }
 
-    public void joinGame() {
-
+    public void joinGame(String gameID, String color, String authToken) throws ResponseException {
+        ClientJoinGameRequest request = new ClientJoinGameRequest(gameID, color);
+        makeRequest("PUT", "/game", request, null, authToken);
     }
 
     public void observeGame() {

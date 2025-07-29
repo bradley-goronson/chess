@@ -9,6 +9,7 @@ public class PreLoginREPL {
     private boolean loggedIn = false;
     private boolean quit = false;
     private String authToken = "";
+    private String serverURL = "http://localhost:8080";
 
     public boolean repl() throws ResponseException {
         String method = "mint chocolate chip ice cream";
@@ -92,7 +93,7 @@ public class PreLoginREPL {
                     EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        ServerFacade facade = new ServerFacade("blank");
+        ServerFacade facade = new ServerFacade(serverURL);
         authToken = facade.login(requestArray[1], requestArray[2]);
         return !authToken.isEmpty();
     }
@@ -105,7 +106,7 @@ public class PreLoginREPL {
                     EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        ServerFacade facade = new ServerFacade("blank");
+        ServerFacade facade = new ServerFacade(serverURL);
         authToken = facade.register(requestArray[1], requestArray[2], requestArray[3]);
         if (!authToken.isEmpty()) {
             System.out.println(

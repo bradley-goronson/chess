@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class PostLoginREPL {
     boolean joinedGame = false;
     boolean loggedIn = true;
+    String serverURL = "http://localhost:8080";
     ArrayList<GameData> recentGameArray = new ArrayList<>();
 
     public boolean repl(String authToken) throws ResponseException {
@@ -27,7 +28,7 @@ public class PostLoginREPL {
                 case "help" -> help();
                 case "logout" -> loggedIn = logout(requestArray, authToken);
                 case "createGame" -> createGame(requestArray, authToken);
-                case "list" -> listGames(requestArray);
+                case "list" -> recentGameArray = listGames(requestArray, authToken);
                 case "join" -> joinedGame = joinGame(requestArray, authToken);
                 case "observe" -> joinedGame = observeGame(requestArray);
                 default -> System.out.println(
@@ -99,7 +100,7 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return true;
         }
-        ServerFacade facade = new ServerFacade("blank");
+        ServerFacade facade = new ServerFacade(serverURL);
 
         facade.logout(authToken);
         System.out.println(
@@ -117,24 +118,33 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return;
         }
-        ServerFacade facade = new ServerFacade("blank");
+        ServerFacade facade = new ServerFacade(serverURL);
         facade.createGame(requestArray[1], authToken);
     }
 
-    private void listGames(String[] requestArray) {
+    private ArrayList<GameData> listGames(String[] requestArray, String authToken) throws ResponseException {
         if (requestArray.length != 1) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
                             "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
-            return;
+            return recentGameArray;
         }
-        ServerFacade facade = new ServerFacade("BLAKN");
+        ServerFacade facade = new ServerFacade(serverURL);
 
-        recentGameArray = facade.listGames();
+        recentGameArray = facade.listGames(authToken);
+
+        for (int i = 1; i < recentGameArray.size(); i++) {
+            GameData currentGame = recentGameArray.get(i - 1);
+            System.out.println(
+                    i + ")" + currentGame.gameName() + " - " +
+                    "white player: " + currentGame.whiteUsername() +
+                    "blue player" + currentGame.blackUsername() + "\n");
+        }
+        return recentGameArray;
     }
 
-    private boolean joinGame(String[] requestArray, String authToken) {
+    private boolean joinGame(String[] requestArray, String authToken) throws ResponseException {
         if (requestArray.length != 3) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
@@ -142,9 +152,9 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        ServerFacade facade = new ServerFacade("BLANK");
+        ServerFacade facade = new ServerFacade(serverURL);
 
-        facade.joinGame();
+        facade.joinGame(requestArray[1], requestArray[2], authToken);
         return true;
     }
 
@@ -156,7 +166,7 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        ServerFacade facade = new ServerFacade("BLANK");
+        ServerFacade facade = new ServerFacade(serverURL);
         facade.observeGame();
         return true;
     }

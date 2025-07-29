@@ -1,10 +1,16 @@
 package client;
 
+import chess.ChessGame;
+import dataaccess.DatabaseManager;
+import dataaccess.exceptions.DataAccessException;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import server.ResponseException;
 import server.Server;
 import server.ServerFacade;
 import server.clear.ClearService;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,6 +26,16 @@ public class ServerFacadeTests {
         var port = server.run(0);
         serverURL = "http://localhost:" + port;
         System.out.println("Started test HTTP server on " + port);
+    }
+
+    @AfterEach
+    void tearDownReset() {
+        try {
+            DatabaseManager.dropTables();
+            DatabaseManager.createTables();
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @AfterAll
@@ -113,13 +129,50 @@ public class ServerFacadeTests {
     public void successfullyListGames() {
         ServerFacade facade = new ServerFacade(serverURL);
         String authToken;
+        ArrayList<GameData> gamesArray = new ArrayList<>();
+        ArrayList<GameData> expectedGamesArray = new ArrayList<>();
+        expectedGamesArray.add(
+                new GameData(1, null, null, "game 1", new ChessGame())
+        );
+        expectedGamesArray.add(
+                new GameData(2, null, null, "game 2", new ChessGame())
+        );
+        expectedGamesArray.add(
+                new GameData(3, null, null, "game 3", new ChessGame())
+        );
+
         try {
             authToken = facade.register("bradle", "goron", "bg@gmail.com");
-            facade.logout(authToken);
+            facade.createGame("game 1", authToken);
+            facade.createGame("game 2", authToken);
+            facade.createGame("game 3", authToken);
+            gamesArray = facade.listGames(authToken);
         } catch (ResponseException e) {
             System.out.println(e.getMessage());
             assert(false);
         }
+
+        assertEquals(expectedGamesArray.size(), gamesArray.size());
+        assertEquals(expectedGamesArray.get(0), gamesArray.get(0));
+        assertEquals(expectedGamesArray.get(1), gamesArray.get(1));
+        assertEquals(expectedGamesArray.get(2), gamesArray.get(2));
+    }
+
+    @Test
+    public void listGamesShowsEmptyListWhenNoGames() {
+        ServerFacade facade = new ServerFacade(serverURL);
+        String authToken;
+        ArrayList<GameData> gamesArray = new ArrayList<>();
+        ArrayList<GameData> expectedGamesArray = new ArrayList<>();
+        try {
+            authToken = facade.register("bradle", "goron", "bg@gmail.com");
+            gamesArray = facade.listGames(authToken);
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+            assert(false);
+        }
+
+        assertEquals(expectedGamesArray, gamesArray);
     }
 
     @Test
