@@ -1,10 +1,11 @@
+import server.ResponseException;
 import ui.EscapeSequences;
 import ui.GamePlayUI;
 import ui.PostLoginREPL;
 import ui.PreLoginREPL;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ResponseException {
         System.out.println(
                 EscapeSequences.SET_TEXT_COLOR_WHITE +
                 EscapeSequences.SET_TEXT_BOLD +

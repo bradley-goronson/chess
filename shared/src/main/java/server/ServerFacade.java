@@ -11,11 +11,14 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class ServerFacade {
-    String serverURL = "http://localhost:8080";
+    String serverURL;
 
-    public String register(String username, String password, String email) {
+    public ServerFacade(String serverURL) {
+        this.serverURL = serverURL;
+    }
+
+    public String register(String username, String password, String email) throws ResponseException {
         ClientRegisterRequest request = new ClientRegisterRequest(username, password, email);
-
         AuthData authData = makeRequest("POST", "/user", request, AuthData.class);
         return authData.authToken();
     }
@@ -49,7 +52,7 @@ public class ServerFacade {
 
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException{
         try {
             URL url = (new URI(serverURL + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -60,8 +63,10 @@ public class ServerFacade {
             http.connect();
             throwIfUnsuccessful(http);
             return readBody(http, responseClass);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (ResponseException e) {
+            throw e;
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
         }
     }
 
@@ -88,16 +93,15 @@ public class ServerFacade {
         return response;
     }
 
-    private void throwIfUnsuccessful(HttpURLConnection http) throws IOException {
+    private void throwIfUnsuccessful(HttpURLConnection http) throws IOException, ResponseException {
         int status = http.getResponseCode();
         if (!(status / 100 == 2)) {
             try (InputStream responseError = http.getErrorStream()) {
                 if (responseError != null) {
-                    throw new RuntimeException();
+                    throw ResponseException.fromJson(responseError);
                 }
             }
-
-            throw new RuntimeException();
+            throw new ResponseException(status, "some failure: " + status);
         }
     }
 }

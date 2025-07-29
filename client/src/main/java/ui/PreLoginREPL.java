@@ -1,5 +1,6 @@
 package ui;
 
+import server.ResponseException;
 import server.ServerFacade;
 
 import java.util.Scanner;
@@ -9,7 +10,7 @@ public class PreLoginREPL {
     private boolean quit = false;
     private String authToken = "";
 
-    public boolean repl() {
+    public boolean repl() throws ResponseException {
         String method = "mint chocolate chip ice cream";
 
         help();
@@ -91,12 +92,12 @@ public class PreLoginREPL {
                     EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        ServerFacade facade = new ServerFacade();
+        ServerFacade facade = new ServerFacade("blank");
         authToken = facade.login(requestArray[1], requestArray[2]);
         return !authToken.isEmpty();
     }
 
-    private boolean register(String[] requestArray) {
+    private boolean register(String[] requestArray) throws ResponseException {
         if (requestArray.length != 4) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
@@ -104,7 +105,7 @@ public class PreLoginREPL {
                     EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        ServerFacade facade = new ServerFacade();
+        ServerFacade facade = new ServerFacade("blank");
         authToken = facade.register(requestArray[1], requestArray[2], requestArray[3]);
         if (!authToken.isEmpty()) {
             System.out.println(

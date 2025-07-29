@@ -98,7 +98,7 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return true;
         }
-        ServerFacade facade = new ServerFacade();
+        ServerFacade facade = new ServerFacade("blank");
 
         facade.logout();
         System.out.println(
@@ -116,7 +116,7 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return;
         }
-        ServerFacade facade = new ServerFacade();
+        ServerFacade facade = new ServerFacade("blank");
 
         facade.createGame();
     }
@@ -129,7 +129,7 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return;
         }
-        ServerFacade facade = new ServerFacade();
+        ServerFacade facade = new ServerFacade("BLAKN");
 
         recentGameArray = facade.listGames();
     }
@@ -142,7 +142,7 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        ServerFacade facade = new ServerFacade();
+        ServerFacade facade = new ServerFacade("BLANK");
 
         facade.joinGame();
         return true;
@@ -156,7 +156,7 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        ServerFacade facade = new ServerFacade();
+        ServerFacade facade = new ServerFacade("BLANK");
         facade.observeGame();
         return true;
     }
