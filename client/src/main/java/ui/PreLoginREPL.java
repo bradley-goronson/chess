@@ -24,19 +24,26 @@ public class PreLoginREPL {
                 case "help" -> help();
                 case "register" -> loggedIn = register(requestArray);
                 case "login" -> loggedIn = login(requestArray);
-                case "quit" -> quit = true;
-                default -> System.out.println("error: invalid command given. use \"help\" for a list of available commands");
+                case "quit" -> quit = quit(requestArray);
+                default -> System.out.println(
+                        EscapeSequences.SET_TEXT_COLOR_RED +
+                        "error: invalid command given - use \"help\" for a list of available commands and usages" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE);
             }
 
             if (quit) {
-                System.out.println("quitting application...");
+                System.out.println(
+                        "Quitting application..." +
+                        EscapeSequences.SET_TEXT_COLOR_GREEN +
+                        "Done" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE);
             }
 
             if (loggedIn) {
                 System.out.println(
                         EscapeSequences.SET_TEXT_COLOR_GREEN +
                         "Successfully logged in as: " + requestArray[1] +
-                        EscapeSequences.RESET_TEXT_COLOR);
+                        EscapeSequences.SET_TEXT_COLOR_WHITE);
             }
         }
         return loggedIn;
@@ -73,12 +80,15 @@ public class PreLoginREPL {
                         "quit" +
                 EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
                         ": close chess application\n" +
-                EscapeSequences.RESET_TEXT_COLOR);
+                EscapeSequences.SET_TEXT_COLOR_WHITE);
     }
 
     private boolean login(String[] requestArray) {
         if (requestArray.length != 3) {
-            System.out.println("incorrect number of arguments given");
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                    "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
         ServerFacade facade = new ServerFacade();
@@ -88,7 +98,10 @@ public class PreLoginREPL {
 
     private boolean register(String[] requestArray) {
         if (requestArray.length != 4) {
-            System.out.println("incorrect number of arguments given");
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                    "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
         ServerFacade facade = new ServerFacade();
@@ -97,9 +110,20 @@ public class PreLoginREPL {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_GREEN +
                     "Successfully registered account!" +
-                    EscapeSequences.RESET_TEXT_COLOR);
+                    EscapeSequences.SET_TEXT_COLOR_WHITE);
         }
         return !authToken.isEmpty();
+    }
+
+    private boolean quit(String[] requestArray) {
+        if (requestArray.length != 1) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return false;
+        }
+        return true;
     }
 
     public String getAuthToken() {

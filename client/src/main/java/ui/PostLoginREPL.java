@@ -15,7 +15,7 @@ public class PostLoginREPL {
         String method = "bacon cheeseburger";
 
         help();
-        while (!method.equals("logout") && !joinedGame) {
+        while (loggedIn && !joinedGame) {
             System.out.println("What would you like to do ROUND TWO? ");
             Scanner scanner = new Scanner(System.in);
             String request = scanner.nextLine();
@@ -24,11 +24,15 @@ public class PostLoginREPL {
 
             switch (method) {
                 case "help" -> help();
-                case "logout" -> logout(authToken);
+                case "logout" -> loggedIn = logout(requestArray, authToken);
                 case "createGame" -> createGame(requestArray);
-                case "list" -> listGames();
-                case "join" -> joinedGame = playGame();
-                case "observer" -> joinedGame = observeGame();
+                case "list" -> listGames(requestArray);
+                case "join" -> joinedGame = joinGame(requestArray, authToken);
+                case "observe" -> joinedGame = observeGame(requestArray);
+                default -> System.out.println(
+                        EscapeSequences.SET_TEXT_COLOR_RED +
+                                "error: invalid command given - use \"help\" for a list of available commands and usages" +
+                                EscapeSequences.SET_TEXT_COLOR_WHITE);
             }
         }
         return joinedGame;
@@ -86,40 +90,75 @@ public class PostLoginREPL {
         System.out.println("   note: the gameID is the number to the left of the chess game when using the \"list\" command\n");
     }
 
-    private void logout(String authToken) {
+    private boolean logout(String[] requestArray, String authToken) {
+        if (requestArray.length != 1) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return true;
+        }
         ServerFacade facade = new ServerFacade();
 
         facade.logout();
         System.out.println(
                 EscapeSequences.SET_TEXT_COLOR_GREEN +
                         "Successfully logged out" +
-                        EscapeSequences.RESET_TEXT_COLOR);
-        loggedIn = false;
+                        EscapeSequences.SET_TEXT_COLOR_WHITE);
+        return false;
     }
 
     private void createGame(String[] requestArray) {
+        if (requestArray.length != 2) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return;
+        }
         ServerFacade facade = new ServerFacade();
 
         facade.createGame();
     }
 
-    private void listGames() {
+    private void listGames(String[] requestArray) {
+        if (requestArray.length != 1) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return;
+        }
         ServerFacade facade = new ServerFacade();
 
         recentGameArray = facade.listGames();
     }
 
-    private boolean playGame() {
+    private boolean joinGame(String[] requestArray, String authToken) {
+        if (requestArray.length != 3) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return false;
+        }
         ServerFacade facade = new ServerFacade();
 
         facade.joinGame();
-        return false;
+        return true;
     }
 
-    private boolean observeGame() {
+    private boolean observeGame(String[] requestArray) {
+        if (requestArray.length != 2) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return false;
+        }
         ServerFacade facade = new ServerFacade();
         facade.observeGame();
-        return false;
+        return true;
     }
 
     public boolean getLoggedIn() {

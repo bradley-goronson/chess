@@ -9,7 +9,7 @@ public class Main {
                 EscapeSequences.SET_TEXT_COLOR_WHITE +
                 EscapeSequences.SET_TEXT_BOLD +
                 "♖♘♗♔ BYU CS 240 Chess Client ♕♗♘♖" +
-                EscapeSequences.RESET_TEXT_COLOR);
+                EscapeSequences.SET_TEXT_COLOR_WHITE);
 
         boolean quit = false;
         while (!quit) {
