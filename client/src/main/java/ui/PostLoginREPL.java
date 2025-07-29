@@ -1,6 +1,7 @@
 package ui;
 
 import model.GameData;
+import server.ResponseException;
 import server.ServerFacade;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class PostLoginREPL {
     boolean loggedIn = true;
     ArrayList<GameData> recentGameArray = new ArrayList<>();
 
-    public boolean repl(String authToken) {
+    public boolean repl(String authToken) throws ResponseException {
         String method = "bacon cheeseburger";
 
         help();
@@ -90,7 +91,7 @@ public class PostLoginREPL {
         System.out.println("   note: the gameID is the number to the left of the chess game when using the \"list\" command\n");
     }
 
-    private boolean logout(String[] requestArray, String authToken) {
+    private boolean logout(String[] requestArray, String authToken) throws ResponseException {
         if (requestArray.length != 1) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
@@ -100,7 +101,7 @@ public class PostLoginREPL {
         }
         ServerFacade facade = new ServerFacade("blank");
 
-        facade.logout();
+        facade.logout(authToken);
         System.out.println(
                 EscapeSequences.SET_TEXT_COLOR_GREEN +
                         "Successfully logged out" +

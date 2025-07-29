@@ -6,8 +6,7 @@ import server.Server;
 import server.ServerFacade;
 import server.clear.ClearService;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -56,7 +55,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void successfullyLogin() {
+    public void successfullyLoginGivenCorrectPassword() {
         ServerFacade facade = new ServerFacade(serverURL);
         String authToken = null;
         try {
@@ -79,5 +78,34 @@ public class ServerFacadeTests {
             System.out.println(e.getMessage());
         }
         assertNull(authToken);
+    }
+
+    @Test
+    public void successfullyLogoutGivenValidAuthToken() {
+        ServerFacade facade = new ServerFacade(serverURL);
+        String authToken = null;
+        try {
+            authToken = facade.register("bradle", "goron", "bg@gmail.com");
+            facade.logout(authToken);
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+            assert(false);
+        }
+    }
+
+    @Test
+    public void failToLogoutGivenInvalidAuthToken() {
+        ServerFacade facade = new ServerFacade(serverURL);
+        String authToken = null;
+        int finalStatusCode = -1;
+        try {
+            authToken = facade.register("bradle", "goron", "bg@gmail.com");
+            facade.logout("wrong");
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+            finalStatusCode = e.getStatusCode();
+        }
+        assertNotNull(authToken);
+        assertEquals(401, finalStatusCode);
     }
 }

@@ -19,18 +19,18 @@ public class ServerFacade {
 
     public String register(String username, String password, String email) throws ResponseException {
         ClientRegisterRequest request = new ClientRegisterRequest(username, password, email);
-        AuthData authData = makeRequest("POST", "/user", request, AuthData.class);
+        AuthData authData = makeRequest("POST", "/user", request, AuthData.class, null);
         return authData.authToken();
     }
 
     public String login(String username, String password) throws ResponseException {
         ClientLoginRequest request = new ClientLoginRequest(username, password);
-        AuthData authData = makeRequest("POST", "/session", request, AuthData.class);
+        AuthData authData = makeRequest("POST", "/session", request, AuthData.class, null);
         return authData.authToken();
     }
 
-    public void logout() {
-
+    public void logout(String authToken) throws ResponseException {
+        makeRequest("DELETE", "/session", null, null, authToken);
     }
 
     public ArrayList<GameData> listGames() {
@@ -51,13 +51,14 @@ public class ServerFacade {
 
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException{
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException{
         try {
             URL url = (new URI(serverURL + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
+            http.setRequestProperty("authorization", authToken);
             writeBody(request, http);
             http.connect();
             throwIfUnsuccessful(http);
