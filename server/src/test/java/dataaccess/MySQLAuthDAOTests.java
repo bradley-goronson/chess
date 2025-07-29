@@ -216,9 +216,9 @@ public class MySQLAuthDAOTests extends MySQLDAOTests {
         String username2 = "bradle2";
         MySQLAuthDAO authDAO = new MySQLAuthDAO();
 
-        int initialUserCount = -1;
+        int initialAuthCount = -1;
         try {
-            initialUserCount = authDAO.size();
+            initialAuthCount = authDAO.size();
         } catch (DataAccessException ex) {
             System.out.println("size error");
         }
@@ -236,7 +236,7 @@ public class MySQLAuthDAOTests extends MySQLDAOTests {
             throw new RuntimeException(e);
         }
 
-        assertEquals(0, initialUserCount);
+        assertEquals(0, initialAuthCount);
         assertEquals(2, newUserCount);
     }
 }

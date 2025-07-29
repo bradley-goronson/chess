@@ -9,44 +9,48 @@ public class PreLoginREPL {
     private boolean loggedIn = false;
     private boolean quit = false;
     private String authToken = "";
-    private String serverURL = "http://localhost:8080";
+    private final String serverURL = "http://localhost:8080";
 
-    public boolean repl() throws ResponseException {
+    public boolean repl() {
         String method = "mint chocolate chip ice cream";
 
-        help();
-        while (!method.equals("quit") && !loggedIn) {
-            System.out.println("What would you like to do? ");
-            Scanner scanner = new Scanner(System.in);
-            String request = scanner.nextLine();
-            String[] requestArray = request.split(" ");
-            method = requestArray[0];
+        try {
+            help();
+            while (!method.equals("quit") && !loggedIn) {
+                System.out.println("What would you like to do? ");
+                Scanner scanner = new Scanner(System.in);
+                String request = scanner.nextLine();
+                String[] requestArray = request.split(" ");
+                method = requestArray[0];
 
-            switch (method) {
-                case "help" -> help();
-                case "register" -> loggedIn = register(requestArray);
-                case "login" -> loggedIn = login(requestArray);
-                case "quit" -> quit = quit(requestArray);
-                default -> System.out.println(
-                        EscapeSequences.SET_TEXT_COLOR_RED +
-                        "error: invalid command given - use \"help\" for a list of available commands and usages" +
-                        EscapeSequences.SET_TEXT_COLOR_WHITE);
-            }
+                switch (method) {
+                    case "help" -> help();
+                    case "register" -> loggedIn = register(requestArray);
+                    case "login" -> loggedIn = login(requestArray);
+                    case "quit" -> quit = quit(requestArray);
+                    default -> System.out.println(
+                            EscapeSequences.SET_TEXT_COLOR_RED +
+                                    "error: invalid command given - use \"help\" for a list of available commands and usages" +
+                                    EscapeSequences.SET_TEXT_COLOR_WHITE);
+                }
 
-            if (quit) {
-                System.out.println(
-                        "Quitting application..." +
-                        EscapeSequences.SET_TEXT_COLOR_GREEN +
-                        "Done" +
-                        EscapeSequences.SET_TEXT_COLOR_WHITE);
-            }
+                if (quit) {
+                    System.out.println(
+                            "Quitting application..." +
+                                    EscapeSequences.SET_TEXT_COLOR_GREEN +
+                                    "Done" +
+                                    EscapeSequences.SET_TEXT_COLOR_WHITE);
+                }
 
-            if (loggedIn) {
-                System.out.println(
-                        EscapeSequences.SET_TEXT_COLOR_GREEN +
-                        "Successfully logged in as: " + requestArray[1] +
-                        EscapeSequences.SET_TEXT_COLOR_WHITE);
+                if (loggedIn) {
+                    System.out.println(
+                            EscapeSequences.SET_TEXT_COLOR_GREEN +
+                                    "Successfully logged in as: " + requestArray[1] +
+                                    EscapeSequences.SET_TEXT_COLOR_WHITE);
+                }
             }
+        } catch (ResponseException e) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + e.getMessage() + EscapeSequences.SET_TEXT_COLOR_WHITE);
         }
         return loggedIn;
     }

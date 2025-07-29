@@ -15,29 +15,36 @@ public class PostLoginREPL {
     String serverURL = "http://localhost:8080";
     ArrayList<GameData> recentGameArray = new ArrayList<>();
 
-    public boolean repl(String authToken) throws ResponseException {
+    public boolean repl(String authToken) {
         String method;
 
-        help();
-        while (loggedIn && !joinedGame) {
-            System.out.println("What would you like to do? ");
-            Scanner scanner = new Scanner(System.in);
-            String request = scanner.nextLine();
-            String[] requestArray = request.split(" ");
-            method = requestArray[0];
+        try {
+            help();
+            while (loggedIn && !joinedGame) {
+                System.out.println("What would you like to do? ");
+                Scanner scanner = new Scanner(System.in);
+                String request = scanner.nextLine();
+                String[] requestArray = request.split(" ");
+                method = requestArray[0];
 
-            switch (method) {
-                case "help" -> help();
-                case "logout" -> loggedIn = logout(requestArray, authToken);
-                case "createGame" -> createGame(requestArray, authToken);
-                case "list" -> recentGameArray = listGames(requestArray, authToken);
-                case "join" -> joinedGame = joinGame(requestArray, authToken);
-                case "observe" -> joinedGame = observeGame(requestArray);
-                default -> System.out.println(
-                        EscapeSequences.SET_TEXT_COLOR_RED +
-                                "error: invalid command given - use \"help\" for a list of available commands and usages" +
-                                EscapeSequences.SET_TEXT_COLOR_WHITE);
+                switch (method) {
+                    case "help" -> help();
+                    case "logout" -> loggedIn = logout(requestArray, authToken);
+                    case "create" -> createGame(requestArray, authToken);
+                    case "list" -> recentGameArray = listGames(requestArray, authToken);
+                    case "join" -> joinedGame = joinGame(requestArray, authToken);
+                    case "observe" -> joinedGame = observeGame(requestArray);
+                    default -> System.out.println(
+                            EscapeSequences.SET_TEXT_COLOR_RED +
+                                    "error: invalid command given - use \"help\" for a list of available commands and usages" +
+                                    EscapeSequences.SET_TEXT_COLOR_WHITE);
+                }
             }
+        } catch (ResponseException e) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                    "response error" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE);
         }
         return joinedGame;
     }
@@ -87,7 +94,7 @@ public class PostLoginREPL {
 
         System.out.println(
                 EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
-                        "observer" +
+                        "observe" +
                         EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
                         ": observe the indicated chess game as a spectator"
         );
@@ -121,8 +128,17 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return;
         }
-        ServerFacade facade = new ServerFacade(serverURL);
-        facade.createGame(requestArray[1], authToken);
+        try {
+            ServerFacade facade = new ServerFacade(serverURL);
+            facade.createGame(requestArray[1], authToken);
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_GREEN +
+                "Successfully created game: " + requestArray[1] +
+                EscapeSequences.SET_TEXT_COLOR_WHITE);
     }
 
     private ArrayList<GameData> listGames(String[] requestArray, String authToken) throws ResponseException {
@@ -136,14 +152,23 @@ public class PostLoginREPL {
         ServerFacade facade = new ServerFacade(serverURL);
 
         recentGameArray = facade.listGames(authToken);
-
-        for (int i = 1; i < recentGameArray.size(); i++) {
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully fetched games");
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_WHITE +
+                EscapeSequences.SET_TEXT_UNDERLINE +
+                "Active Chess Games" +
+                EscapeSequences.RESET_TEXT_UNDERLINE);
+        if (recentGameArray.isEmpty()) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + "No active games" + EscapeSequences.SET_TEXT_COLOR_WHITE + "\n");
+        }
+        for (int i = 1; i <= recentGameArray.size(); i++) {
             GameData currentGame = recentGameArray.get(i - 1);
             System.out.println(
-                    i + ")" + currentGame.gameName() + " - " +
+                    i + ") " + currentGame.gameName() + " - " +
                     "white player: " + currentGame.whiteUsername() +
-                    "blue player" + currentGame.blackUsername() + "\n");
+                    ", black player: " + currentGame.blackUsername());
         }
+        System.out.println("\n");
         return recentGameArray;
     }
 
@@ -151,13 +176,36 @@ public class PostLoginREPL {
         if (requestArray.length != 3) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
-                            "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                            "error: incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        ServerFacade facade = new ServerFacade(serverURL);
 
+        if (!requestArray[2].equals("WHITE") && !requestArray[2].equals("BLACK")) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            "error: invalid color given - must provide either \"WHITE\" or \"BLACK\" in all capital letters" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return false;
+        }
+
+        try {
+            int requestedIndex = Integer.parseInt(requestArray[1]) - 1;
+            recentGameArray.get(requestedIndex);
+        } catch (NumberFormatException ex) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            "error: invalid gameID" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "invalid gameID" + EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return false;
+        }
+
+        ServerFacade facade = new ServerFacade(serverURL);
         facade.joinGame(requestArray[1], requestArray[2], authToken);
+
+        printBoard(requestArray[2].equals("WHITE"));
         return true;
     }
 
@@ -171,7 +219,7 @@ public class PostLoginREPL {
         }
         int requestedIndex = Integer.parseInt(requestArray[1]) - 1;
         try {
-            GameData requestedGame = recentGameArray.get(requestedIndex);
+            recentGameArray.get(requestedIndex);
         } catch (IndexOutOfBoundsException e) {
             System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "invalid gameID" + EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
