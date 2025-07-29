@@ -23,11 +23,10 @@ public class ServerFacade {
         return authData.authToken();
     }
 
-    public String login(String username, String password) {
-        String authToken = "null";
-
-
-        return authToken;
+    public String login(String username, String password) throws ResponseException {
+        ClientLoginRequest request = new ClientLoginRequest(username, password);
+        AuthData authData = makeRequest("POST", "/session", request, AuthData.class);
+        return authData.authToken();
     }
 
     public void logout() {

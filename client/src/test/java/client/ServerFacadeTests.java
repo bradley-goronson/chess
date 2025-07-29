@@ -54,4 +54,30 @@ public class ServerFacadeTests {
         }
         assertNull(authToken);
     }
+
+    @Test
+    public void successfullyLogin() {
+        ServerFacade facade = new ServerFacade(serverURL);
+        String authToken = null;
+        try {
+            facade.register("bradle", "goron", "bg@gmail.com");
+            authToken = facade.login("bradle", "goron");
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        assertNotNull(authToken);
+    }
+
+    @Test
+    public void failToLoginGivenWrongPassword() {
+        ServerFacade facade = new ServerFacade(serverURL);
+        String authToken = null;
+        try {
+            facade.register("bradle", "goron", "bg@gmail.com");
+            authToken = facade.login("bradle", "boron");
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        assertNull(authToken);
+    }
 }

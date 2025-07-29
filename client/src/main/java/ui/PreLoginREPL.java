@@ -84,7 +84,7 @@ public class PreLoginREPL {
                 EscapeSequences.SET_TEXT_COLOR_WHITE);
     }
 
-    private boolean login(String[] requestArray) {
+    private boolean login(String[] requestArray) throws ResponseException {
         if (requestArray.length != 3) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
