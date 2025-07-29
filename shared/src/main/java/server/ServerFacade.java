@@ -34,8 +34,8 @@ public class ServerFacade {
     }
 
     public ArrayList<GameData> listGames(String authToken) throws ResponseException {
-        record listGamesResponse(ArrayList<GameData> games) {}
-        listGamesResponse response = makeRequest("GET", "/game", null, listGamesResponse.class, authToken);
+        record ListGamesResponse(ArrayList<GameData> games) {}
+        ListGamesResponse response = makeRequest("GET", "/game", null, ListGamesResponse.class, authToken);
         return response.games;
     }
 

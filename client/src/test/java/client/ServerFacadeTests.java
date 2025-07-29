@@ -249,44 +249,4 @@ public class ServerFacadeTests {
         }
         assertEquals(403, finalStatusCode);
     }
-
-    @Test
-    public void successfullyObserveGame() {
-        ServerFacade facade = new ServerFacade(serverURL);
-        ArrayList<GameData> gamesArray;
-        String authToken;
-        GameData targetedGame = new GameData(-1, "white", "black", "cake", new ChessGame());
-        try {
-            authToken = facade.register("bradle", "goron", "test@test.com");
-            facade.createGame("game1", authToken);
-            facade.createGame("game2", authToken);
-            facade.joinGame("2", "WHITE", authToken);
-            gamesArray = facade.listGames(authToken);
-            targetedGame = gamesArray.get(1);
-        } catch (ResponseException e) {
-            System.out.println(e.getMessage());
-        }
-        assertEquals(2, targetedGame.gameID());
-        assertEquals("game2", targetedGame.gameName());
-        assertEquals("bradle", targetedGame.whiteUsername());
-        assertNull(targetedGame.blackUsername());
-    }
-
-    @Test
-    public void failToObserveGame() {
-        ServerFacade facade = new ServerFacade(serverURL);
-        String authToken;
-        int finalStatusCode = -1;
-        try {
-            authToken = facade.register("bradle", "goron", "test@test.com");
-            facade.createGame("game1", authToken);
-            facade.createGame("game2", authToken);
-            facade.joinGame("2", "WHITE", authToken);
-            facade.joinGame("2", "WHITE", authToken);
-        } catch (ResponseException e) {
-            System.out.println(e.getMessage());
-            finalStatusCode = e.getStatusCode();
-        }
-        assertEquals(403, finalStatusCode);
-    }
 }
