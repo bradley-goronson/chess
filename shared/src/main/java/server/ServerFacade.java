@@ -45,13 +45,9 @@ public class ServerFacade {
         return gameData.gameID();
     }
 
-    public void joinGame(String gameID, String color, String authToken) throws ResponseException {
-        ClientJoinGameRequest request = new ClientJoinGameRequest(gameID, color);
+    public void joinGame(String gameID, String playerColor, String authToken) throws ResponseException {
+        ClientJoinGameRequest request = new ClientJoinGameRequest(playerColor, gameID);
         makeRequest("PUT", "/game", request, null, authToken);
-    }
-
-    public void observeGame() {
-
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException{

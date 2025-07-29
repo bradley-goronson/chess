@@ -4,6 +4,8 @@ import model.GameData;
 import server.ResponseException;
 import server.ServerFacade;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -81,6 +83,7 @@ public class PostLoginREPL {
         );
         System.out.println("   usage: join <gameID> <playerColor>");
         System.out.println("   note: the gameID is the number to the left of the chess game when using the \"list\" command");
+        System.out.println("   note: the playerColor must be given in all caps, either WHITE or BLUE");
 
         System.out.println(
                 EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
@@ -166,12 +169,168 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        ServerFacade facade = new ServerFacade(serverURL);
-        facade.observeGame();
+        int requestedIndex = Integer.parseInt(requestArray[1]) - 1;
+        try {
+            GameData requestedGame = recentGameArray.get(requestedIndex);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "invalid gameID" + EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return false;
+        }
+        printBoard(true);
         return true;
     }
 
     public boolean getLoggedIn() {
         return loggedIn;
+    }
+
+    private void printBoard(boolean whitePerspective) {
+        PrintStream output = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+
+        String wp = EscapeSequences.SET_TEXT_COLOR_WHITE + "P";
+        String wr = EscapeSequences.SET_TEXT_COLOR_WHITE + "R";
+        String wn = EscapeSequences.SET_TEXT_COLOR_WHITE + "N";
+        String wb = EscapeSequences.SET_TEXT_COLOR_WHITE + "B";
+        String wq = EscapeSequences.SET_TEXT_COLOR_WHITE + "Q";
+        String wk = EscapeSequences.SET_TEXT_COLOR_WHITE + "K";
+
+        String bp = EscapeSequences.SET_TEXT_COLOR_BLACK + "P";
+        String br = EscapeSequences.SET_TEXT_COLOR_BLACK + "R";
+        String bn = EscapeSequences.SET_TEXT_COLOR_BLACK + "N";
+        String bb = EscapeSequences.SET_TEXT_COLOR_BLACK + "B";
+        String bq = EscapeSequences.SET_TEXT_COLOR_BLACK + "Q";
+        String bk = EscapeSequences.SET_TEXT_COLOR_BLACK + "K";
+
+        String[][] rowArray = {
+                {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "},
+                {"8", br, bn, bb, bq, bk, bb, bn, br, "8"},
+                {"7", bp, bp, bp, bp, bp, bp, bp, bp, "7"},
+                {"6", " ", " ", " ", " ", " ", " ", " ", " ", "6"},
+                {"5", " ", " ", " ", " ", " ", " ", " ", " ", "5"},
+                {"4", " ", " ", " ", " ", " ", " ", " ", " ", "4"},
+                {"3", " ", " ", " ", " ", " ", " ", " ", " ", "3"},
+                {"2", wp, wp, wp, wp, wp, wp, wp, wp, "2"},
+                {"1", wr, wn, wb, wq, wk, wb, wn, wr, "1"},
+                {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "}
+        };
+
+        if (whitePerspective) {
+            printWhiteBoard(rowArray, output);
+        } else {
+            printBlackBoard(rowArray, output);
+        }
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_WHITE + "\n");
+    }
+
+    private void printWhiteBoard(String[][] rowArray, PrintStream output) {
+        int rowNumber = 1;
+        for (String[] row : rowArray) {
+            printRow(output, row, rowNumber);
+            rowNumber++;
+        }
+    }
+
+    private void printBlackBoard(String[][] rowArray, PrintStream output) {
+        int rowNumber = 1;
+        for (int i = 10; i > 0; i--) {
+            String[] row = rowArray[i - 1];
+            if (rowNumber == 1 || rowNumber == 10) {
+                row = new String[] {" ", "h", "g", "f", "e", "d", "c", "b", "a", " "};
+            }
+            printRow(output, row, rowNumber);
+            rowNumber++;
+        }
+    }
+
+    private void printRow(PrintStream output, String[] row, int rowNumber) {
+        output.print(EscapeSequences.SET_BG_COLOR_MAGENTA);
+        output.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA);
+
+        if (rowNumber == 1 || rowNumber == 10) {
+            printEdge(output, row);
+        } else if (rowNumber % 2 == 0) {
+            printEvenRow(output, row);
+        } else {
+            printOddRow(output, row);
+        }
+        output.print(EscapeSequences.SET_BG_COLOR_BLACK + "\n");
+    }
+
+    private void printEdge(PrintStream output, String[] row) {
+        for (String letter : row) {
+            output.print(" ");
+            output.print(EscapeSequences.SET_TEXT_COLOR_YELLOW);
+            output.print(letter);
+            output.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA);
+            output.print(" ");
+        }
+    }
+
+    private void printEvenRow(PrintStream output, String[] row) {
+        int tileNumber = 1;
+        String backgroundColor;
+        String textColor;
+
+        for (String letter : row) {
+            if (tileNumber == 1 || tileNumber == 10) {
+                backgroundColor = EscapeSequences.SET_BG_COLOR_MAGENTA;
+                textColor = EscapeSequences.SET_TEXT_COLOR_YELLOW;
+            } else if (tileNumber % 2 == 0) {
+                backgroundColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+                if (!letter.equals(EscapeSequences.EMPTY)) {
+                    textColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
+                } else {
+                    textColor = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+                }
+            } else {
+                backgroundColor = EscapeSequences.SET_BG_COLOR_BLUE;
+                if (!letter.equals(EscapeSequences.EMPTY)) {
+                    textColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
+                } else {
+                    textColor = EscapeSequences.SET_TEXT_COLOR_BLUE;
+                }
+            }
+
+            output.print(backgroundColor);
+            output.print(" ");
+            output.print(textColor);
+            output.print(letter);
+            output.print(" ");
+            tileNumber++;
+        }
+    }
+
+    private void printOddRow(PrintStream output, String[] row) {
+        int tileNumber = 1;
+        String backgroundColor;
+        String textColor;
+
+        for (String letter : row) {
+            if (tileNumber == 1 || tileNumber == 10) {
+                backgroundColor = EscapeSequences.SET_BG_COLOR_MAGENTA;
+                textColor = EscapeSequences.SET_TEXT_COLOR_YELLOW;
+            } else if (tileNumber % 2 == 0) {
+                backgroundColor = EscapeSequences.SET_BG_COLOR_BLUE;
+                if (!letter.equals(EscapeSequences.EMPTY)) {
+                    textColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
+                } else {
+                    textColor = EscapeSequences.SET_TEXT_COLOR_BLUE;
+                }
+            } else {
+                backgroundColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+                if (!letter.equals(EscapeSequences.EMPTY)) {
+                    textColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
+                } else {
+                    textColor = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+                }
+            }
+
+            output.print(backgroundColor);
+            output.print(" ");
+            output.print(textColor);
+            output.print(letter);
+            output.print(" ");
+            tileNumber++;
+        }
     }
 }
