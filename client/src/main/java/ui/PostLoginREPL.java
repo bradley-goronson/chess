@@ -193,7 +193,7 @@ public class PostLoginREPL {
         }
 
         try {
-            int requestedIndex = Integer.parseInt(requestArray[1]);
+            int requestedIndex = Integer.parseInt(requestArray[1]) - 1;
             recentGameArray.get(requestedIndex);
         } catch (NumberFormatException e) {
             throw new ResponseException(400, "Error: bad request - must provide gameID before color and gameID must be a number");
@@ -218,7 +218,7 @@ public class PostLoginREPL {
         }
 
         try {
-            int requestedIndex = Integer.parseInt(requestArray[1]);
+            int requestedIndex = Integer.parseInt(requestArray[1]) - 1;
             recentGameArray.get(requestedIndex);
         } catch (NumberFormatException e) {
             throw new ResponseException(400, "Error: bad request - must provide gameID before color and gameID must be a number");
@@ -286,6 +286,14 @@ public class PostLoginREPL {
             String[] row = rowArray[i - 1];
             if (rowNumber == 1 || rowNumber == 10) {
                 row = new String[] {" ", "h", "g", "f", "e", "d", "c", "b", "a", " "};
+            }
+            if (rowNumber == 2) {
+                row[4] = EscapeSequences.SET_TEXT_COLOR_WHITE + "K";
+                row[5] = EscapeSequences.SET_TEXT_COLOR_WHITE + "Q";
+            }
+            if (rowNumber == 9) {
+                row[4] = EscapeSequences.SET_TEXT_COLOR_BLACK + "K";
+                row[5] = EscapeSequences.SET_TEXT_COLOR_BLACK + "Q";
             }
             printRow(output, row, rowNumber);
             rowNumber++;
