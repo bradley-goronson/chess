@@ -26,12 +26,13 @@ public class PostLoginREPL {
                 String request = scanner.nextLine();
                 String[] requestArray = request.split(" ");
                 method = requestArray[0];
+                recentGameArray = listGames(requestArray, authToken, false);
 
                 switch (method) {
                     case "help" -> help();
                     case "logout" -> loggedIn = logout(requestArray, authToken);
                     case "create" -> createGame(requestArray, authToken);
-                    case "list" -> recentGameArray = listGames(requestArray, authToken);
+                    case "list" -> recentGameArray = listGames(requestArray, authToken, true);
                     case "join" -> joinedGame = joinGame(requestArray, authToken);
                     case "observe" -> joinedGame = observeGame(requestArray);
                     default -> System.out.println(
@@ -43,7 +44,7 @@ public class PostLoginREPL {
         } catch (ResponseException e) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
-                    "response error" +
+                    e.getMessage() +
                     EscapeSequences.SET_TEXT_COLOR_WHITE);
         }
         return joinedGame;
@@ -81,6 +82,7 @@ public class PostLoginREPL {
                         EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
                         ": display a list of all active chess games"
         );
+
 
         System.out.println(
                 EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
@@ -141,8 +143,8 @@ public class PostLoginREPL {
                 EscapeSequences.SET_TEXT_COLOR_WHITE);
     }
 
-    private ArrayList<GameData> listGames(String[] requestArray, String authToken) throws ResponseException {
-        if (requestArray.length != 1) {
+    private ArrayList<GameData> listGames(String[] requestArray, String authToken, boolean willDisplay) throws ResponseException {
+        if (requestArray.length != 1 && willDisplay) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
                             "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
@@ -150,25 +152,26 @@ public class PostLoginREPL {
             return recentGameArray;
         }
         ServerFacade facade = new ServerFacade(serverURL);
-
         recentGameArray = facade.listGames(authToken);
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully fetched games");
-        System.out.println(
-                EscapeSequences.SET_TEXT_COLOR_WHITE +
-                EscapeSequences.SET_TEXT_UNDERLINE +
-                "Active Chess Games" +
-                EscapeSequences.RESET_TEXT_UNDERLINE);
-        if (recentGameArray.isEmpty()) {
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + "No active games" + EscapeSequences.SET_TEXT_COLOR_WHITE + "\n");
-        }
-        for (int i = 1; i <= recentGameArray.size(); i++) {
-            GameData currentGame = recentGameArray.get(i - 1);
+        if (willDisplay) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully fetched games");
             System.out.println(
-                    i + ") " + currentGame.gameName() + " - " +
-                    "white player: " + currentGame.whiteUsername() +
-                    ", black player: " + currentGame.blackUsername());
+                    EscapeSequences.SET_TEXT_COLOR_WHITE +
+                            EscapeSequences.SET_TEXT_UNDERLINE +
+                            "Active Chess Games" +
+                            EscapeSequences.RESET_TEXT_UNDERLINE);
+            if (recentGameArray.isEmpty()) {
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + "No active games" + EscapeSequences.SET_TEXT_COLOR_WHITE + "\n");
+            }
+            for (int i = 1; i <= recentGameArray.size(); i++) {
+                GameData currentGame = recentGameArray.get(i - 1);
+                System.out.println(
+                        i + ") " + currentGame.gameName() + " - " +
+                                "white player: " + currentGame.whiteUsername() +
+                                ", black player: " + currentGame.blackUsername());
+            }
+            System.out.println("\n");
         }
-        System.out.println("\n");
         return recentGameArray;
     }
 
@@ -178,27 +181,6 @@ public class PostLoginREPL {
                     EscapeSequences.SET_TEXT_COLOR_RED +
                             "error: incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
-            return false;
-        }
-
-        if (!requestArray[2].equals("WHITE") && !requestArray[2].equals("BLACK")) {
-            System.out.println(
-                    EscapeSequences.SET_TEXT_COLOR_RED +
-                            "error: invalid color given - must provide either \"WHITE\" or \"BLACK\" in all capital letters" +
-                            EscapeSequences.SET_TEXT_COLOR_WHITE);
-            return false;
-        }
-
-        try {
-            int requestedIndex = Integer.parseInt(requestArray[1]) - 1;
-            recentGameArray.get(requestedIndex);
-        } catch (NumberFormatException ex) {
-            System.out.println(
-                    EscapeSequences.SET_TEXT_COLOR_RED +
-                            "error: invalid gameID" +
-                            EscapeSequences.SET_TEXT_COLOR_WHITE);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "invalid gameID" + EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
 
