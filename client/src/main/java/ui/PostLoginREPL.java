@@ -184,7 +184,7 @@ public class PostLoginREPL {
             return false;
         }
 
-        if (!requestArray[1].equals("WHITE") && !requestArray[1].equals("BLACK")) {
+        if (!requestArray[2].equals("WHITE") && !requestArray[2].equals("BLACK")) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
                             "Error: color must be either \"WHITE\" or \"BLACK\" in all capital letters" +
