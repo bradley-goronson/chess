@@ -179,9 +179,26 @@ public class PostLoginREPL {
         if (requestArray.length != 3) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
-                            "error: incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                            "Error: incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
+        }
+
+        if (!requestArray[1].equals("WHITE") && !requestArray[1].equals("BLACK")) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            "Error: color must be either \"WHITE\" or \"BLACK\" in all capital letters" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return false;
+        }
+
+        try {
+            int requestedIndex = Integer.parseInt(requestArray[1]);
+            recentGameArray.get(requestedIndex);
+        } catch (NumberFormatException e) {
+            throw new ResponseException(400, "Error: bad request - must provide gameID before color and gameID must be a number");
+        } catch (IndexOutOfBoundsException ex) {
+            throw new ResponseException(400, "Error: invalid gameID");
         }
 
         ServerFacade facade = new ServerFacade(serverURL);
@@ -191,7 +208,7 @@ public class PostLoginREPL {
         return true;
     }
 
-    private boolean observeGame(String[] requestArray) {
+    private boolean observeGame(String[] requestArray) throws ResponseException {
         if (requestArray.length != 2) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
@@ -199,13 +216,16 @@ public class PostLoginREPL {
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }
-        int requestedIndex = Integer.parseInt(requestArray[1]) - 1;
+
         try {
+            int requestedIndex = Integer.parseInt(requestArray[1]);
             recentGameArray.get(requestedIndex);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "invalid gameID" + EscapeSequences.SET_TEXT_COLOR_WHITE);
-            return false;
+        } catch (NumberFormatException e) {
+            throw new ResponseException(400, "Error: bad request - must provide gameID before color and gameID must be a number");
+        } catch (IndexOutOfBoundsException ex) {
+            throw new ResponseException(400, "Error: invalid gameID");
         }
+
         printBoard(true);
         return true;
     }
@@ -298,32 +318,24 @@ public class PostLoginREPL {
 
     private void printEvenRow(PrintStream output, String[] row) {
         int tileNumber = 1;
-        String backgroundColor;
-        String textColor;
+        String trueBackgroundColor;
+        String trueTextColor;
 
         for (String letter : row) {
             if (tileNumber == 1 || tileNumber == 10) {
-                backgroundColor = EscapeSequences.SET_BG_COLOR_MAGENTA;
-                textColor = EscapeSequences.SET_TEXT_COLOR_YELLOW;
+                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_MAGENTA;
+                trueTextColor = EscapeSequences.SET_TEXT_COLOR_YELLOW;
             } else if (tileNumber % 2 == 0) {
-                backgroundColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
-                if (!letter.equals(EscapeSequences.EMPTY)) {
-                    textColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
-                } else {
-                    textColor = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
-                }
+                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+                trueTextColor = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
             } else {
-                backgroundColor = EscapeSequences.SET_BG_COLOR_BLUE;
-                if (!letter.equals(EscapeSequences.EMPTY)) {
-                    textColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
-                } else {
-                    textColor = EscapeSequences.SET_TEXT_COLOR_BLUE;
-                }
+                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_BLUE;
+                trueTextColor = EscapeSequences.SET_TEXT_COLOR_BLUE;
             }
 
-            output.print(backgroundColor);
+            output.print(trueBackgroundColor);
             output.print(" ");
-            output.print(textColor);
+            output.print(trueTextColor);
             output.print(letter);
             output.print(" ");
             tileNumber++;
@@ -332,32 +344,27 @@ public class PostLoginREPL {
 
     private void printOddRow(PrintStream output, String[] row) {
         int tileNumber = 1;
-        String backgroundColor;
-        String textColor;
+        String trueBackgroundColor;
+        String trueTextColor;
+
 
         for (String letter : row) {
             if (tileNumber == 1 || tileNumber == 10) {
-                backgroundColor = EscapeSequences.SET_BG_COLOR_MAGENTA;
-                textColor = EscapeSequences.SET_TEXT_COLOR_YELLOW;
-            } else if (tileNumber % 2 == 0) {
-                backgroundColor = EscapeSequences.SET_BG_COLOR_BLUE;
-                if (!letter.equals(EscapeSequences.EMPTY)) {
-                    textColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
-                } else {
-                    textColor = EscapeSequences.SET_TEXT_COLOR_BLUE;
-                }
-            } else {
-                backgroundColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
-                if (!letter.equals(EscapeSequences.EMPTY)) {
-                    textColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
-                } else {
-                    textColor = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
-                }
-            }
+                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_MAGENTA;
+                trueTextColor = EscapeSequences.SET_TEXT_COLOR_YELLOW;
 
-            output.print(backgroundColor);
+            } else if (tileNumber % 2 == 0) {
+                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_BLUE;
+                trueTextColor = EscapeSequences.SET_TEXT_COLOR_BLUE;
+
+            } else {
+                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+                trueTextColor = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+                }
+
+            output.print(trueBackgroundColor);
             output.print(" ");
-            output.print(textColor);
+            output.print(trueTextColor);
             output.print(letter);
             output.print(" ");
             tileNumber++;
