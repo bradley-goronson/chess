@@ -1,5 +1,5 @@
 import ui.EscapeSequences;
-import ui.GamePlayUI;
+import ui.GamePlayREPL;
 import ui.PostLoginREPL;
 import ui.PreLoginREPL;
 
@@ -22,10 +22,9 @@ public class Main {
                 authToken = preLogin.getAuthToken();
                 PostLoginREPL postLogin = new PostLoginREPL();
                 boolean joinedGame = postLogin.repl(authToken);
-
                 if (joinedGame) {
-                    GamePlayUI gamePlay = new GamePlayUI();
-                    gamePlay.play();
+                    GamePlayREPL gamePlay = new GamePlayREPL();
+                    gamePlay.play(postLogin.getCurrentGameData(), postLogin.getWhitePerspective());
                 }
                 loggedIn = postLogin.getLoggedIn();
             }

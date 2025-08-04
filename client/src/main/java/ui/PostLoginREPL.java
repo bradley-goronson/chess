@@ -4,15 +4,15 @@ import model.GameData;
 import server.ResponseException;
 import server.ServerFacade;
 
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class PostLoginREPL {
+    String serverURL = "http://localhost:8080";
     boolean joinedGame = false;
     boolean loggedIn = true;
-    String serverURL = "http://localhost:8080";
+    boolean whitePerspective = true;
+    GameData currentGameData = null;
     ArrayList<GameData> recentGameArray = new ArrayList<>();
 
     public boolean repl(String authToken) {
@@ -194,7 +194,7 @@ public class PostLoginREPL {
 
         try {
             int requestedIndex = Integer.parseInt(requestArray[1]) - 1;
-            recentGameArray.get(requestedIndex);
+            currentGameData = recentGameArray.get(requestedIndex);
         } catch (NumberFormatException e) {
             throw new ResponseException(400, "Error: bad request - must provide gameID before color and gameID must be a number");
         } catch (IndexOutOfBoundsException ex) {
@@ -204,7 +204,7 @@ public class PostLoginREPL {
         ServerFacade facade = new ServerFacade(serverURL);
         facade.joinGame(requestArray[1], requestArray[2], authToken);
 
-        printBoard(requestArray[2].equals("WHITE"));
+        whitePerspective = requestArray[2].equals("WHITE");
         return true;
     }
 
@@ -219,14 +219,14 @@ public class PostLoginREPL {
 
         try {
             int requestedIndex = Integer.parseInt(requestArray[1]) - 1;
-            recentGameArray.get(requestedIndex);
+            currentGameData = recentGameArray.get(requestedIndex);
         } catch (NumberFormatException e) {
             throw new ResponseException(400, "Error: bad request - must provide gameID before color and gameID must be a number");
         } catch (IndexOutOfBoundsException ex) {
             throw new ResponseException(400, "Error: invalid gameID");
         }
 
-        printBoard(true);
+        whitePerspective = true;
         return true;
     }
 
@@ -234,148 +234,11 @@ public class PostLoginREPL {
         return loggedIn;
     }
 
-    private void printBoard(boolean whitePerspective) {
-        PrintStream output = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-
-        String wp = EscapeSequences.SET_TEXT_COLOR_WHITE + "P";
-        String wr = EscapeSequences.SET_TEXT_COLOR_WHITE + "R";
-        String wn = EscapeSequences.SET_TEXT_COLOR_WHITE + "N";
-        String wb = EscapeSequences.SET_TEXT_COLOR_WHITE + "B";
-        String wq = EscapeSequences.SET_TEXT_COLOR_WHITE + "Q";
-        String wk = EscapeSequences.SET_TEXT_COLOR_WHITE + "K";
-
-        String bp = EscapeSequences.SET_TEXT_COLOR_BLACK + "P";
-        String br = EscapeSequences.SET_TEXT_COLOR_BLACK + "R";
-        String bn = EscapeSequences.SET_TEXT_COLOR_BLACK + "N";
-        String bb = EscapeSequences.SET_TEXT_COLOR_BLACK + "B";
-        String bq = EscapeSequences.SET_TEXT_COLOR_BLACK + "Q";
-        String bk = EscapeSequences.SET_TEXT_COLOR_BLACK + "K";
-
-        String[][] rowArray = {
-                {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "},
-                {"8", br, bn, bb, bq, bk, bb, bn, br, "8"},
-                {"7", bp, bp, bp, bp, bp, bp, bp, bp, "7"},
-                {"6", " ", " ", " ", " ", " ", " ", " ", " ", "6"},
-                {"5", " ", " ", " ", " ", " ", " ", " ", " ", "5"},
-                {"4", " ", " ", " ", " ", " ", " ", " ", " ", "4"},
-                {"3", " ", " ", " ", " ", " ", " ", " ", " ", "3"},
-                {"2", wp, wp, wp, wp, wp, wp, wp, wp, "2"},
-                {"1", wr, wn, wb, wq, wk, wb, wn, wr, "1"},
-                {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "}
-        };
-
-        if (whitePerspective) {
-            printWhiteBoard(rowArray, output);
-        } else {
-            printBlackBoard(rowArray, output);
-        }
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_WHITE + "\n");
+    public boolean getWhitePerspective() {
+        return whitePerspective;
     }
 
-    private void printWhiteBoard(String[][] rowArray, PrintStream output) {
-        int rowNumber = 1;
-        for (String[] row : rowArray) {
-            printRow(output, row, rowNumber);
-            rowNumber++;
-        }
-    }
-
-    private void printBlackBoard(String[][] rowArray, PrintStream output) {
-        int rowNumber = 1;
-        for (int i = 10; i > 0; i--) {
-            String[] row = rowArray[i - 1];
-            if (rowNumber == 1 || rowNumber == 10) {
-                row = new String[] {" ", "h", "g", "f", "e", "d", "c", "b", "a", " "};
-            }
-            if (rowNumber == 2) {
-                row[4] = EscapeSequences.SET_TEXT_COLOR_WHITE + "K";
-                row[5] = EscapeSequences.SET_TEXT_COLOR_WHITE + "Q";
-            }
-            if (rowNumber == 9) {
-                row[4] = EscapeSequences.SET_TEXT_COLOR_BLACK + "K";
-                row[5] = EscapeSequences.SET_TEXT_COLOR_BLACK + "Q";
-            }
-            printRow(output, row, rowNumber);
-            rowNumber++;
-        }
-    }
-
-    private void printRow(PrintStream output, String[] row, int rowNumber) {
-        output.print(EscapeSequences.SET_BG_COLOR_MAGENTA);
-        output.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA);
-
-        if (rowNumber == 1 || rowNumber == 10) {
-            printEdge(output, row);
-        } else if (rowNumber % 2 == 0) {
-            printEvenRow(output, row);
-        } else {
-            printOddRow(output, row);
-        }
-        output.print(EscapeSequences.SET_BG_COLOR_BLACK + "\n");
-    }
-
-    private void printEdge(PrintStream output, String[] row) {
-        for (String letter : row) {
-            output.print(" ");
-            output.print(EscapeSequences.SET_TEXT_COLOR_YELLOW);
-            output.print(letter);
-            output.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA);
-            output.print(" ");
-        }
-    }
-
-    private void printEvenRow(PrintStream output, String[] row) {
-        int tileNumber = 1;
-        String trueBackgroundColor;
-        String trueTextColor;
-
-        for (String letter : row) {
-            if (tileNumber == 1 || tileNumber == 10) {
-                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_MAGENTA;
-                trueTextColor = EscapeSequences.SET_TEXT_COLOR_YELLOW;
-            } else if (tileNumber % 2 == 0) {
-                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
-                trueTextColor = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
-            } else {
-                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_BLUE;
-                trueTextColor = EscapeSequences.SET_TEXT_COLOR_BLUE;
-            }
-
-            output.print(trueBackgroundColor);
-            output.print(" ");
-            output.print(trueTextColor);
-            output.print(letter);
-            output.print(" ");
-            tileNumber++;
-        }
-    }
-
-    private void printOddRow(PrintStream output, String[] row) {
-        int tileNumber = 1;
-        String trueBackgroundColor;
-        String trueTextColor;
-
-
-        for (String letter : row) {
-            if (tileNumber == 1 || tileNumber == 10) {
-                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_MAGENTA;
-                trueTextColor = EscapeSequences.SET_TEXT_COLOR_YELLOW;
-
-            } else if (tileNumber % 2 == 0) {
-                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_BLUE;
-                trueTextColor = EscapeSequences.SET_TEXT_COLOR_BLUE;
-
-            } else {
-                trueBackgroundColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
-                trueTextColor = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
-                }
-
-            output.print(trueBackgroundColor);
-            output.print(" ");
-            output.print(trueTextColor);
-            output.print(letter);
-            output.print(" ");
-            tileNumber++;
-        }
+    public GameData getCurrentGameData() {
+        return currentGameData;
     }
 }
