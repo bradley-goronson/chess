@@ -9,7 +9,7 @@ import server.clear.ClearService;
 import server.creategame.CreateGameRequest;
 import server.creategame.CreateGameResult;
 import server.creategame.CreateGameService;
-import server.joingame.JoinGameRequest;
+import server.joingame.UpdateGameRequest;
 import server.joingame.JoinGameResult;
 import server.joingame.JoinGameService;
 import server.register.RegisterRequest;
@@ -43,7 +43,7 @@ public class JoinGameServiceTests {
         CreateGameResult createGameResult = createGameService.addGame(createGameRequest);
 
         JoinGameService joinGameService = new JoinGameService();
-        JoinGameRequest joinGameRequest = new JoinGameRequest();
+        UpdateGameRequest joinGameRequest = new UpdateGameRequest();
         joinGameRequest.setGameID(createGameResult.getGameID());
         joinGameRequest.setPlayColor("WHITE");
         joinGameRequest.setAuthorization(registerResult.getAuthToken());
@@ -80,7 +80,7 @@ public class JoinGameServiceTests {
         createGameService.addGame(createGameRequest);
 
         JoinGameService joinGameService = new JoinGameService();
-        JoinGameRequest joinGameRequest = new JoinGameRequest();
+        UpdateGameRequest joinGameRequest = new UpdateGameRequest();
         joinGameRequest.setGameID(24);
         joinGameRequest.setPlayColor("WHITE");
         joinGameRequest.setAuthorization(registerResult.getAuthToken());
@@ -116,7 +116,7 @@ public class JoinGameServiceTests {
         CreateGameResult createGameResult = createGameService.addGame(createGameRequest);
 
         JoinGameService joinGameService = new JoinGameService();
-        JoinGameRequest joinGameRequest = new JoinGameRequest();
+        UpdateGameRequest joinGameRequest = new UpdateGameRequest();
         joinGameRequest.setGameID(1);
         joinGameRequest.setPlayColor(null);
         joinGameRequest.setAuthorization(registerResult.getAuthToken());
@@ -153,7 +153,7 @@ public class JoinGameServiceTests {
         CreateGameResult createGameResult = createGameService.addGame(createGameRequest);
 
         JoinGameService joinGameService = new JoinGameService();
-        JoinGameRequest joinGameRequest = new JoinGameRequest();
+        UpdateGameRequest joinGameRequest = new UpdateGameRequest();
         joinGameRequest.setGameID(1);
         joinGameRequest.setPlayColor("WHITE");
         joinGameRequest.setAuthorization(null);
@@ -191,7 +191,7 @@ public class JoinGameServiceTests {
         CreateGameResult createGameResult = createGameService.addGame(createGameRequest);
 
         JoinGameService joinGameService = new JoinGameService();
-        JoinGameRequest joinGameRequest = new JoinGameRequest();
+        UpdateGameRequest joinGameRequest = new UpdateGameRequest();
         joinGameRequest.setGameID(null);
         joinGameRequest.setPlayColor("WHITE");
         joinGameRequest.setAuthorization(registerResult.getAuthToken());

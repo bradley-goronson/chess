@@ -4,12 +4,14 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import model.GameData;
 import server.ResponseException;
+import server.ServerFacade;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class GamePlayREPL {
+    String serverURL = "http://localhost:8080";
     GameData currentGameState = null;
     public void play(GameData currentGame, boolean whitePerspective, boolean isObserver, String authToken) {
         currentGameState = currentGame;
@@ -29,7 +31,7 @@ public class GamePlayREPL {
                 switch (method) {
                     case "help" -> help(isObserver);
                     case "redraw" -> printBoard(currentGame, whitePerspective);
-                    case "leave" -> gameOver = leave(requestArray, authToken);
+                    case "leave" -> gameOver = leave(isObserver, whitePerspective, authToken);
                     case "move" -> move(requestArray, isObserver, authToken);
                     case "resign" -> gameOver = resign(isObserver, authToken);
                     case "show" -> showMoves(requestArray, authToken);
@@ -97,10 +99,14 @@ public class GamePlayREPL {
         System.out.println("   usage: show <position>");
     }
 
-    private boolean leave(String[] requestArray, String authToken) throws  ResponseException {
-        System.out.print("You left the game\n");
+    private boolean leave(boolean isObserver, boolean isWhitePlayer, String authToken) throws ResponseException {
+        ServerFacade facade = new ServerFacade(serverURL);
+        facade.leave(currentGameState.gameID(), isObserver, isWhitePlayer, authToken);
+        System.out.print(
+                EscapeSequences.SET_TEXT_COLOR_GREEN +
+                        "Leaving game...\n" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE);
         //broadcast notification
-
         return true;
     }
 

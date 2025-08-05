@@ -6,7 +6,7 @@ import spark.Response;
 
 public class JoinGameHandler extends Handler {
     public Object handle(Request req, Response res) {
-        JoinGameRequest joinGameRequest = serializer.fromJson(req.body(), JoinGameRequest.class);
+        UpdateGameRequest joinGameRequest = serializer.fromJson(req.body(), UpdateGameRequest.class);
         joinGameRequest.setAuthorization(req.headers("Authorization"));
         JoinGameResult joinGameResult = new JoinGameService().joinGame(joinGameRequest);
         res.status(joinGameResult.getStatusCode());

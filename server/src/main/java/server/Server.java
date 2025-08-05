@@ -5,6 +5,7 @@ import dataaccess.DatabaseManager;
 import server.clear.ClearHandler;
 import server.creategame.CreateGameHandler;
 import server.joingame.JoinGameHandler;
+import server.leave.LeaveHandler;
 import server.listgames.ListGamesHandler;
 import server.login.LoginHandler;
 import server.logout.LogoutHandler;
@@ -42,5 +43,6 @@ public class Server {
         Spark.post("/game", new CreateGameHandler());
         Spark.get("/game", new ListGamesHandler());
         Spark.put("/game", new JoinGameHandler());
+        Spark.put("/leave", new LeaveHandler());
     }
 }

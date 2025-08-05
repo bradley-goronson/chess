@@ -10,7 +10,7 @@ import model.GameData;
 import service.Service;
 
 public class JoinGameService extends Service {
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) {
+    public JoinGameResult joinGame(UpdateGameRequest joinGameRequest) {
         JoinGameResult joinGameResult = new JoinGameResult();
         String authToken = joinGameRequest.getAuthToken();
         String playerColor = joinGameRequest.getPlayColor();

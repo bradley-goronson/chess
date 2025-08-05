@@ -2,7 +2,7 @@ package server.joingame;
 
 import server.Request;
 
-public class JoinGameRequest extends Request {
+public class UpdateGameRequest extends Request {
     private String playerColor;
     private Integer gameID;
 

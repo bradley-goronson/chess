@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
@@ -48,6 +49,16 @@ public class ServerFacade {
     public void joinGame(String gameID, String playerColor, String authToken) throws ResponseException {
         ClientJoinGameRequest request = new ClientJoinGameRequest(playerColor, gameID);
         makeRequest("PUT", "/game", request, null, authToken);
+    }
+
+    public void leave(int gameID, boolean isObserver, boolean isWhitePlayer, String authToken) throws ResponseException {
+        ClientLeaveRequest request = new ClientLeaveRequest(gameID, isObserver, isWhitePlayer);
+        makeRequest("PUT", "/leave", request, null, authToken);
+    }
+
+    public void makeMove(String gameID, ChessPosition start, ChessPosition end, String authToken) throws ResponseException {
+        ClientMakeMoveRequest request = new ClientMakeMoveRequest(gameID, start, end);
+        makeRequest("PUT", "/move", request, null, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
