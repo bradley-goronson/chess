@@ -3,14 +3,114 @@ package ui;
 import chess.ChessGame;
 import chess.ChessPiece;
 import model.GameData;
+import server.ResponseException;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class GamePlayREPL {
-    GameData currentGame = null;
-    public void play(GameData currentGame, boolean whitePerspective) {
+    GameData currentGameState = null;
+    public void play(GameData currentGame, boolean whitePerspective, String authToken) {
+        currentGameState = currentGame;
         printBoard(currentGame, whitePerspective);
+        String method;
+        boolean gameOver = false;
+
+        try {
+            help();
+            while (!gameOver) {
+                System.out.println("What would you like to do? ");
+                Scanner scanner = new Scanner(System.in);
+                String request = scanner.nextLine();
+                String[] requestArray = request.split(" ");
+                method = requestArray[0];
+
+                switch (method) {
+                    case "help" -> help();
+                    case "redraw" -> printBoard(currentGame, whitePerspective);
+                    case "leave" -> gameOver = leave(requestArray, authToken);
+                    case "move" -> move(requestArray, authToken);
+                    case "resign" -> gameOver = resign(requestArray, authToken);
+                    case "show" -> showMoves(requestArray, authToken);
+                    default -> System.out.println(
+                            EscapeSequences.SET_TEXT_COLOR_RED +
+                                    "error: invalid command given - use \"help\" for a list of available commands and usages" +
+                                    EscapeSequences.SET_TEXT_COLOR_WHITE);
+                }
+            }
+        } catch (ResponseException e) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            e.getMessage() +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+        }
+    }
+
+    private void help() {
+        System.out.println(
+                EscapeSequences.SET_TEXT_UNDERLINE + EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE +
+                        "Available commands:" +
+                        EscapeSequences.RESET_TEXT_UNDERLINE + EscapeSequences.RESET_TEXT_BOLD_FAINT);
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "help" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": display a list of available commands");
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "redraw" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": redraw chess board");
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "leave" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": leave the game");
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "move" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": display a list of all active chess games"
+        );
+        System.out.println("   usage: move <startPosition> <endPosition>");
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "resign" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": join the indicated chess game playing as the indicated color"
+        );
+
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                        "show" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                        ": highlight possible moves from the given position"
+        );
+        System.out.println("   usage: show <position>");
+    }
+
+    private boolean leave(String[] requestArray, String authToken) throws  ResponseException {
+
+        return true;
+    }
+
+    private void move(String[] requestArray, String authToken) throws ResponseException {
+
+    }
+
+    private boolean resign(String[] requestArray, String authToken) throws ResponseException {
+
+        return true;
+    }
+
+    private void showMoves(String[] requestArray, String authToken) throws ResponseException {
+
     }
 
     private void printBoard(GameData gameData, boolean whitePerspective) {
@@ -55,24 +155,8 @@ public class GamePlayREPL {
                 } else {
                     if (tile.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
                         output.print(EscapeSequences.SET_TEXT_FAINT + EscapeSequences.SET_TEXT_COLOR_WHITE);
-//                        switch (tile.getPieceType()) {
-//                            case KING -> output.print(EscapeSequences.WHITE_KING);
-//                            case QUEEN -> output.print(EscapeSequences.WHITE_QUEEN);
-//                            case BISHOP -> output.print(EscapeSequences.WHITE_BISHOP);
-//                            case KNIGHT -> output.print(EscapeSequences.WHITE_KNIGHT);
-//                            case ROOK -> output.print(EscapeSequences.WHITE_ROOK);
-//                            case PAWN -> output.print(EscapeSequences.WHITE_PAWN);
-//                        }
                     } else {
                         output.print(EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_BLACK);
-//                        switch (tile.getPieceType()) {
-//                            case KING -> output.print(EscapeSequences.BLACK_KING);
-//                            case QUEEN -> output.print(EscapeSequences.BLACK_QUEEN);
-//                            case BISHOP -> output.print(EscapeSequences.BLACK_BISHOP);
-//                            case KNIGHT -> output.print(EscapeSequences.BLACK_KNIGHT);
-//                            case ROOK -> output.print(EscapeSequences.BLACK_ROOK);
-//                            case PAWN -> output.print(EscapeSequences.BLACK_PAWN);
-//                        }
                     }
                     switch (tile.getPieceType()) {
                         case KING -> output.print("K");

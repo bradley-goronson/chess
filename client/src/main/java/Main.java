@@ -24,7 +24,7 @@ public class Main {
                 boolean joinedGame = postLogin.repl(authToken);
                 if (joinedGame) {
                     GamePlayREPL gamePlay = new GamePlayREPL();
-                    gamePlay.play(postLogin.getCurrentGameData(), postLogin.getWhitePerspective());
+                    gamePlay.play(postLogin.getCurrentGameData(), postLogin.getWhitePerspective(), authToken);
                 }
                 loggedIn = postLogin.getLoggedIn();
             }

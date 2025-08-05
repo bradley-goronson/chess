@@ -83,7 +83,6 @@ public class PostLoginREPL {
                         ": display a list of all active chess games"
         );
 
-
         System.out.println(
                 EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
                         "join" +
