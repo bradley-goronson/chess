@@ -12,6 +12,7 @@ public class PostLoginREPL {
     boolean joinedGame = false;
     boolean loggedIn = true;
     boolean whitePerspective = true;
+    boolean observer = false;
     GameData currentGameData = null;
     ArrayList<GameData> recentGameArray = new ArrayList<>();
 
@@ -226,6 +227,7 @@ public class PostLoginREPL {
         }
 
         whitePerspective = true;
+        observer = true;
         return true;
     }
 
@@ -239,5 +241,9 @@ public class PostLoginREPL {
 
     public GameData getCurrentGameData() {
         return currentGameData;
+    }
+
+    public boolean getObserver() {
+        return observer;
     }
 }

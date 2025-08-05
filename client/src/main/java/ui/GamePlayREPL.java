@@ -11,14 +11,14 @@ import java.util.Scanner;
 
 public class GamePlayREPL {
     GameData currentGameState = null;
-    public void play(GameData currentGame, boolean whitePerspective, String authToken) {
+    public void play(GameData currentGame, boolean whitePerspective, boolean isObserver, String authToken) {
         currentGameState = currentGame;
         printBoard(currentGame, whitePerspective);
         String method;
         boolean gameOver = false;
 
         try {
-            help();
+            help(isObserver);
             while (!gameOver) {
                 System.out.println("What would you like to do? ");
                 Scanner scanner = new Scanner(System.in);
@@ -27,11 +27,11 @@ public class GamePlayREPL {
                 method = requestArray[0];
 
                 switch (method) {
-                    case "help" -> help();
+                    case "help" -> help(isObserver);
                     case "redraw" -> printBoard(currentGame, whitePerspective);
                     case "leave" -> gameOver = leave(requestArray, authToken);
-                    case "move" -> move(requestArray, authToken);
-                    case "resign" -> gameOver = resign(requestArray, authToken);
+                    case "move" -> move(requestArray, isObserver, authToken);
+                    case "resign" -> gameOver = resign(isObserver, authToken);
                     case "show" -> showMoves(requestArray, authToken);
                     default -> System.out.println(
                             EscapeSequences.SET_TEXT_COLOR_RED +
@@ -47,7 +47,7 @@ public class GamePlayREPL {
         }
     }
 
-    private void help() {
+    private void help(boolean observer) {
         System.out.println(
                 EscapeSequences.SET_TEXT_UNDERLINE + EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_WHITE +
                         "Available commands:" +
@@ -71,20 +71,22 @@ public class GamePlayREPL {
                         EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
                         ": leave the game");
 
-        System.out.println(
-                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
-                        "move" +
-                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
-                        ": display a list of all active chess games"
-        );
-        System.out.println("   usage: move <startPosition> <endPosition>");
+        if (!observer) {
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                            "move" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                            ": display a list of all active chess games"
+            );
+            System.out.println("   usage: move <startPosition> <endPosition>");
 
-        System.out.println(
-                EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
-                        "resign" +
-                        EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
-                        ": join the indicated chess game playing as the indicated color"
-        );
+            System.out.println(
+                    EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
+                            "resign" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.RESET_TEXT_BOLD_FAINT +
+                            ": join the indicated chess game playing as the indicated color"
+            );
+        }
 
         System.out.println(
                 EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD +
@@ -96,21 +98,49 @@ public class GamePlayREPL {
     }
 
     private boolean leave(String[] requestArray, String authToken) throws  ResponseException {
+        System.out.print("You left the game\n");
+        //broadcast notification
 
         return true;
     }
 
-    private void move(String[] requestArray, String authToken) throws ResponseException {
-
+    private void move(String[] requestArray, boolean isObserver, String authToken) throws ResponseException {
+        if (!isObserver) {
+            System.out.print("You tried to move");
+            //broadcast notification
+        } else {
+            System.out.print(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                    "Only players can make moves. You are an observer.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE);
+        }
     }
 
-    private boolean resign(String[] requestArray, String authToken) throws ResponseException {
-
-        return true;
+    private boolean resign(boolean isObserver, String authToken) throws ResponseException {
+        if (!isObserver) {
+            System.out.print("Are you sure you want to resign? Confirm with \"YES\" cancel with \"NO\"\n");
+            Scanner scanner = new Scanner(System.in);
+            String response = scanner.nextLine();
+            boolean resigned = response.equals("YES");
+            if (resigned) {
+                System.out.print(
+                        EscapeSequences.SET_TEXT_COLOR_GREEN +
+                        "You have surrendered. Leaving game...\n" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE);
+                //broadcast notification
+            }
+            return resigned;
+        } else {
+            System.out.print(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                    "Only players can resign from a game. You are an observer.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE);
+            return false;
+        }
     }
 
     private void showMoves(String[] requestArray, String authToken) throws ResponseException {
-
+        System.out.print("You tried to show moves");
     }
 
     private void printBoard(GameData gameData, boolean whitePerspective) {
