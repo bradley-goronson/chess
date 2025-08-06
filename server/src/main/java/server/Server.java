@@ -11,8 +11,11 @@ import server.login.LoginHandler;
 import server.logout.LogoutHandler;
 import server.register.RegisterHandler;
 import spark.*;
+import websocket.handler.WebSocketHandler;
 
 public class Server {
+    private final static WebSocketHandler webSocketHandler = new WebSocketHandler();
+
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
@@ -36,6 +39,7 @@ public class Server {
     }
 
     public static void createRoutes() {
+        Spark.webSocket("/ws", webSocketHandler);
         Spark.delete("/db", new ClearHandler());
         Spark.post("/user", new RegisterHandler());
         Spark.post("/session", new LoginHandler());
