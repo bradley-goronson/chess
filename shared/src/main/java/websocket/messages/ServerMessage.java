@@ -42,6 +42,12 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
+    public String getMessage() { return this.message; }
+
+    public String getErrorMessage() { return this.errorMessage; }
+
+    public GameData getGame() { return this.game; }
+
     public String toString() {
         return new Gson().toJson(this);
     }

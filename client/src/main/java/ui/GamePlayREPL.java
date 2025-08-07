@@ -18,6 +18,7 @@ public class GamePlayREPL implements NotificationHandler {
     String serverURL = "http://localhost:8080";
     GameData currentGameState = null;
     Integer gameID;
+    boolean isWhitePerspective;
     ServerFacade facade = new ServerFacade(serverURL);
     WebSocketFacade ws;
 
@@ -26,9 +27,9 @@ public class GamePlayREPL implements NotificationHandler {
     }
 
     public void play(GameData currentGame, boolean whitePerspective, boolean isObserver, String authToken) throws ResponseException {
-        ws = new WebSocketFacade(serverURL, this, gameID);
+        ws = new WebSocketFacade(serverURL, this, gameID, authToken);
+        isWhitePerspective = whitePerspective;
         currentGameState = currentGame;
-        printBoard(currentGame, whitePerspective);
         String method;
         boolean gameOver = false;
 
@@ -113,6 +114,7 @@ public class GamePlayREPL implements NotificationHandler {
     }
 
     private boolean leave(boolean isObserver, boolean isWhitePlayer, String authToken) throws ResponseException {
+        ws.leave(authToken);
         facade.leave(currentGameState.gameID(), isObserver, isWhitePlayer, authToken);
         System.out.print(
                 EscapeSequences.SET_TEXT_COLOR_GREEN +
@@ -126,8 +128,8 @@ public class GamePlayREPL implements NotificationHandler {
             ChessPosition startPosition = getChessPosition(requestArray[1]);
             ChessPosition endPosition = getChessPosition(requestArray[2]);
 
-            currentGameState = facade.makeMove(currentGameState.gameID(), new ChessMove(startPosition, endPosition, null), authToken);
-            printBoard(currentGameState, true);
+            ws.move();
+            //currentGameState = facade.makeMove(currentGameState.gameID(), new ChessMove(startPosition, endPosition, null), authToken);
         } else {
             System.out.print(
                     EscapeSequences.SET_TEXT_COLOR_RED +
@@ -262,6 +264,34 @@ public class GamePlayREPL implements NotificationHandler {
     }
 
     public void notify(ServerMessage message) {
+        System.out.println("You made it to notify!");
+        switch (message.getServerMessageType()) {
+            case LOAD_GAME -> loadGame(message.getGame());
+            case NOTIFICATION -> displayNotification(message.getMessage());
+            case ERROR -> displayError(message.getErrorMessage());
+        }
+    }
 
+    private void loadGame(GameData newGameState) {
+        currentGameState = newGameState;
+        printBoard(currentGameState, isWhitePerspective);
+    }
+
+    private void displayNotification(String notification) {
+        System.out.println("You made it to notify 2!");
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE +
+                notification +
+                EscapeSequences.SET_TEXT_COLOR_WHITE
+        );
+    }
+
+    private void displayError(String errorMessage) {
+        System.out.println("You made it to error notify!");
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_BLUE +
+                errorMessage +
+                EscapeSequences.SET_TEXT_COLOR_WHITE
+        );
     }
 }

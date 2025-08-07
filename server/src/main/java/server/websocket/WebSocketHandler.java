@@ -28,7 +28,7 @@ public class WebSocketHandler {
 
         try {
             String username = new Service().getAuthDAO().getAuth(command.getAuthToken()).username();
-
+            System.out.println("Good job! You got a username! It is: " + username);
             switch (command.getCommandType()) {
                 case CONNECT -> connect(command.getGameID(), username, session);
                 case LEAVE -> leave(command.getGameID(), username);
@@ -60,41 +60,50 @@ public class WebSocketHandler {
         }
     }
 
-    private void leave(Integer gameID, String userName) throws IOException{
-        Session session = connections.getSession(gameID, userName);
-        GameDataAccess gameDAO = new Service().getGameDAO();
+    private void leave(Integer gameID, String userName) throws IOException {
+        System.out.println("We are trying to leave! the gameID is:" + gameID + "\n");
+        if (gameID != null) {
+            Session session = connections.getSession(gameID, userName);
+            System.out.println("You made a session! Good job! It is: " + session);
+            if (session != null) {
+                GameDataAccess gameDAO = new Service().getGameDAO();
 
-        try {
-            GameData currentGame = gameDAO.getGame(gameID);
-            String blackUsername = currentGame.blackUsername();
-            String whiteUsername = currentGame.whiteUsername();
+                try {
+                    GameData currentGame = gameDAO.getGame(gameID);
+                    String blackUsername = currentGame.blackUsername();
+                    String whiteUsername = currentGame.whiteUsername();
 
-            if (userName.equals(currentGame.whiteUsername())) {
-                whiteUsername = null;
+                    if (userName.equals(currentGame.whiteUsername())) {
+                        whiteUsername = null;
+                    }
+                    if (userName.equals(currentGame.blackUsername())) {
+                        blackUsername = null;
+                    }
+
+                    gameDAO.updateGame(
+                            gameID,
+                            new GameData(gameID, whiteUsername, blackUsername, currentGame.gameName(), currentGame.game())
+                    );
+
+                    String message = String.format("%s has left the game.", userName);
+                    ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                    notification.setNotificationText(message);
+                    connections.broadcast(gameID, userName, notification);
+                    connections.removeSession(gameID, userName);
+                } catch (GameNotFoundException | DataAccessException e) {
+                    ServerMessage leaveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                    leaveError.setErrorMessage(e.getMessage());
+                    session.getRemote().sendString(new Gson().toJson(leaveError));
+                }
             }
-            if (userName.equals(currentGame.blackUsername())) {
-                blackUsername = null;
-            }
-
-            gameDAO.updateGame(
-                    gameID,
-                    new GameData(gameID, whiteUsername, blackUsername, currentGame.gameName(), currentGame.game())
-            );
-
-            String message = String.format("%s has left the game.", userName);
-            ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            notification.setNotificationText(message);
-            connections.broadcast(gameID, userName, notification);
-            connections.removeSession(gameID, userName);
-        } catch (GameNotFoundException | DataAccessException e) {
-            ServerMessage leaveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-            leaveError.setErrorMessage(e.getMessage());
-            session.getRemote().sendString(new Gson().toJson(leaveError));
         }
     }
 
     private void resign(Integer gameID, String userName) throws IOException {
         Session session = connections.getSession(gameID, userName);
+        if (session == null) {
+            return;
+        }
         GameDataAccess gameDAO = new Service().getGameDAO();
 
         try {
@@ -150,6 +159,9 @@ public class WebSocketHandler {
 
     private void makeMove(Integer gameID, String userName, ChessMove move) throws IOException {
         Session session = connections.getSession(gameID, userName);
+        if (session == null) {
+            return;
+        }
         GameDataAccess gameDAO = new Service().getGameDAO();
 
         try {

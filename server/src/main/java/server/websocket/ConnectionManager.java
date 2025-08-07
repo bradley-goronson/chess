@@ -35,7 +35,12 @@ public class ConnectionManager {
 
     public Session getSession(Integer gameID, String username) {
         Collection<Connection> currentGameSessions = connections.get(gameID);
+        System.out.println("Good job! You found game sessions! They are: " + currentGameSessions);
         Session retrievedSession = null;
+        if (currentGameSessions == null) {
+            System.out.println("Hmmmm, no game sessions! They are: " + currentGameSessions);
+            return retrievedSession;
+        }
         for (Connection connection : currentGameSessions) {
             if (connection.userName.equals(username)) {
                 retrievedSession = connection.session;

@@ -14,15 +14,19 @@ public class WebSocketFacade extends Endpoint {
     NotificationHandler notificationHandler;
     Session session;
     Integer gameID;
+    String authToken;
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler, Integer gameID) throws ResponseException {
+    public WebSocketFacade(String url, NotificationHandler notificationHandler, Integer gameID, String authToken) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURL = new URI(url + "/ws");
             this.notificationHandler = notificationHandler;
+            this.gameID = gameID;
+            this.authToken = authToken;
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURL);
+            connect(authToken);
 
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
@@ -38,6 +42,15 @@ public class WebSocketFacade extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    public void connect(String authToken) throws ResponseException {
+        try {
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 
     public void leave(String authToken) throws ResponseException {
