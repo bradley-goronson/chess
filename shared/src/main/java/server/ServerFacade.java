@@ -1,5 +1,8 @@
 package server;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.AuthData;
@@ -56,9 +59,9 @@ public class ServerFacade {
         makeRequest("PUT", "/leave", request, null, authToken);
     }
 
-    public void makeMove(String gameID, ChessPosition start, ChessPosition end, String authToken) throws ResponseException {
-        ClientMakeMoveRequest request = new ClientMakeMoveRequest(gameID, start, end);
-        makeRequest("PUT", "/move", request, null, authToken);
+    public GameData makeMove(int gameID, ChessMove move, String authToken) throws ResponseException {
+        ClientMakeMoveRequest request = new ClientMakeMoveRequest(gameID, move);
+         return makeRequest("PUT", "/move", request, GameData.class, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {

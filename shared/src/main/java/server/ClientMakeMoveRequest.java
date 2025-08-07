@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessMove;
 import chess.ChessPosition;
 
-public record ClientMakeMoveRequest (String gameID, ChessPosition startPosition, ChessPosition endPosition){}
+public record ClientMakeMoveRequest (int gameID, ChessMove move){}

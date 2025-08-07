@@ -1,18 +1,21 @@
 package ui;
 
-import chess.ChessGame;
-import chess.ChessPiece;
+import chess.*;
 import model.GameData;
 import server.ResponseException;
 import server.ServerFacade;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class GamePlayREPL {
     String serverURL = "http://localhost:8080";
     GameData currentGameState = null;
+    ServerFacade facade = new ServerFacade(serverURL);
+
     public void play(GameData currentGame, boolean whitePerspective, boolean isObserver, String authToken) {
         currentGameState = currentGame;
         printBoard(currentGame, whitePerspective);
@@ -100,7 +103,6 @@ public class GamePlayREPL {
     }
 
     private boolean leave(boolean isObserver, boolean isWhitePlayer, String authToken) throws ResponseException {
-        ServerFacade facade = new ServerFacade(serverURL);
         facade.leave(currentGameState.gameID(), isObserver, isWhitePlayer, authToken);
         System.out.print(
                 EscapeSequences.SET_TEXT_COLOR_GREEN +
@@ -112,7 +114,10 @@ public class GamePlayREPL {
 
     private void move(String[] requestArray, boolean isObserver, String authToken) throws ResponseException {
         if (!isObserver) {
-            System.out.print("You tried to move");
+            ChessPosition startPosition = getChessPosition(requestArray[1]);
+            ChessPosition endPosition = getChessPosition(requestArray[2]);
+
+            currentGameState = facade.makeMove(currentGameState.gameID(), new ChessMove(startPosition, endPosition, null), authToken);
             //broadcast notification
         } else {
             System.out.print(
@@ -120,6 +125,20 @@ public class GamePlayREPL {
                     "Only players can make moves. You are an observer.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE);
         }
+    }
+
+    private ChessPosition getChessPosition(String position) {
+        ArrayList<Character> letterColumns = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g'));
+        ArrayList<Integer> integerRows = new ArrayList<>(Arrays.asList(8, 7, 6, 5, 4, 3, 2, 1));
+
+        Character givenLetter = position.charAt(0);
+        char givenNumberChar = position.charAt(1);
+        Integer givenNumber = Character.getNumericValue(givenNumberChar);
+
+        int rowIndex = integerRows.indexOf(givenNumber);
+        int columnIndex = letterColumns.indexOf(givenLetter);
+
+        return new ChessPosition(rowIndex, columnIndex);
     }
 
     private boolean resign(boolean isObserver, String authToken) throws ResponseException {

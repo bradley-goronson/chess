@@ -9,9 +9,10 @@ import server.leave.LeaveHandler;
 import server.listgames.ListGamesHandler;
 import server.login.LoginHandler;
 import server.logout.LogoutHandler;
+import server.move.MakeMoveHandler;
 import server.register.RegisterHandler;
 import spark.*;
-import websocket.handler.WebSocketHandler;
+import server.websocket.WebSocketHandler;
 
 public class Server {
     private final static WebSocketHandler webSocketHandler = new WebSocketHandler();
@@ -48,5 +49,6 @@ public class Server {
         Spark.get("/game", new ListGamesHandler());
         Spark.put("/game", new JoinGameHandler());
         Spark.put("/leave", new LeaveHandler());
+        Spark.put("/move", new MakeMoveHandler());
     }
 }
