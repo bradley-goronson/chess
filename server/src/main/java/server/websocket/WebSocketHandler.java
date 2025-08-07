@@ -149,7 +149,7 @@ public class WebSocketHandler {
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(message);
             connections.broadcast(gameID, null, notification);
-            connections.removeSession(gameID, userName);
+            //connections.removeSession(gameID, userName);
         } catch (GameNotFoundException | DataAccessException e) {
             ServerMessage resignError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             resignError.setErrorMessage(e.getMessage());

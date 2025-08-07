@@ -21,6 +21,9 @@ public class GamePlayREPL implements NotificationHandler {
     boolean isWhitePerspective;
     ServerFacade facade = new ServerFacade(serverURL);
     WebSocketFacade ws;
+    boolean gameOver = false;
+    boolean resigned = false;
+    boolean leftGame = false;
 
     public GamePlayREPL(Integer newGameID) {
         this.gameID = newGameID;
@@ -31,11 +34,10 @@ public class GamePlayREPL implements NotificationHandler {
         isWhitePerspective = whitePerspective;
         currentGameState = currentGame;
         String method;
-        boolean gameOver = false;
 
         try {
             help(isObserver);
-            while (!gameOver) {
+            while (!leftGame) {
                 System.out.println("What would you like to do? ");
                 Scanner scanner = new Scanner(System.in);
                 String request = scanner.nextLine();
@@ -45,9 +47,9 @@ public class GamePlayREPL implements NotificationHandler {
                 switch (method) {
                     case "help" -> help(isObserver);
                     case "redraw" -> printBoard(currentGame, whitePerspective);
-                    case "leave" -> gameOver = leave(isObserver, whitePerspective, authToken);
+                    case "leave" -> leftGame = leave(isObserver, whitePerspective, authToken);
                     case "move" -> move(requestArray, isObserver, whitePerspective, authToken);
-                    case "resign" -> gameOver = resign(isObserver, authToken);
+                    case "resign" -> resign(isObserver, authToken);
                     case "show" -> showMoves(requestArray, authToken);
                     default -> System.out.println(
                             EscapeSequences.SET_TEXT_COLOR_RED +
@@ -157,25 +159,34 @@ public class GamePlayREPL implements NotificationHandler {
         return new ChessPosition(rowIndex + 1, columnIndex + 1);
     }
 
-    private boolean resign(boolean isObserver, String authToken) throws ResponseException {
+    private void resign(boolean isObserver, String authToken) throws ResponseException {
         if (!isObserver) {
+            if (gameOver) {
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED +
+                        "Error: The game is already over. You can't resign.\n" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE);
+                return;
+            }
             System.out.print("Are you sure you want to resign? Confirm with \"YES\" cancel with \"NO\"\n");
             Scanner scanner = new Scanner(System.in);
             String response = scanner.nextLine();
-            boolean resigned = response.equals("YES");
-            if (resigned) {
-                System.out.print(
-                        EscapeSequences.SET_TEXT_COLOR_GREEN +
-                        "You have surrendered. Leaving game...\n" +
-                        EscapeSequences.SET_TEXT_COLOR_WHITE);
+            boolean resigning = response.equals("YES");
+            if (resigning) {
+                ws.resign(authToken);
+                resigned = true;
+                gameOver = true;
+            } else {
+                return;
             }
-            return resigned;
+            System.out.print(
+                        EscapeSequences.SET_TEXT_COLOR_GREEN +
+                        "You have surrendered. Game over.\n" +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE);
         } else {
             System.out.print(
                     EscapeSequences.SET_TEXT_COLOR_RED +
                     "Only players can resign from a game. You are an observer.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE);
-            return false;
         }
     }
 
