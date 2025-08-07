@@ -69,8 +69,6 @@ public class WebSocketHandler {
             String blackUsername = currentGame.blackUsername();
             String whiteUsername = currentGame.whiteUsername();
 
-            connections.removeSession(gameID, userName);
-
             if (userName.equals(currentGame.whiteUsername())) {
                 whiteUsername = null;
             }
@@ -87,10 +85,7 @@ public class WebSocketHandler {
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(message);
             connections.broadcast(gameID, userName, notification);
-            GameData updatedGameData = gameDAO.getGame(gameID);
-            ServerMessage loadGameMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-            loadGameMessage.setGame(updatedGameData);
-            connections.broadcast(gameID, null, loadGameMessage);
+            connections.removeSession(gameID, userName);
         } catch (GameNotFoundException | DataAccessException e) {
             ServerMessage leaveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             leaveError.setErrorMessage(e.getMessage());
@@ -106,6 +101,20 @@ public class WebSocketHandler {
             GameData currentGame = gameDAO.getGame(gameID);
             String blackUsername = currentGame.blackUsername();
             String whiteUsername = currentGame.whiteUsername();
+
+            if (currentGame.game().isGameOver()) {
+                ServerMessage resignError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                resignError.setErrorMessage("Error: You can't resign, the game is already over. Leave instead.");
+                session.getRemote().sendString(new Gson().toJson(resignError));
+                return;
+            }
+
+            if (isObserver(currentGame, userName)) {
+                ServerMessage resignError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                resignError.setErrorMessage("Error: Observers can't resign. Leave the game instead.");
+                session.getRemote().sendString(new Gson().toJson(resignError));
+                return;
+            }
 
             String otherUsername;
             if (userName.equals(blackUsername)) {
@@ -145,15 +154,28 @@ public class WebSocketHandler {
 
         try {
             GameData currentGame = gameDAO.getGame(gameID);
+            if (isObserver(currentGame, userName)) {
+                ServerMessage moveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                moveError.setErrorMessage("Error: Observers can't make moves.");
+                session.getRemote().sendString(new Gson().toJson(moveError));
+                return;
+            }
+
             ChessGame.TeamColor playerColor;
             if (userName.equals(currentGame.whiteUsername())) {
                 playerColor = ChessGame.TeamColor.WHITE;
-            } else if (userName.equals(currentGame.blackUsername())) {
-                playerColor = ChessGame.TeamColor.BLACK;
             } else {
-                playerColor = null;
+                playerColor = ChessGame.TeamColor.BLACK;
             }
-            ChessGame updatedGame = gameDAO.getGame(gameID).game().makeMove(move, playerColor);
+
+            if (currentGame.game().getBoard().getPiece(move.getStartPosition()).pieceColor != playerColor) {
+                ServerMessage moveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                moveError.setErrorMessage("Error: You can't move an opponents piece!");
+                session.getRemote().sendString(new Gson().toJson(moveError));
+                return;
+            }
+
+            ChessGame updatedGame = gameDAO.getGame(gameID).game().makeMove(move);
             GameData updatedGameData = new GameData(gameID, currentGame.whiteUsername(), currentGame.blackUsername(), currentGame.gameName(), updatedGame);
             if (winCondition(updatedGameData)) {
                 updatedGameData.game().setGameOver(true);
@@ -200,5 +222,12 @@ public class WebSocketHandler {
         } else {
             return false;
         }
+    }
+
+    private boolean isObserver(GameData gameData, String username) {
+        if (username.equals(gameData.whiteUsername()) || username.equals(gameData.blackUsername())) {
+            return false;
+        }
+        return true;
     }
 }

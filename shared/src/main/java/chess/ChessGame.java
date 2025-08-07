@@ -27,6 +27,10 @@ public class ChessGame {
         return currentTeam;
     }
 
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
     /**
      * Set's which teams turn it is
      *
@@ -83,7 +87,7 @@ public class ChessGame {
      * @param move chess move to perform
      * @throws InvalidMoveException if move is invalid
      */
-    public ChessGame makeMove(ChessMove move, TeamColor playerColor) throws InvalidMoveException {
+    public ChessGame makeMove(ChessMove move) throws InvalidMoveException {
         if (gameOver) {
             throw new InvalidMoveException("Error: the game is over!");
         }
@@ -127,10 +131,6 @@ public class ChessGame {
             }
         }
         return this;
-    }
-
-    public ChessGame makeMove(ChessMove move) throws InvalidMoveException{
-        return makeMove(move, TeamColor.WHITE);
     }
 
     /**
