@@ -37,7 +37,7 @@ public class MakeMoveTests {
 
         var kingStartPosition = new ChessPosition(1, 2);
         var kingEndPosition = new ChessPosition(1, 1);
-        game.makeMove(new ChessMove(kingStartPosition, kingEndPosition, null), ChessGame.TeamColor.WHITE);
+        game.makeMove(new ChessMove(kingStartPosition, kingEndPosition, null));
 
         Assertions.assertEquals(TestUtilities.loadBoard("""
                 | | | | | | | | |
@@ -68,7 +68,7 @@ public class MakeMoveTests {
 
         var queenStartPosition = new ChessPosition(6, 7);
         var queenEndPosition = new ChessPosition(1, 2);
-        game.makeMove(new ChessMove(queenStartPosition, queenEndPosition, null), ChessGame.TeamColor.BLACK);
+        game.makeMove(new ChessMove(queenStartPosition, queenEndPosition, null));
 
         Assertions.assertEquals(TestUtilities.loadBoard("""
                 | | | | | | | | |
@@ -99,7 +99,7 @@ public class MakeMoveTests {
 
         var rookStartPosition = new ChessPosition(3, 8);
         var rookEndPosition = new ChessPosition(7, 8);
-        game.makeMove(new ChessMove(rookStartPosition, rookEndPosition, null), ChessGame.TeamColor.WHITE);
+        game.makeMove(new ChessMove(rookStartPosition, rookEndPosition, null));
 
         Assertions.assertEquals(TestUtilities.loadBoard("""
                 | | | | |k| | | |
@@ -130,7 +130,7 @@ public class MakeMoveTests {
 
         var knightStartPosition = new ChessPosition(6, 3);
         var knightEndPosition = new ChessPosition(4, 4);
-        game.makeMove(new ChessMove(knightStartPosition, knightEndPosition, null), ChessGame.TeamColor.BLACK);
+        game.makeMove(new ChessMove(knightStartPosition, knightEndPosition, null));
 
         Assertions.assertEquals(TestUtilities.loadBoard("""
                 | | | | |k| | | |
@@ -161,7 +161,7 @@ public class MakeMoveTests {
 
         var bishopStartPosition = new ChessPosition(1, 3);
         var bishopEndPosition = new ChessPosition(6, 8);
-        game.makeMove(new ChessMove(bishopStartPosition, bishopEndPosition, null), ChessGame.TeamColor.WHITE);
+        game.makeMove(new ChessMove(bishopStartPosition, bishopEndPosition, null));
 
         Assertions.assertEquals(TestUtilities.loadBoard("""
                 | | | | |k| | | |
@@ -192,7 +192,7 @@ public class MakeMoveTests {
 
         var pawnStartPosition = new ChessPosition(7, 2);
         var pawnEndPosition = new ChessPosition(6, 2);
-        game.makeMove(new ChessMove(pawnStartPosition, pawnEndPosition, null), ChessGame.TeamColor.BLACK);
+        game.makeMove(new ChessMove(pawnStartPosition, pawnEndPosition, null));
 
         Assertions.assertEquals(TestUtilities.loadBoard("""
                 | |k| | | | | | |
