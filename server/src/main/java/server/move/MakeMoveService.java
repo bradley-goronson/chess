@@ -13,11 +13,8 @@ public class MakeMoveService extends Service {
         Integer gameID = makeMoveRequest.getGameID();
         ChessMove move = makeMoveRequest.getMove();
         try {
-            System.out.print("You made it to the point where you're about to get the target gamedata! Provided move is" + move +"\n");
             GameData targetGameData = gameDAO.getGame(gameID);
-            System.out.print("You made it to the point where you got the game! Target game is" + targetGameData +"\n");
             targetGameData.game().makeMove(move);
-            System.out.print("You made it to the point where you just made the move! Updated game is" + targetGameData + "\n");
             makeMoveResult.setGameID(targetGameData.gameID());
             makeMoveResult.setWhiteUsername(targetGameData.whiteUsername());
             makeMoveResult.setBlackUsername(targetGameData.blackUsername());

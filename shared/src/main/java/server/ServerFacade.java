@@ -57,12 +57,8 @@ public class ServerFacade {
     }
 
     public GameData makeMove(Integer gameID, ChessMove move, String authToken) throws ResponseException {
-        System.out.print("You made it to the point where you're about to create the make move request: Provided move is" + move + "\n");
         ClientMakeMoveRequest request = new ClientMakeMoveRequest(gameID, move);
-        System.out.print("You made it to the point where you just made the make move request: Created request is" + request + "\n");
-        GameData updatedGameData = makeRequest("PUT", "/move", request, GameData.class, authToken);
-        System.out.print("You made it to the point where you're about to return the updated game on the client side. The game: " + updatedGameData + "\n");
-        return updatedGameData;
+        return makeRequest("PUT", "/move", request, GameData.class, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
