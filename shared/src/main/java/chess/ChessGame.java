@@ -14,6 +14,7 @@ public class ChessGame {
     ChessBoard currentBoard = new ChessBoard();
     TeamColor currentTeam = TeamColor.WHITE;
     boolean alternateUniverse = false;
+    boolean gameOver = false;
 
     public ChessGame() {
         currentBoard.resetBoard();
@@ -34,6 +35,8 @@ public class ChessGame {
     public void setTeamTurn(TeamColor team) {
         currentTeam = team;
     }
+
+    public void setGameOver(boolean status) {gameOver = status;}
 
     /**
      * Enum identifying the 2 possible teams in a chess game
@@ -80,7 +83,7 @@ public class ChessGame {
      * @param move chess move to perform
      * @throws InvalidMoveException if move is invalid
      */
-    public void makeMove(ChessMove move) throws InvalidMoveException {
+    public ChessGame makeMove(ChessMove move, TeamColor playerColor) throws InvalidMoveException {
         ChessPiece movingPiece = currentBoard.getPiece(move.getStartPosition());
         ChessPiece destinationPiece = currentBoard.getPiece(move.getEndPosition());
         if (movingPiece == null) {
@@ -89,7 +92,7 @@ public class ChessGame {
 
         if (!alternateUniverse) {
             if (movingPiece.getTeamColor() != getTeamTurn()) {
-                throw new InvalidMoveException("Error: You can't move when it isn't your turn!");
+                throw new InvalidMoveException("Error: You can't move an opponent's piece!");
             }
         }
         if (destinationPiece != null && destinationPiece.getTeamColor() == movingPiece.getTeamColor()) {
@@ -113,12 +116,17 @@ public class ChessGame {
         }
 
         if (!alternateUniverse) {
-            if (movingPiece.getTeamColor() == TeamColor.WHITE) {
+            if (currentTeam == TeamColor.WHITE) {
                 setTeamTurn(TeamColor.BLACK);
             } else {
                 setTeamTurn(TeamColor.WHITE);
             }
         }
+        return this;
+    }
+
+    public ChessGame makeMove(ChessMove move) throws InvalidMoveException{
+        return makeMove(move, TeamColor.WHITE);
     }
 
     /**
