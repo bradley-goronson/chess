@@ -176,7 +176,9 @@ public class WebSocketHandler {
             }
 
             ChessGame updatedGame = gameDAO.getGame(gameID).game().makeMove(move);
-            GameData updatedGameData = new GameData(gameID, currentGame.whiteUsername(), currentGame.blackUsername(), currentGame.gameName(), updatedGame);
+            String whiteUsername = currentGame.whiteUsername();
+            String blackUsername = currentGame.blackUsername();
+            GameData updatedGameData = new GameData(gameID, whiteUsername, blackUsername, currentGame.gameName(), updatedGame);
             if (winCondition(updatedGameData)) {
                 updatedGameData.game().setGameOver(true);
             }

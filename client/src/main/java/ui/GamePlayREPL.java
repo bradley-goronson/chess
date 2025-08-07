@@ -113,10 +113,8 @@ public class GamePlayREPL {
 
     private void move(String[] requestArray, boolean isObserver, String authToken) throws ResponseException {
         if (!isObserver) {
-            System.out.print("You made it to the point where you're about to create the positions! Provided positions:" + requestArray[1] + " and " + requestArray[2] + "\n");
             ChessPosition startPosition = getChessPosition(requestArray[1]);
             ChessPosition endPosition = getChessPosition(requestArray[2]);
-            System.out.print("You made it to the point where you made the positions! They are: " + startPosition + "and" + endPosition +"\n");
 
             currentGameState = facade.makeMove(currentGameState.gameID(), new ChessMove(startPosition, endPosition, null), authToken);
             printBoard(currentGameState, true);
