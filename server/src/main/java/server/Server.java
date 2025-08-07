@@ -15,7 +15,7 @@ import spark.*;
 import server.websocket.WebSocketHandler;
 
 public class Server {
-    private final static WebSocketHandler WebSocketHandler = new WebSocketHandler();
+    private final static WebSocketHandler WEB_SOCKET_HANDLER = new WebSocketHandler();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -40,7 +40,7 @@ public class Server {
     }
 
     public static void createRoutes() {
-        Spark.webSocket("/ws", WebSocketHandler);
+        Spark.webSocket("/ws", WEB_SOCKET_HANDLER);
         Spark.delete("/db", new ClearHandler());
         Spark.post("/user", new RegisterHandler());
         Spark.post("/session", new LoginHandler());
