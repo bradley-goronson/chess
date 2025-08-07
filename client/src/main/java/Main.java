@@ -1,3 +1,4 @@
+import server.ResponseException;
 import ui.EscapeSequences;
 import ui.GamePlayREPL;
 import ui.PostLoginREPL;
@@ -23,8 +24,12 @@ public class Main {
                 PostLoginREPL postLogin = new PostLoginREPL();
                 boolean joinedGame = postLogin.repl(authToken);
                 if (joinedGame) {
-                    GamePlayREPL gamePlay = new GamePlayREPL();
-                    gamePlay.play(postLogin.getCurrentGameData(), postLogin.getWhitePerspective(), postLogin.getObserver(), authToken);
+                    try {
+                        GamePlayREPL gamePlay = new GamePlayREPL(postLogin.getCurrentGameData().gameID());
+                        gamePlay.play(postLogin.getCurrentGameData(), postLogin.getWhitePerspective(), postLogin.getObserver(), authToken);
+                    } catch (ResponseException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
                 loggedIn = postLogin.getLoggedIn();
             }

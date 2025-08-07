@@ -4,6 +4,9 @@ import chess.*;
 import model.GameData;
 import server.ResponseException;
 import server.ServerFacade;
+import websocket.NotificationHandler;
+import websocket.WebSocketFacade;
+import websocket.messages.ServerMessage;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -11,12 +14,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class GamePlayREPL {
+public class GamePlayREPL implements NotificationHandler {
     String serverURL = "http://localhost:8080";
     GameData currentGameState = null;
+    Integer gameID;
     ServerFacade facade = new ServerFacade(serverURL);
+    WebSocketFacade ws;
 
-    public void play(GameData currentGame, boolean whitePerspective, boolean isObserver, String authToken) {
+    public GamePlayREPL(Integer newGameID) {
+        this.gameID = newGameID;
+    }
+
+    public void play(GameData currentGame, boolean whitePerspective, boolean isObserver, String authToken) throws ResponseException {
+        ws = new WebSocketFacade(serverURL, this, gameID);
         currentGameState = currentGame;
         printBoard(currentGame, whitePerspective);
         String method;
@@ -249,5 +259,9 @@ public class GamePlayREPL {
         }
         output.print(EscapeSequences.SET_BG_COLOR_BLACK);
         output.print("\n");
+    }
+
+    public void notify(ServerMessage message) {
+
     }
 }
