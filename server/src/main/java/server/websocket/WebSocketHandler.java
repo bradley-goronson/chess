@@ -182,7 +182,7 @@ public class WebSocketHandler {
 
             if (currentGame.game().getBoard().getPiece(move.getStartPosition()).pieceColor != playerColor) {
                 ServerMessage moveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                moveError.setErrorMessage("Error: You can't move an opponents piece!");
+                moveError.setErrorMessage("Error: HANDLER You can't move an opponents piece! The piece is: " + currentGame.game().getBoard().getPiece(move.getStartPosition()).pieceColor + "You are: " + playerColor);
                 session.getRemote().sendString(new Gson().toJson(moveError));
                 return;
             }
