@@ -84,21 +84,21 @@ public class ChessGame {
         ChessPiece movingPiece = currentBoard.getPiece(move.getStartPosition());
         ChessPiece destinationPiece = currentBoard.getPiece(move.getEndPosition());
         if (movingPiece == null) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Error: You can't move without a piece!");
         }
 
         if (!alternateUniverse) {
             if (movingPiece.getTeamColor() != getTeamTurn()) {
-                throw new InvalidMoveException();
+                throw new InvalidMoveException("Error: You can't move when it isn't your turn!");
             }
         }
         if (destinationPiece != null && destinationPiece.getTeamColor() == movingPiece.getTeamColor()) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Error: You can't capture one of your own pieces!");
         }
 
         Collection<ChessMove> possibleMoves = movingPiece.pieceMoves(currentBoard, move.getStartPosition());
         if (!possibleMoves.contains(move)) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Error: That isn't a valid move");
         }
 
         if (move.getPromotionPiece() != null) {
@@ -109,7 +109,7 @@ public class ChessGame {
         currentBoard.addPiece(move.getStartPosition(), null);
 
         if (isInCheck(movingPiece.getTeamColor())) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Error: That move puts you in check!");
         }
 
         if (!alternateUniverse) {

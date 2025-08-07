@@ -1,6 +1,7 @@
 package server.websocket;
 
 import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.GameNotFoundException;
@@ -9,7 +10,6 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import server.login.LoginService;
 import service.Service;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
@@ -25,7 +25,7 @@ public class WebSocketHandler {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
 
         try {
-            String username = new LoginService().getAuthDAO().getAuth(command.getAuthToken()).username();
+            String username = new Service().getAuthDAO().getAuth(command.getAuthToken()).username();
 
             switch (command.getCommandType()) {
                 case CONNECT -> connect(command.getGameID(), username, session);
@@ -34,22 +34,23 @@ public class WebSocketHandler {
                 case MAKE_MOVE -> makeMove(command.getGameID(), username, command.getMove());
             }
         } catch (UnauthorizedException | DataAccessException e) {
-            session.getRemote().sendString(e.getMessage());
+            ServerMessage authError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            authError.setErrorMessage(e.getMessage());
+            session.getRemote().sendString(authError.toString());
         }
     }
 
     private void connect(Integer gameID, String userName, Session session) throws IOException {
-        connections.add(gameID, userName, session);
-        String notifyMessage = String.format("%s has entered the game", userName);
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notification.setNotificationText(notifyMessage);
-        connections.broadcast(gameID, userName, notification);
-
         try {
             GameData currentGameState = new Service().getGameDAO().getGame(gameID);
+            connections.add(gameID, userName, session);
+            String notifyMessage = String.format("%s has entered the game", userName);
+            ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            notification.setNotificationText(notifyMessage);
             ServerMessage loadGameMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             loadGameMessage.setGame(currentGameState);
             session.getRemote().sendString(new Gson().toJson(loadGameMessage));
+            connections.broadcast(gameID, userName, notification);
         } catch (GameNotFoundException | DataAccessException e) {
             ServerMessage loadGameError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             loadGameError.setErrorMessage(e.getMessage());
@@ -75,18 +76,21 @@ public class WebSocketHandler {
 
     private void makeMove(Integer gameID, String userName, ChessMove move) throws IOException {
         Session session = connections.getSession(gameID, userName);
-        String message = String.format("%s moved", userName);
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        notification.setNotificationText(message);
-        connections.broadcast(gameID, userName, notification);
 
         try {
-            GameData currentGameState = new Service().getGameDAO().getGame(gameID);
+            new Service().getGameDAO().getGame(gameID).game().makeMove(move);
+            GameData updatedGameState = new Service().getGameDAO().getGame(gameID);
             ServerMessage loadGameMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-            loadGameMessage.setGame(currentGameState);
-            session.getRemote().sendString(new Gson().toJson(loadGameMessage));
-        } catch (GameNotFoundException | DataAccessException e) {
-            session.getRemote().sendString(e.getMessage());
+            loadGameMessage.setGame(updatedGameState);
+            connections.broadcast(gameID, null, loadGameMessage);
+            String message = String.format("%s moved", userName);
+            ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            notification.setNotificationText(message);
+            connections.broadcast(gameID, userName, notification);
+        } catch (InvalidMoveException | GameNotFoundException | DataAccessException e) {
+            ServerMessage moveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            moveError.setErrorMessage(e.getMessage());
+            session.getRemote().sendString(new Gson().toJson(moveError));
         }
     }
 }
