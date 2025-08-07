@@ -107,7 +107,12 @@ public class WebSocketHandler {
             String blackUsername = currentGame.blackUsername();
             String whiteUsername = currentGame.whiteUsername();
 
-            connections.removeSession(gameID, userName);
+            String otherUsername;
+            if (userName.equals(blackUsername)) {
+                otherUsername = whiteUsername;
+            } else {
+                otherUsername = blackUsername;
+            }
 
             if (userName.equals(currentGame.whiteUsername())) {
                 whiteUsername = null;
@@ -116,23 +121,21 @@ public class WebSocketHandler {
                 blackUsername = null;
             }
 
+            currentGame.game().setGameOver(true);
             gameDAO.updateGame(
                     gameID,
                     new GameData(gameID, whiteUsername, blackUsername, currentGame.gameName(), currentGame.game())
             );
 
-            String message = String.format("%s has resigned from the game.", userName);
+            String message = String.format("%s has resigned from the game. %s has won.", userName, otherUsername);
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(message);
-            connections.broadcast(gameID, userName, notification);
-            GameData updatedGameData = gameDAO.getGame(gameID);
-            ServerMessage loadGameMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-            loadGameMessage.setGame(updatedGameData);
-            connections.broadcast(gameID, null, loadGameMessage);
+            connections.broadcast(gameID, null, notification);
+            connections.removeSession(gameID, userName);
         } catch (GameNotFoundException | DataAccessException e) {
-            ServerMessage leaveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-            leaveError.setErrorMessage(e.getMessage());
-            session.getRemote().sendString(new Gson().toJson(leaveError));
+            ServerMessage resignError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            resignError.setErrorMessage(e.getMessage());
+            session.getRemote().sendString(new Gson().toJson(resignError));
         }
     }
 
@@ -151,11 +154,11 @@ public class WebSocketHandler {
                 playerColor = null;
             }
             ChessGame updatedGame = gameDAO.getGame(gameID).game().makeMove(move, playerColor);
-            gameDAO.updateGame(
-                    gameID,
-                    new GameData(gameID, currentGame.whiteUsername(), currentGame.blackUsername(), currentGame.gameName(), updatedGame)
-            );
-            GameData updatedGameData = gameDAO.getGame(gameID);
+            GameData updatedGameData = new GameData(gameID, currentGame.whiteUsername(), currentGame.blackUsername(), currentGame.gameName(), updatedGame);
+            if (winCondition(updatedGameData)) {
+                updatedGameData.game().setGameOver(true);
+            }
+            gameDAO.updateGame(gameID, updatedGameData);
             ServerMessage loadGameMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             loadGameMessage.setGame(updatedGameData);
             connections.broadcast(gameID, null, loadGameMessage);
@@ -164,8 +167,6 @@ public class WebSocketHandler {
             notification.setNotificationText(message);
             connections.broadcast(gameID, userName, notification);
 
-            evaluateWinConditions(updatedGameData);
-
         } catch (InvalidMoveException | GameNotFoundException | DataAccessException e) {
             ServerMessage moveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             moveError.setErrorMessage(e.getMessage());
@@ -173,7 +174,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void evaluateWinConditions(GameData updatedGameData) throws IOException {
+    private boolean winCondition(GameData updatedGameData) throws IOException {
         ChessGame updatedGame = updatedGameData.game();
         if (updatedGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
             updatedGame.setGameOver(true);
@@ -181,20 +182,23 @@ public class WebSocketHandler {
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(message);
             connections.broadcast(updatedGameData.gameID(), null, notification);
-        }
-        if (updatedGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+            return true;
+        } else if (updatedGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
             updatedGame.setGameOver(true);
             String message = String.format("The game is over! %s has won.", updatedGameData.whiteUsername());
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(message);
             connections.broadcast(updatedGameData.gameID(), null, notification);
-        }
-        if (updatedGame.isInStalemate(ChessGame.TeamColor.WHITE) || updatedGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
+            return true;
+        } else if (updatedGame.isInStalemate(ChessGame.TeamColor.WHITE) || updatedGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
             updatedGame.setGameOver(true);
             String message = "The game is over! It was a stalemate.";
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(message);
             connections.broadcast(updatedGameData.gameID(), null, notification);
+            return true;
+        } else {
+            return false;
         }
     }
 }

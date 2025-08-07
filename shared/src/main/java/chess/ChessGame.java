@@ -84,6 +84,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public ChessGame makeMove(ChessMove move, TeamColor playerColor) throws InvalidMoveException {
+        if (gameOver) {
+            throw new InvalidMoveException("Error: the game is over!");
+        }
+
         ChessPiece movingPiece = currentBoard.getPiece(move.getStartPosition());
         ChessPiece destinationPiece = currentBoard.getPiece(move.getEndPosition());
         if (movingPiece == null) {
