@@ -1,9 +1,6 @@
 package server;
 
-import chess.ChessBoard;
-import chess.ChessGame;
 import chess.ChessMove;
-import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
@@ -49,7 +46,7 @@ public class ServerFacade {
         return gameData.gameID();
     }
 
-    public void joinGame(String gameID, String playerColor, String authToken) throws ResponseException {
+    public void joinGame(Integer gameID, String playerColor, String authToken) throws ResponseException {
         ClientJoinGameRequest request = new ClientJoinGameRequest(playerColor, gameID);
         makeRequest("PUT", "/game", request, null, authToken);
     }
@@ -59,9 +56,13 @@ public class ServerFacade {
         makeRequest("PUT", "/leave", request, null, authToken);
     }
 
-    public GameData makeMove(int gameID, ChessMove move, String authToken) throws ResponseException {
+    public GameData makeMove(Integer gameID, ChessMove move, String authToken) throws ResponseException {
+        System.out.print("You made it to the point where you're about to create the make move request: Provided move is" + move + "\n");
         ClientMakeMoveRequest request = new ClientMakeMoveRequest(gameID, move);
-         return makeRequest("PUT", "/move", request, GameData.class, authToken);
+        System.out.print("You made it to the point where you just made the make move request: Created request is" + request + "\n");
+        GameData updatedGameData = makeRequest("PUT", "/move", request, GameData.class, authToken);
+        System.out.print("You made it to the point where you're about to return the updated game on the client side. The game: " + updatedGameData + "\n");
+        return updatedGameData;
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {

@@ -202,7 +202,7 @@ public class PostLoginREPL {
         }
 
         ServerFacade facade = new ServerFacade(serverURL);
-        facade.joinGame(requestArray[1], requestArray[2], authToken);
+        facade.joinGame(currentGameData.gameID(), requestArray[2], authToken);
 
         whitePerspective = requestArray[2].equals("WHITE");
         return true;

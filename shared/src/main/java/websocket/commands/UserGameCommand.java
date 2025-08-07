@@ -21,11 +21,11 @@ public class UserGameCommand {
 
     private final ChessMove move;
 
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String userName, ChessMove move) {
+    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String username, ChessMove move) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
-        this.userName = userName;
+        this.userName = username;
         this.move = move;
     }
 

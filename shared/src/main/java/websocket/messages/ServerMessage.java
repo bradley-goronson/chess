@@ -1,18 +1,20 @@
 package websocket.messages;
 
 import com.google.gson.Gson;
+import model.GameData;
 
 import java.util.Objects;
 
 /**
  * Represents a Message the server can send through a WebSocket
- * 
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
 public class ServerMessage {
     ServerMessageType serverMessageType;
-    String notificationText;
+    String message;
+    String errorMessage;
+    GameData game;
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -20,9 +22,20 @@ public class ServerMessage {
         NOTIFICATION
     }
 
-    public ServerMessage(ServerMessageType type, String text) {
+    public ServerMessage(ServerMessageType type) {
         this.serverMessageType = type;
-        this.notificationText = text;
+    }
+
+    public void setNotificationText(String message) {
+        this.message = message;
+    }
+
+    public void setErrorMessage(String message) {
+        this.errorMessage = message;
+    }
+
+    public void setGame(GameData game) {
+        this.game = game;
     }
 
     public ServerMessageType getServerMessageType() {

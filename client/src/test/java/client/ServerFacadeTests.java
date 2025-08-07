@@ -220,7 +220,7 @@ public class ServerFacadeTests {
             authToken = facade.register("bradle", "goron", "test@test.com");
             facade.createGame("game1", authToken);
             facade.createGame("game2", authToken);
-            facade.joinGame("2", "WHITE", authToken);
+            facade.joinGame(2, "WHITE", authToken);
             gamesArray = facade.listGames(authToken);
             targetedGame = gamesArray.get(1);
         } catch (ResponseException e) {
@@ -241,8 +241,8 @@ public class ServerFacadeTests {
             authToken = facade.register("bradle", "goron", "test@test.com");
             facade.createGame("game1", authToken);
             facade.createGame("game2", authToken);
-            facade.joinGame("2", "WHITE", authToken);
-            facade.joinGame("2", "WHITE", authToken);
+            facade.joinGame(2, "WHITE", authToken);
+            facade.joinGame(2, "WHITE", authToken);
         } catch (ResponseException e) {
             System.out.println(e.getMessage());
             finalStatusCode = e.getStatusCode();
