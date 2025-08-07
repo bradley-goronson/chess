@@ -130,7 +130,6 @@ public class GamePlayREPL implements NotificationHandler {
             ChessPosition startPosition = getChessPosition(requestArray[1], isWhitePerspective);
             ChessPosition endPosition = getChessPosition(requestArray[2], isWhitePerspective);
             ChessMove move = new ChessMove(startPosition, endPosition, null);
-
             ws.move(move, authToken);
             //currentGameState = facade.makeMove(currentGameState.gameID(), new ChessMove(startPosition, endPosition, null), authToken);
         } else {
@@ -142,12 +141,11 @@ public class GamePlayREPL implements NotificationHandler {
     }
 
     private ChessPosition getChessPosition(String position, boolean isWhitePerspective) {
-        ArrayList<Character> letterColumns = new ArrayList<>(Arrays.asList('h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'));
+        ArrayList<Character> letterColumns = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
         ArrayList<Integer> integerRows = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8));
         if (!isWhitePerspective) {
-            letterColumns = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+            letterColumns = new ArrayList<>(Arrays.asList('h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'));
             integerRows = new ArrayList<>(Arrays.asList(8, 7, 6, 5, 4, 3, 2, 1));
-
         }
         Character givenLetter = position.charAt(0);
         char givenNumberChar = position.charAt(1);
