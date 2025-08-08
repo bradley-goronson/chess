@@ -47,8 +47,8 @@ public class GamePlayREPL implements NotificationHandler {
 
                 switch (method) {
                     case "help" -> help(isObserver);
-                    case "redraw" -> printBoard(currentGame, whitePerspective, null, null);
-                    case "leave" -> leftGame = leave(isObserver, whitePerspective, authToken);
+                    case "redraw" -> printBoard(currentGameState, isWhitePerspective, null, null);
+                    case "leave" -> leftGame = leave(isObserver, isWhitePerspective, authToken);
                     case "move" -> move(requestArray, isObserver, authToken);
                     case "resign" -> resign(isObserver, authToken);
                     case "show" -> showMoves(requestArray);
@@ -118,7 +118,7 @@ public class GamePlayREPL implements NotificationHandler {
 
     private boolean leave(boolean isObserver, boolean isWhitePlayer, String authToken) throws ResponseException {
         ws.leave(authToken);
-        facade.leave(currentGameState.gameID(), isObserver, isWhitePlayer, authToken);
+        //facade.leave(currentGameState.gameID(), isObserver, isWhitePlayer, authToken);
         System.out.print(
                 EscapeSequences.SET_TEXT_COLOR_GREEN +
                         "Leaving game...\n" +
@@ -130,8 +130,49 @@ public class GamePlayREPL implements NotificationHandler {
         if (!isObserver) {
             try {
                 ChessPosition startPosition = getChessPosition(requestArray[1]);
+                ChessPiece movingPiece = currentGameState.game().getBoard().getPiece(startPosition);
+                if (movingPiece == null) {
+                    System.out.print(
+                            EscapeSequences.SET_TEXT_COLOR_RED +
+                                    "Error: You need a piece to move. Your start position wasn't an empty tile" +
+                                    EscapeSequences.SET_TEXT_COLOR_WHITE);
+                    return;
+                }
+
+                ChessGame.TeamColor playerColor;
+                if (isWhitePerspective) {
+                    playerColor = ChessGame.TeamColor.WHITE;
+                } else {
+                    playerColor = ChessGame.TeamColor.BLACK;
+                }
+
+                if (currentGameState.game().getTeamTurn() != playerColor) {
+                    System.out.print(
+                            EscapeSequences.SET_TEXT_COLOR_RED +
+                                    "Error: You can't move when it isn't your turn!" +
+                                    EscapeSequences.SET_TEXT_COLOR_WHITE);
+                    return;
+                }
+
+                if (movingPiece.getTeamColor() != currentGameState.game().getTeamTurn()) {
+                    System.out.print(
+                            EscapeSequences.SET_TEXT_COLOR_RED +
+                                    "Error: You can't move an opponent's piece!" +
+                                    EscapeSequences.SET_TEXT_COLOR_WHITE);
+                    return;
+                }
                 ChessPosition endPosition = getChessPosition(requestArray[2]);
-                ChessMove move = new ChessMove(startPosition, endPosition, null);
+                ChessPiece.PieceType promotionPiece = null;
+                if (movingPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                    if (movingPiece.getTeamColor() == ChessGame.TeamColor.WHITE && endPosition.getRow() == 8) {
+                        promotionPiece = checkForPromotion(startPosition, endPosition);
+                    }
+                    if (movingPiece.getTeamColor() == ChessGame.TeamColor.BLACK && endPosition.getRow() == 1) {
+                        promotionPiece = checkForPromotion(startPosition, endPosition);
+                    }
+                }
+                System.out.println(promotionPiece);
+                ChessMove move = new ChessMove(startPosition, endPosition, promotionPiece);
                 ws.move(move, authToken, requestArray[1], requestArray[2]);
             } catch (IndexOutOfBoundsException e) {
                 System.out.print(
@@ -178,7 +219,7 @@ public class GamePlayREPL implements NotificationHandler {
                 resigned = true;
                 gameOver = true;
                 System.out.print(
-                        EscapeSequences.SET_TEXT_COLOR_GREEN +
+                        EscapeSequences.SET_TEXT_COLOR_YELLOW +
                                 "You have surrendered. Game over.\n" +
                                 EscapeSequences.SET_TEXT_COLOR_WHITE);
             }
@@ -349,5 +390,41 @@ public class GamePlayREPL implements NotificationHandler {
                 }
             }
         }
+    }
+
+    private ChessPiece.PieceType checkForPromotion(ChessPosition startPosition, ChessPosition endPosition) {
+        Collection<ChessMove> validMoves = currentGameState.game().validMoves(startPosition);
+        ChessPiece.PieceType returnPiece = null;
+
+        boolean valid = false;
+        for (ChessMove move : validMoves) {
+            if (move.getEndPosition().getColumn() == endPosition.getColumn() && move.getEndPosition().getRow() == endPosition.getRow()) {
+                valid = true;
+                break;
+            }
+        }
+
+        if (valid) {
+            boolean done = false;
+            while (!done) {
+                System.out.println("You're moving a pawn to a promotion spot! What piece do you want to promote to?\n");
+                System.out.println("Queen: type \"QUEEN\"\n" +
+                        "Bishop: type \"BISHOP\"\n" +
+                        "Knight: type \"KNIGHT\"\n" +
+                        "Rook: type \"ROOK\"\n");
+                Scanner scanner = new Scanner(System.in);
+                String answer = scanner.nextLine();
+                switch (answer) {
+                    case "QUEEN" -> returnPiece = ChessPiece.PieceType.QUEEN;
+                    case "BISHOP" -> returnPiece = ChessPiece.PieceType.BISHOP;
+                    case "KNIGHT" -> returnPiece = ChessPiece.PieceType.KNIGHT;
+                    case "ROOK" -> returnPiece = ChessPiece.PieceType.ROOK;
+                }
+                if (returnPiece != null) {
+                    done = true;
+                }
+            }
+        }
+        return returnPiece;
     }
 }

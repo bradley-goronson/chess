@@ -108,7 +108,7 @@ public class PostLoginREPL {
         if (requestArray.length != 1) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
-                            "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                            "Error: incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return true;
         }
@@ -212,7 +212,7 @@ public class PostLoginREPL {
         if (requestArray.length != 2) {
             System.out.println(
                     EscapeSequences.SET_TEXT_COLOR_RED +
-                            "error incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
+                            "Error: incorrect number of arguments given - use \"help\" for a list of available commands and usages" +
                             EscapeSequences.SET_TEXT_COLOR_WHITE);
             return false;
         }

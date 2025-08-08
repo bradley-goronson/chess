@@ -137,13 +137,6 @@ public class WebSocketHandler {
                 otherUsername = blackUsername;
             }
 
-            if (userName.equals(currentGame.whiteUsername())) {
-                whiteUsername = null;
-            }
-            if (userName.equals(currentGame.blackUsername())) {
-                blackUsername = null;
-            }
-
             currentGame.game().setGameOver(true);
             gameDAO.updateGame(
                     gameID,
@@ -224,14 +217,14 @@ public class WebSocketHandler {
         ChessGame updatedGame = updatedGameData.game();
         if (updatedGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
             updatedGame.setGameOver(true);
-            String message = String.format("The game is over! %s has won.", updatedGameData.blackUsername());
+            String message = String.format("Checkmate! The game is over! %s has won.", updatedGameData.blackUsername());
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(message);
             connections.broadcast(updatedGameData.gameID(), null, notification);
             return true;
         } else if (updatedGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
             updatedGame.setGameOver(true);
-            String message = String.format("The game is over! %s has won.", updatedGameData.whiteUsername());
+            String message = String.format("Checkmate! The game is over. %s has won.", updatedGameData.whiteUsername());
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(message);
             connections.broadcast(updatedGameData.gameID(), null, notification);
