@@ -2,7 +2,6 @@ package ui;
 
 import chess.*;
 import model.GameData;
-import model.MovesContainer;
 import server.ResponseException;
 import server.ServerFacade;
 import websocket.NotificationHandler;
@@ -50,9 +49,9 @@ public class GamePlayREPL implements NotificationHandler {
                     case "help" -> help(isObserver);
                     case "redraw" -> printBoard(currentGame, whitePerspective, null, null);
                     case "leave" -> leftGame = leave(isObserver, whitePerspective, authToken);
-                    case "move" -> move(requestArray, isObserver, whitePerspective, authToken);
+                    case "move" -> move(requestArray, isObserver, authToken);
                     case "resign" -> resign(isObserver, authToken);
-                    case "show" -> showMoves(requestArray, authToken);
+                    case "show" -> showMoves(requestArray);
                     default -> System.out.println(
                             EscapeSequences.SET_TEXT_COLOR_RED +
                                     "error: invalid command given - use \"help\" for a list of available commands and usages" +
@@ -127,10 +126,10 @@ public class GamePlayREPL implements NotificationHandler {
         return true;
     }
 
-    private void move(String[] requestArray, boolean isObserver, boolean isWhitePerspective, String authToken) throws ResponseException {
+    private void move(String[] requestArray, boolean isObserver, String authToken) throws ResponseException {
         if (!isObserver) {
-            ChessPosition startPosition = getChessPosition(requestArray[1], isWhitePerspective);
-            ChessPosition endPosition = getChessPosition(requestArray[2], isWhitePerspective);
+            ChessPosition startPosition = getChessPosition(requestArray[1]);
+            ChessPosition endPosition = getChessPosition(requestArray[2]);
             ChessMove move = new ChessMove(startPosition, endPosition, null);
             ws.move(move, authToken, requestArray[1], requestArray[2]);
         } else {
@@ -141,7 +140,7 @@ public class GamePlayREPL implements NotificationHandler {
         }
     }
 
-    private ChessPosition getChessPosition(String position, boolean isWhitePerspective) {
+    private ChessPosition getChessPosition(String position) {
         ArrayList<Character> letterColumns = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
         ArrayList<Integer> integerRows = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8));
         Character givenLetter = position.charAt(0);
@@ -185,13 +184,15 @@ public class GamePlayREPL implements NotificationHandler {
         }
     }
 
-    private void showMoves(String[] requestArray, String authToken) throws ResponseException {
-        ChessPosition startPosition = getChessPosition(requestArray[1], isWhitePerspective);
-        MovesContainer validMovesContainer = facade.showMoves(gameID, startPosition, authToken);
-        Collection<ChessMove> validMoves = validMovesContainer.validMoves();
+    private void showMoves(String[] requestArray) throws ResponseException {
+        ChessPosition startPosition = getChessPosition(requestArray[1]);
+        //MovesContainer validMovesContainer = facade.showMoves(gameID, startPosition, authToken);
+        Collection<ChessMove> validMoves = validMoves(startPosition);
         ArrayList<ChessPosition> endPositions = new ArrayList<>();
-        for (ChessMove move : validMoves) {
-            endPositions.add(move.getEndPosition());
+        if (validMoves != null) {
+            for (ChessMove move : validMoves) {
+                endPositions.add(move.getEndPosition());
+            }
         }
         printBoard(currentGameState, isWhitePerspective, startPosition, endPositions);
 
@@ -332,13 +333,97 @@ public class GamePlayREPL implements NotificationHandler {
         );
     }
 
+    private Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        ChessBoard currentBoard = currentGameState.game().getBoard();
+        ChessPiece piece = currentBoard.getPiece(startPosition);
+        if (piece == null) {
+            return null;
+        }
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(currentBoard, startPosition);
+        for (ChessMove move : possibleMoves) {
+            ChessBoard savedBoard = currentBoard;
+            currentBoard = currentBoard.clone();
+            try {
+                makeMove(move, currentBoard);
+                validMoves.add(move);
+            } catch (InvalidMoveException e) {
+                continue;
+            } finally {
+                currentBoard = savedBoard;
+            }
+        }
+        return validMoves;
+    }
+
+    private void makeMove(ChessMove move, ChessBoard currentBoard) throws InvalidMoveException {
+        if (gameOver) {
+            throw new InvalidMoveException("Error: the game is over!");
+        }
+
+        ChessPiece movingPiece = currentBoard.getPiece(move.getStartPosition());
+        ChessPiece destinationPiece = currentBoard.getPiece(move.getEndPosition());
+        if (movingPiece == null) {
+            throw new InvalidMoveException("Error: You can't move without a piece!");
+        }
+
+        if (destinationPiece != null && destinationPiece.getTeamColor() == movingPiece.getTeamColor()) {
+            throw new InvalidMoveException("Error: You can't capture one of your own pieces!");
+        }
+
+        Collection<ChessMove> possibleMoves = movingPiece.pieceMoves(currentBoard, move.getStartPosition());
+        if (!possibleMoves.contains(move)) {
+            throw new InvalidMoveException("Error: That isn't a valid move");
+        }
+
+        if (move.getPromotionPiece() != null) {
+            movingPiece.type = move.getPromotionPiece();
+        }
+
+        currentBoard.addPiece(move.getEndPosition(), movingPiece);
+        currentBoard.addPiece(move.getStartPosition(), null);
+
+        if (isInCheck(movingPiece.getTeamColor(), currentBoard)) {
+            throw new InvalidMoveException("Error: That move puts you in check!");
+        }
+    }
+
+    public boolean isInCheck(ChessGame.TeamColor teamColor, ChessBoard currentBoard) {
+        Collection<ChessPosition> opponentPositions = new ArrayList<>();
+        ChessPosition kingPosition = new ChessPosition(0, 0);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece currentPiece = currentBoard.board[i][j];
+                if (currentPiece != null && currentPiece.getTeamColor() == teamColor) {
+                    if (currentPiece.type == ChessPiece.PieceType.KING) {
+                        kingPosition = new ChessPosition(i + 1, j + 1);
+                    }
+                } else {
+                    if (currentPiece != null) {
+                        opponentPositions.add(new ChessPosition(i + 1, j + 1));
+                    }
+                }
+            }
+        }
+        for (ChessPosition opponentPosition : opponentPositions) {
+            ChessPiece opponentPiece = currentBoard.getPiece(opponentPosition);
+            Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(currentBoard, opponentPosition);
+            for (ChessMove opponentMove : opponentMoves) {
+                if (opponentMove.getEndPosition().equals(kingPosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void checkForHighlighting(PrintStream output, ChessPosition start, int rowIndex, int colIndex, ArrayList<ChessPosition> ends) {
         if (start.getRow() - 1 == rowIndex && start.getColumn() - 1 == colIndex) {
-            output.print(EscapeSequences.SET_BG_COLOR_YELLOW);
+            output.print(EscapeSequences.SET_BG_COLOR_MAGENTA);
         } else {
             for (ChessPosition position : ends) {
                 if (position.getRow() - 1 == rowIndex && position.getColumn() - 1 == colIndex) {
-                    output.print(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+                    output.print(EscapeSequences.SET_BG_COLOR_GREEN);
                 }
             }
         }
