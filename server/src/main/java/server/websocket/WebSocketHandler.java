@@ -33,7 +33,7 @@ public class WebSocketHandler {
                 case CONNECT -> connect(command.getGameID(), username, session);
                 case LEAVE -> leave(command.getGameID(), username);
                 case RESIGN -> resign(command.getGameID(), username);
-                case MAKE_MOVE -> makeMove(command.getGameID(), username, command.getMove());
+                case MAKE_MOVE -> makeMove(command.getGameID(), username, command.getMove(), command.getFirstPosition(), command.getLastPosition());
             }
         } catch (UnauthorizedException | DataAccessException e) {
             ServerMessage authError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
@@ -157,7 +157,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(Integer gameID, String userName, ChessMove move) throws IOException {
+    private void makeMove(Integer gameID, String userName, ChessMove move, String start, String end) throws IOException {
         Session session = connections.getSession(gameID, userName);
         if (session == null) {
             return;
@@ -182,7 +182,7 @@ public class WebSocketHandler {
 
             if (currentGame.game().getBoard().getPiece(move.getStartPosition()).pieceColor != playerColor) {
                 ServerMessage moveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                moveError.setErrorMessage("Error: HANDLER You can't move an opponents piece! The piece is: " + currentGame.game().getBoard().getPiece(move.getStartPosition()).pieceColor + "You are: " + playerColor);
+                moveError.setErrorMessage("Error: You can't move an opponents piece!");
                 session.getRemote().sendString(new Gson().toJson(moveError));
                 return;
             }
@@ -198,7 +198,7 @@ public class WebSocketHandler {
             ServerMessage loadGameMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             loadGameMessage.setGame(updatedGameData);
             connections.broadcast(gameID, null, loadGameMessage);
-            String message = String.format("%s moved", userName);
+            String message = String.format("%s moved from %s to %s", userName, start, end);
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(message);
             connections.broadcast(gameID, userName, notification);

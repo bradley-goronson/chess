@@ -11,10 +11,12 @@ import java.util.Objects;
 public class ChessPosition {
     private final int row;
     private final int col;
+    private boolean hypotheticallyValid;
 
     public ChessPosition(int row, int col) {
         this.row = row;
         this.col = col;
+        this.hypotheticallyValid = false;
     }
 
     /**
@@ -31,6 +33,10 @@ public class ChessPosition {
      */
     public int getColumn() {
         return this.col;
+    }
+
+    public boolean getValidity() {
+        return hypotheticallyValid;
     }
 
     @Override

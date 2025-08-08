@@ -19,6 +19,10 @@ public class UserGameCommand {
 
     private ChessMove move = null;
 
+    private String firstPosition;
+
+    private String lastPosition;
+
     public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
         this.commandType = commandType;
         this.authToken = authToken;
@@ -49,6 +53,23 @@ public class UserGameCommand {
     public void setMove(ChessMove newMove) {
         move = newMove;
     }
+
+    public void setFirstPosition(String string) {
+        firstPosition = string;
+    }
+
+    public void setLastPosition(String string) {
+        lastPosition = string;
+    }
+
+    public String getFirstPosition() {
+        return firstPosition;
+    }
+
+    public String getLastPosition() {
+        return lastPosition;
+    }
+
 
     @Override
     public boolean equals(Object o) {

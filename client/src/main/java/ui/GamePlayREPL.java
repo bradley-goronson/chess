@@ -130,8 +130,7 @@ public class GamePlayREPL implements NotificationHandler {
             ChessPosition startPosition = getChessPosition(requestArray[1], isWhitePerspective);
             ChessPosition endPosition = getChessPosition(requestArray[2], isWhitePerspective);
             ChessMove move = new ChessMove(startPosition, endPosition, null);
-            ws.move(move, authToken);
-            //currentGameState = facade.makeMove(currentGameState.gameID(), new ChessMove(startPosition, endPosition, null), authToken);
+            ws.move(move, authToken, requestArray[1], requestArray[2]);
         } else {
             System.out.print(
                     EscapeSequences.SET_TEXT_COLOR_RED +
@@ -143,10 +142,6 @@ public class GamePlayREPL implements NotificationHandler {
     private ChessPosition getChessPosition(String position, boolean isWhitePerspective) {
         ArrayList<Character> letterColumns = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
         ArrayList<Integer> integerRows = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8));
-        if (!isWhitePerspective) {
-            letterColumns = new ArrayList<>(Arrays.asList('h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'));
-            integerRows = new ArrayList<>(Arrays.asList(8, 7, 6, 5, 4, 3, 2, 1));
-        }
         Character givenLetter = position.charAt(0);
         char givenNumberChar = position.charAt(1);
         Integer givenNumber = Character.getNumericValue(givenNumberChar);
@@ -228,6 +223,9 @@ public class GamePlayREPL implements NotificationHandler {
                     output.print(oddColor);
                 }
                 ChessPiece tile = currentRow[j];
+                if (!whitePerspective) {
+                    tile = currentRow[7 - j];
+                }
                 output.print(" ");
                 if (tile == null) {
                     output.print(" ");
@@ -278,7 +276,6 @@ public class GamePlayREPL implements NotificationHandler {
     }
 
     public void notify(ServerMessage message) {
-        System.out.println("You made it to notify!");
         switch (message.getServerMessageType()) {
             case LOAD_GAME -> loadGame(message.getGame());
             case NOTIFICATION -> displayNotification(message.getMessage());
@@ -292,7 +289,6 @@ public class GamePlayREPL implements NotificationHandler {
     }
 
     private void displayNotification(String notification) {
-        System.out.println("You made it to notify 2!");
         System.out.println(
                 EscapeSequences.SET_TEXT_COLOR_BLUE +
                 notification +
@@ -301,7 +297,6 @@ public class GamePlayREPL implements NotificationHandler {
     }
 
     private void displayError(String errorMessage) {
-        System.out.println("You made it to error notify!");
         System.out.println(
                 EscapeSequences.SET_TEXT_COLOR_BLUE +
                 errorMessage +

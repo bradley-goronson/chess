@@ -100,7 +100,7 @@ public class ChessGame {
 
         if (!alternateUniverse) {
             if (movingPiece.getTeamColor() != getTeamTurn()) {
-                throw new InvalidMoveException("Error: You can't move an opponent's piece!");
+                throw new InvalidMoveException("Error: You can't move when it isn't your turn!");
             }
         }
         if (destinationPiece != null && destinationPiece.getTeamColor() == movingPiece.getTeamColor()) {
