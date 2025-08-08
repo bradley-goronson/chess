@@ -136,7 +136,8 @@ public class GamePlayREPL implements NotificationHandler {
             } catch (IndexOutOfBoundsException e) {
                 System.out.print(
                         EscapeSequences.SET_TEXT_COLOR_RED +
-                                "Invalid input. Make sure to type \"move <firstPosition> <secondPosition>\" with no spaces between the letter and number of the positions.\n" +
+                                "Invalid input. Make sure to type \"move <firstPosition> <secondPosition>\" " +
+                                "with no spaces between the letter and number of the positions.\n" +
                                 EscapeSequences.SET_TEXT_COLOR_WHITE);
             }
         } else {
