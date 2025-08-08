@@ -28,7 +28,6 @@ public class WebSocketHandler {
 
         try {
             String username = new Service().getAuthDAO().getAuth(command.getAuthToken()).username();
-            System.out.println("Good job! You got a username! It is: " + username);
             switch (command.getCommandType()) {
                 case CONNECT -> connect(command.getGameID(), username, session);
                 case LEAVE -> leave(command.getGameID(), username);
@@ -46,7 +45,15 @@ public class WebSocketHandler {
         try {
             GameData currentGameState = new Service().getGameDAO().getGame(gameID);
             connections.add(gameID, userName, session);
-            String notifyMessage = String.format("%s has entered the game", userName);
+
+            String notifyMessage = String.format("%s has entered the game as an observer", userName);
+            if (!isObserver(currentGameState, userName)) {
+                String playerColor = "WHITE";
+                if (userName.equals(currentGameState.blackUsername())) {
+                    playerColor = "BLACK";
+                }
+                notifyMessage = String.format("%s has join the game as the %s player", userName, playerColor);
+            }
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(notifyMessage);
             ServerMessage loadGameMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
@@ -61,10 +68,8 @@ public class WebSocketHandler {
     }
 
     private void leave(Integer gameID, String userName) throws IOException {
-        System.out.println("We are trying to leave! the gameID is:" + gameID + "\n");
         if (gameID != null) {
             Session session = connections.getSession(gameID, userName);
-            System.out.println("You made a session! Good job! It is: " + session);
             if (session != null) {
                 GameDataAccess gameDAO = new Service().getGameDAO();
 
@@ -149,7 +154,6 @@ public class WebSocketHandler {
             ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.setNotificationText(message);
             connections.broadcast(gameID, null, notification);
-            //connections.removeSession(gameID, userName);
         } catch (GameNotFoundException | DataAccessException e) {
             ServerMessage resignError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             resignError.setErrorMessage(e.getMessage());
@@ -190,18 +194,24 @@ public class WebSocketHandler {
             ChessGame updatedGame = gameDAO.getGame(gameID).game().makeMove(move);
             String whiteUsername = currentGame.whiteUsername();
             String blackUsername = currentGame.blackUsername();
+
             GameData updatedGameData = new GameData(gameID, whiteUsername, blackUsername, currentGame.gameName(), updatedGame);
-            if (winCondition(updatedGameData)) {
-                updatedGameData.game().setGameOver(true);
+            String message = String.format("%s moved from %s to %s", userName, start, end);
+            ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            notification.setNotificationText(message);
+            connections.broadcast(gameID, userName, notification);
+
+            if (updatedGame.isInCheck(ChessGame.TeamColor.WHITE) || updatedGameData.game().isInCheck(ChessGame.TeamColor.BLACK)) {
+                if (winCondition(updatedGameData)) {
+                    updatedGameData.game().setGameOver(true);
+                } else {
+                    generateCheckNotification(updatedGameData);
+                }
             }
             gameDAO.updateGame(gameID, updatedGameData);
             ServerMessage loadGameMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             loadGameMessage.setGame(updatedGameData);
             connections.broadcast(gameID, null, loadGameMessage);
-            String message = String.format("%s moved from %s to %s", userName, start, end);
-            ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            notification.setNotificationText(message);
-            connections.broadcast(gameID, userName, notification);
 
         } catch (InvalidMoveException | GameNotFoundException | DataAccessException e) {
             ServerMessage moveError = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
@@ -235,6 +245,21 @@ public class WebSocketHandler {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void generateCheckNotification(GameData updatedGameData) throws IOException {
+        ChessGame updatedGame = updatedGameData.game();
+        if (updatedGame.isInCheck(ChessGame.TeamColor.WHITE)) {
+            String message = String.format("The WHITE king (%s) is in check.", updatedGameData.blackUsername());
+            ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            notification.setNotificationText(message);
+            connections.broadcast(updatedGameData.gameID(), null, notification);
+        } else if (updatedGame.isInCheck(ChessGame.TeamColor.BLACK)) {
+            String message = String.format("The BLACK king (%s) is in check.", updatedGameData.whiteUsername());
+            ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            notification.setNotificationText(message);
+            connections.broadcast(updatedGameData.gameID(), null, notification);
         }
     }
 

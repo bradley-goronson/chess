@@ -176,13 +176,11 @@ public class GamePlayREPL implements NotificationHandler {
                 ws.resign(authToken);
                 resigned = true;
                 gameOver = true;
-            } else {
-                return;
-            }
-            System.out.print(
+                System.out.print(
                         EscapeSequences.SET_TEXT_COLOR_GREEN +
-                        "You have surrendered. Game over.\n" +
-                        EscapeSequences.SET_TEXT_COLOR_WHITE);
+                                "You have surrendered. Game over.\n" +
+                                EscapeSequences.SET_TEXT_COLOR_WHITE);
+            }
         } else {
             System.out.print(
                     EscapeSequences.SET_TEXT_COLOR_RED +
@@ -194,7 +192,7 @@ public class GamePlayREPL implements NotificationHandler {
     private void showMoves(String[] requestArray) throws ResponseException {
         ChessPosition startPosition = getChessPosition(requestArray[1]);
         //MovesContainer validMovesContainer = facade.showMoves(gameID, startPosition, authToken);
-        Collection<ChessMove> validMoves = validMoves(startPosition);
+        Collection<ChessMove> validMoves = currentGameState.game().validMoves(startPosition);
         ArrayList<ChessPosition> endPositions = new ArrayList<>();
         if (validMoves != null) {
             for (ChessMove move : validMoves) {
@@ -338,90 +336,6 @@ public class GamePlayREPL implements NotificationHandler {
                 errorMessage +
                 EscapeSequences.SET_TEXT_COLOR_WHITE
         );
-    }
-
-    private Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessBoard currentBoard = currentGameState.game().getBoard();
-        ChessPiece piece = currentBoard.getPiece(startPosition);
-        if (piece == null) {
-            return null;
-        }
-        Collection<ChessMove> validMoves = new ArrayList<>();
-        Collection<ChessMove> possibleMoves = piece.pieceMoves(currentBoard, startPosition);
-        for (ChessMove move : possibleMoves) {
-            ChessBoard savedBoard = currentBoard;
-            currentBoard = currentBoard.clone();
-            try {
-                makeMove(move, currentBoard);
-                validMoves.add(move);
-            } catch (InvalidMoveException e) {
-                continue;
-            } finally {
-                currentBoard = savedBoard;
-            }
-        }
-        return validMoves;
-    }
-
-    private void makeMove(ChessMove move, ChessBoard currentBoard) throws InvalidMoveException {
-        if (gameOver) {
-            throw new InvalidMoveException("Error: the game is over!");
-        }
-
-        ChessPiece movingPiece = currentBoard.getPiece(move.getStartPosition());
-        ChessPiece destinationPiece = currentBoard.getPiece(move.getEndPosition());
-        if (movingPiece == null) {
-            throw new InvalidMoveException("Error: You can't move without a piece!");
-        }
-
-        if (destinationPiece != null && destinationPiece.getTeamColor() == movingPiece.getTeamColor()) {
-            throw new InvalidMoveException("Error: You can't capture one of your own pieces!");
-        }
-
-        Collection<ChessMove> possibleMoves = movingPiece.pieceMoves(currentBoard, move.getStartPosition());
-        if (!possibleMoves.contains(move)) {
-            throw new InvalidMoveException("Error: That isn't a valid move");
-        }
-
-        if (move.getPromotionPiece() != null) {
-            movingPiece.type = move.getPromotionPiece();
-        }
-
-        currentBoard.addPiece(move.getEndPosition(), movingPiece);
-        currentBoard.addPiece(move.getStartPosition(), null);
-
-        if (isInCheck(movingPiece.getTeamColor(), currentBoard)) {
-            throw new InvalidMoveException("Error: That move puts you in check!");
-        }
-    }
-
-    public boolean isInCheck(ChessGame.TeamColor teamColor, ChessBoard currentBoard) {
-        Collection<ChessPosition> opponentPositions = new ArrayList<>();
-        ChessPosition kingPosition = new ChessPosition(0, 0);
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                ChessPiece currentPiece = currentBoard.board[i][j];
-                if (currentPiece != null && currentPiece.getTeamColor() == teamColor) {
-                    if (currentPiece.type == ChessPiece.PieceType.KING) {
-                        kingPosition = new ChessPosition(i + 1, j + 1);
-                    }
-                } else {
-                    if (currentPiece != null) {
-                        opponentPositions.add(new ChessPosition(i + 1, j + 1));
-                    }
-                }
-            }
-        }
-        for (ChessPosition opponentPosition : opponentPositions) {
-            ChessPiece opponentPiece = currentBoard.getPiece(opponentPosition);
-            Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(currentBoard, opponentPosition);
-            for (ChessMove opponentMove : opponentMoves) {
-                if (opponentMove.getEndPosition().equals(kingPosition)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private void checkForHighlighting(PrintStream output, ChessPosition start, int rowIndex, int colIndex, ArrayList<ChessPosition> ends) {
