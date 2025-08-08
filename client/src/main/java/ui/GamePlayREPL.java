@@ -2,16 +2,18 @@ package ui;
 
 import chess.*;
 import model.GameData;
+import model.MovesContainer;
 import server.ResponseException;
 import server.ServerFacade;
 import websocket.NotificationHandler;
-import websocket.WebSocketFacade;
+import Facade.WebSocketFacade;
 import websocket.messages.ServerMessage;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Scanner;
 
 public class GamePlayREPL implements NotificationHandler {
@@ -46,7 +48,7 @@ public class GamePlayREPL implements NotificationHandler {
 
                 switch (method) {
                     case "help" -> help(isObserver);
-                    case "redraw" -> printBoard(currentGame, whitePerspective);
+                    case "redraw" -> printBoard(currentGame, whitePerspective, null, null);
                     case "leave" -> leftGame = leave(isObserver, whitePerspective, authToken);
                     case "move" -> move(requestArray, isObserver, whitePerspective, authToken);
                     case "resign" -> resign(isObserver, authToken);
@@ -184,10 +186,28 @@ public class GamePlayREPL implements NotificationHandler {
     }
 
     private void showMoves(String[] requestArray, String authToken) throws ResponseException {
-        System.out.print("You tried to show moves");
+        ChessPosition startPosition = getChessPosition(requestArray[1], isWhitePerspective);
+        MovesContainer validMovesContainer = facade.showMoves(gameID, startPosition, authToken);
+        Collection<ChessMove> validMoves = validMovesContainer.validMoves();
+        ArrayList<ChessPosition> endPositions = new ArrayList<>();
+        for (ChessMove move : validMoves) {
+            endPositions.add(move.getEndPosition());
+        }
+        printBoard(currentGameState, isWhitePerspective, startPosition, endPositions);
+
+        if (currentGameState.game().getBoard().getPiece(startPosition) == null) {
+            System.out.print(
+                    EscapeSequences.SET_TEXT_COLOR_RED +
+                            "You need to select a tile that has a piece on it to show moves.\n" +
+                            EscapeSequences.SET_TEXT_COLOR_WHITE);
+        }
     }
 
-    private void printBoard(GameData gameData, boolean whitePerspective) {
+    private void printBoard(GameData gameData, boolean whitePerspective, ChessPosition startPosition, ArrayList<ChessPosition> endPositions) {
+        boolean showingMoves = false;
+        if (endPositions != null) {
+            showingMoves = true;
+        }
         PrintStream output = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         String[] whiteEdge = {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "};
         String[] blackEdge = {" ", "h", "g", "f", "e", "d", "c", "b", "a", " "};
@@ -212,20 +232,36 @@ public class GamePlayREPL implements NotificationHandler {
                 oddColor = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
             }
 
-            ChessPiece[] currentRow = currentChessBoard[7 - i];
+            int currentRowIndex = 7 - i;
             if (!whitePerspective) {
-                currentRow = currentChessBoard[i];
+                currentRowIndex = i;
             }
+            ChessPiece[] currentRow = currentChessBoard[currentRowIndex];
+
             for (int j = 0; j < currentRow.length; j++) {
                 if (j % 2 == 0) {
                     output.print(evenColor);
                 } else {
                     output.print(oddColor);
                 }
-                ChessPiece tile = currentRow[j];
+                int currentColIndex = j;
                 if (!whitePerspective) {
-                    tile = currentRow[7 - j];
+                    currentColIndex = 7 - j;
                 }
+                ChessPiece tile = currentRow[currentColIndex];
+
+                if (showingMoves) {
+                    if (startPosition.getRow() - 1 == currentRowIndex && startPosition.getColumn() - 1 == currentColIndex) {
+                        output.print(EscapeSequences.SET_BG_COLOR_YELLOW);
+                    } else {
+                        for (ChessPosition position : endPositions) {
+                            if (position.getRow() - 1 == currentRowIndex && position.getColumn() - 1 == currentColIndex) {
+                                output.print(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+                            }
+                        }
+                    }
+                }
+
                 output.print(" ");
                 if (tile == null) {
                     output.print(" ");
@@ -285,7 +321,7 @@ public class GamePlayREPL implements NotificationHandler {
 
     private void loadGame(GameData newGameState) {
         currentGameState = newGameState;
-        printBoard(currentGameState, isWhitePerspective);
+        printBoard(currentGameState, isWhitePerspective, null, null);
     }
 
     private void displayNotification(String notification) {

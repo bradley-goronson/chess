@@ -1,14 +1,16 @@
 package server.move;
 
-import chess.ChessGame;
+import chess.ChessMove;
 import server.Result;
 
-public class MakeMoveResult extends Result {
+import java.util.Collection;
+
+public class ShowMovesResult extends Result {
     private Integer gameID;
     private String whiteUsername;
     private String blackUsername;
     private String gameName;
-    private ChessGame updatedGame;
+    private Collection<ChessMove> validMoves;
 
     public void setGameID(Integer resultGameId) {
         gameID = resultGameId;
@@ -26,7 +28,7 @@ public class MakeMoveResult extends Result {
         gameName = resultGameName;
     }
 
-    public void setGame(ChessGame game) {
-        updatedGame = game;
+    public void setMoves(Collection<ChessMove> moves) {
+        validMoves = moves;
     }
 }

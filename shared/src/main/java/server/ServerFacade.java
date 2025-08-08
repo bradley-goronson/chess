@@ -1,15 +1,18 @@
 package server;
 
 import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
+import model.MovesContainer;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class ServerFacade {
     String serverURL;
@@ -56,9 +59,9 @@ public class ServerFacade {
         makeRequest("PUT", "/leave", request, null, authToken);
     }
 
-    public GameData makeMove(Integer gameID, ChessMove move, String authToken) throws ResponseException {
-        ClientMakeMoveRequest request = new ClientMakeMoveRequest(gameID, move);
-        return makeRequest("PUT", "/move", request, GameData.class, authToken);
+    public MovesContainer showMoves(Integer gameID, ChessPosition startPosition, String authToken) throws ResponseException {
+        ClientShowMovesRequest request = new ClientShowMovesRequest(gameID, startPosition);
+        return makeRequest("GET", "/move", request, MovesContainer.class, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
