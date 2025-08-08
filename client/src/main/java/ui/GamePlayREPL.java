@@ -6,7 +6,7 @@ import model.MovesContainer;
 import server.ResponseException;
 import server.ServerFacade;
 import websocket.NotificationHandler;
-import Facade.WebSocketFacade;
+import facade.WebSocketFacade;
 import websocket.messages.ServerMessage;
 
 import java.io.PrintStream;
@@ -251,15 +251,7 @@ public class GamePlayREPL implements NotificationHandler {
                 ChessPiece tile = currentRow[currentColIndex];
 
                 if (showingMoves) {
-                    if (startPosition.getRow() - 1 == currentRowIndex && startPosition.getColumn() - 1 == currentColIndex) {
-                        output.print(EscapeSequences.SET_BG_COLOR_YELLOW);
-                    } else {
-                        for (ChessPosition position : endPositions) {
-                            if (position.getRow() - 1 == currentRowIndex && position.getColumn() - 1 == currentColIndex) {
-                                output.print(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
-                            }
-                        }
-                    }
+                    checkForHighlighting(output, startPosition, currentRowIndex, currentColIndex, endPositions);
                 }
 
                 output.print(" ");
@@ -338,5 +330,17 @@ public class GamePlayREPL implements NotificationHandler {
                 errorMessage +
                 EscapeSequences.SET_TEXT_COLOR_WHITE
         );
+    }
+
+    private void checkForHighlighting(PrintStream output, ChessPosition startPosition, int currentRowIndex, int currentColIndex, ArrayList<ChessPosition> endPositions) {
+        if (startPosition.getRow() - 1 == currentRowIndex && startPosition.getColumn() - 1 == currentColIndex) {
+            output.print(EscapeSequences.SET_BG_COLOR_YELLOW);
+        } else {
+            for (ChessPosition position : endPositions) {
+                if (position.getRow() - 1 == currentRowIndex && position.getColumn() - 1 == currentColIndex) {
+                    output.print(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+                }
+            }
+        }
     }
 }
