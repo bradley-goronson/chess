@@ -3,7 +3,6 @@ package facade;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import requests.ResponseException;
-import ui.EscapeSequences;
 import websocket.NotificationHandler;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
