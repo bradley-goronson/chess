@@ -5,9 +5,9 @@ import dataaccess.DatabaseManager;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
 import org.junit.jupiter.api.*;
-import server.ResponseException;
+import requests.ResponseException;
 import server.Server;
-import server.ServerFacade;
+import requests.ServerFacade;
 import server.clear.ClearService;
 
 import java.util.ArrayList;

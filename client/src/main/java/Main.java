@@ -1,4 +1,4 @@
-import server.ResponseException;
+import requests.ResponseException;
 import ui.EscapeSequences;
 import ui.GamePlayREPL;
 import ui.PostLoginREPL;

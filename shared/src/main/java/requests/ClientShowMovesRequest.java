@@ -1,4 +1,4 @@
-package server;
+package requests;
 
 import chess.ChessPosition;
 

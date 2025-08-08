@@ -1,6 +1,5 @@
-package server;
+package requests;
 
-import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.AuthData;
@@ -12,7 +11,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class ServerFacade {
     String serverURL;
