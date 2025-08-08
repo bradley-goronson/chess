@@ -128,10 +128,17 @@ public class GamePlayREPL implements NotificationHandler {
 
     private void move(String[] requestArray, boolean isObserver, String authToken) throws ResponseException {
         if (!isObserver) {
-            ChessPosition startPosition = getChessPosition(requestArray[1]);
-            ChessPosition endPosition = getChessPosition(requestArray[2]);
-            ChessMove move = new ChessMove(startPosition, endPosition, null);
-            ws.move(move, authToken, requestArray[1], requestArray[2]);
+            try {
+                ChessPosition startPosition = getChessPosition(requestArray[1]);
+                ChessPosition endPosition = getChessPosition(requestArray[2]);
+                ChessMove move = new ChessMove(startPosition, endPosition, null);
+                ws.move(move, authToken, requestArray[1], requestArray[2]);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.print(
+                        EscapeSequences.SET_TEXT_COLOR_RED +
+                                "Invalid input. Make sure to type \"move <firstPosition> <secondPosition>\" with no spaces between the letter and number of the positions.\n" +
+                                EscapeSequences.SET_TEXT_COLOR_WHITE);
+            }
         } else {
             System.out.print(
                     EscapeSequences.SET_TEXT_COLOR_RED +
@@ -161,7 +168,7 @@ public class GamePlayREPL implements NotificationHandler {
                         EscapeSequences.SET_TEXT_COLOR_WHITE);
                 return;
             }
-            System.out.print("Are you sure you want to resign? Confirm with \"YES\" cancel with \"NO\"\n");
+            System.out.print("Are you sure you want to resign? Confirm with \"YES\" cancel with any other input\n");
             Scanner scanner = new Scanner(System.in);
             String response = scanner.nextLine();
             boolean resigning = response.equals("YES");
