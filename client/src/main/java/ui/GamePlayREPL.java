@@ -332,12 +332,12 @@ public class GamePlayREPL implements NotificationHandler {
         );
     }
 
-    private void checkForHighlighting(PrintStream output, ChessPosition startPosition, int currentRowIndex, int currentColIndex, ArrayList<ChessPosition> endPositions) {
-        if (startPosition.getRow() - 1 == currentRowIndex && startPosition.getColumn() - 1 == currentColIndex) {
+    private void checkForHighlighting(PrintStream output, ChessPosition start, int rowIndex, int colIndex, ArrayList<ChessPosition> ends) {
+        if (start.getRow() - 1 == rowIndex && start.getColumn() - 1 == colIndex) {
             output.print(EscapeSequences.SET_BG_COLOR_YELLOW);
         } else {
-            for (ChessPosition position : endPositions) {
-                if (position.getRow() - 1 == currentRowIndex && position.getColumn() - 1 == currentColIndex) {
+            for (ChessPosition position : ends) {
+                if (position.getRow() - 1 == rowIndex && position.getColumn() - 1 == colIndex) {
                     output.print(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
                 }
             }
